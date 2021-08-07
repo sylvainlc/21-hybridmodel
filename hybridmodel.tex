@@ -33,6 +33,7 @@
 \usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{booktabs}
+\usepackage{xcolor}
 
 \lstset{%
 	basicstyle={\footnotesize\ttfamily},% footnotesize acceptable for monospace
@@ -273,32 +274,39 @@ where $k = \lfloor(i-1)/m\rfloor$.
 
 This statistical model offers a fine approach to normalize and deseasonnalize the sequences. In addition, with its two recurrent equations only, it is simple to code and incorporate in a larger framework using deep learning model and GPUs. However, other statistical methods could have been used as the basis of our hybrid approach. For example, S. Smyl created his hybrid model with a multiplicative exponential smoothing model instead of the additive form. At the end, The main complexity is in the next stage: succeed in training a global RNN to understand all the per-time-series statistical models and correct their mistakes.
 
-\subsection{Error-corrector recurrent model}
+\subsection{Regime switching error-corrector recurrent model}
 
-The Second stage of our hybrid model is to train a global RNN on all our sequences. its goal is not to compute directly a forecast for each time series but to compute a correction of the first statistical prediction. We motivate this choice for two reasons. Firstly, pure machine learning methods achieve relatively poor results in time series forecasting. Turning a full forecasting task into a correcting task largely simplifies the RNN goals. Secondly, neural network needs a thorough data pre-processing and classical pre-processing methods are not really suited for time-series. With our collection of exponential smoothing models, we find a fine way to normalize and deseasonalize the RNN's inputs and outputs. We describe bellow how we design a RNN able to understand the first exponential smoothing models and estimate a correction of their forecasting errors.
+Then we train a global RNN on all sequences to compute a correction of the first statistical prediction. We motivate this choice for two reasons. Firstly, pure machine learning methods achieve relatively poor results in time series forecasting. Turning a full forecasting task into a correcting task largely simplifies the RNN goals. Secondly, neural network needs a thorough data pre-processing and classical pre-processing methods are not really suited for time-series. With our collection of exponential smoothing models, we propose a fine way to normalize and deseasonalize the RNN inputs and outputs. %We describe bellow how we design a RNN able to understand the first exponential smoothing models and estimate a correction of their forecasting errors.
 
-Let $\window \in \mathbb{N}$ be the size of our window, usually this input window is equal to the forecast horizon $\window = \lag$. Consider the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnn^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
+Let $\window \in \mathbb{N}$ be the window size, usually this input window is equal to the forecast horizon $\window = \lag$. Consider the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnn^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
 $$
-\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} - \lvl^n_T - \seas^n_{T-w+i}}{\meants^n_T}\,, \quad \mathrm{where}\quad \meants^n_T = \frac{1}{w}\sum_{i = 1}^{w}  \ts^n_{T-w+i}\,.
+\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} - \lvl^n_T - \seas^n_{T-w+i}}{\meants^n_T}\,,
 $$
-
-This new input is used to correct the exponential smoothing prediction.
-Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$. 
-Consider then a recurrent neural network denoted by RNN which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the output of this neural network is, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$,
+where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$. This new input is used to correct the exponential smoothing prediction. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$. 
+Consider then a recurrent neural network denoted by RNN which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
 $$
-\rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
+\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
+%  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-Finally, for all $1\leqslant n \leqslant N$, the  final forecast of the model is $\{\tspred^{n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$, where, for all $i \in \{1,\ldots,\lag\}$ :
-\begin{align*}
-\tspred^n_{T+i|T}  = \etspred^{ets,n}_{T+i|T} +  \meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i}  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} + \hat{\err}^{n,T}_{T+i|T}\,.
-\end{align*}
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with \textcolor{red}{specify here the right distribution} and $ U^n_T$ an unobserved regime switching Bernoulli random variable.
+%$$
+%\ts^n_{T+i} = \rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
+%$$
+%Finally, for all $1\leqslant n \leqslant N$, the  final forecast of the model is $\{\tspred^{n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$, where, for all $i \in \{1,\ldots,\lag\}$ :
+%\begin{align*}
+%\tspred^n_{T+i|T}  &= \etspred^{ets,n}_{T+i|T} +  \meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i}\,,\\
+%  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} + \hat{\err}^{n,T}_{T+i|T}\,.
+%\end{align*}
 
 \subsection{Weak signal}
 
 Using a time-series-specific statistical model, the hybrid network achieves striking accuracy on single sequences. Then, the shared recurrent neural network relies on the strength of machine learning methods at leveraging a huge quantities of heterogeneous data.
-In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   $$\fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w} = \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}$$
-Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final forecast $\{\tspred^{n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ become :
-    
+In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
+\begin{align*}
+\fullconcatinput^n_T &= \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}\,, \\
+&= \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
+\end{align*}
+Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final forecast $\{\tspred^{n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ become:
 $$
 \tspred^n_{T+i|T} 
 = \etspred^{ets,n}_{T+i|T} +  \rnnmodel(\fullconcatinput^n_T)_{T+i} \times \meants^n_T
@@ -318,7 +326,7 @@ Heuritech is the first company to adopt a data-intensive approach  for the fashi
 
 
 
-\begin{table}
+\begin{table*}
   \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male)}
   \label{sample-table}
   \centering
@@ -337,7 +345,7 @@ Heuritech is the first company to adopt a data-intensive approach  for the fashi
     \bottomrule
   \end{tabular}
   }
-\end{table}
+\end{table*}
 
 
 
@@ -373,7 +381,7 @@ For more details about the general hybrid training, a complete description of th
 
 \subsection{Benchmarks, hybrid models and Metrics}
 
-As benchmarks, we chose several well-known statistical methods and a full Machine Learning (ML) model. For the statistical part, using the R package "forecast", we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. For the full ML method, we train a global Long-Short Term Memory (\textit{lstm}) neural network on all our dataset (\textcolor{green}{ ici j'ai entrainé un lstm simple sans appliquer aucun preprocessing. Ses résultats sont dans la table 2/3 et ils sont  déjà très corrects. Si j'applique en plus une normalisation, le lstm simple devient aussi bon que nos méthodes hybrides. --> creuser pourquoi}. Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. To reach a higher accuracy level we propose at the end an ensembling (\textit{ensembling} of our two hybrid approaches using the FFORMA method created during the M4 competition, see \citep{fforma} . 
+As benchmarks, we chose several well-known statistical methods and a full Machine Learning (ML) model. For the statistical part, using the R package "forecast", we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. For the full ML method, we train a global Long-Short Term Memory (\textit{lstm}) neural network on all our dataset. Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. To reach a higher accuracy level we propose at the end an ensembling (\textit{ensembling} of our two hybrid approaches using the FFORMA method created during the M4 competition, see \citep{fforma} . 
 
 Finally, to evaluate the power of our external signals and the capacity of our hybrid models to leverage them, we propose for our two approaches a version with the external weak signals. We name them respectively \textit{hybrid-mul-ws} for the multiplicative version and \textit{hybrid-add-ws} for the additive one. As benchmarks we propose the same comparison with our previous full ML model \textit{lstm} with a version including weak signals \textit{lstm-ws}.
 
@@ -408,7 +416,7 @@ Finally, with our results, we can make two interesting conclusions:
 
 \subsection{Discussion}
 
-\begin{table}
+\begin{table*}
   \caption{Results summary (Mean/Median) on our Fashion dataset. In a first time, we train our hybrid approaches without our external weak signals.}
   \label{sample-table}
   \centering
@@ -426,9 +434,9 @@ Finally, with our results, we can make two interesting conclusions:
      Ensembling & 0.846/0.804 & 0.30 & 23.78/21.07 & 12.9 & 0.864/0.863 & 0.10  \\
     \bottomrule
   \end{tabular}
-\end{table}
+\end{table*}
 
-\begin{table}
+\begin{table*}
   \caption{Comparison between our hybrid models without and with our external weak signals, (Mean/Median)}
   \label{sample-table}
   \centering
@@ -445,11 +453,11 @@ Finally, with our results, we can make two interesting conclusions:
      Ensembling & 0.827/0.787 & 0.29 & 23.43/20.63 & 12.8 & 0.849/0.849 & 0.11\\
     \bottomrule
   \end{tabular}
-\end{table}
+\end{table*}
 
 
 
-\begin{table}
+\begin{table*}
   \caption{Cross-Validation. we split our dataset in 5 equal parts. We train for each hybrid approach, 5 models on 4 specific parts of the dataset and we test them of the remaining parts with our inference process.}
   \label{sample-table}
   \centering
@@ -463,7 +471,7 @@ Finally, with our results, we can make two interesting conclusions:
      hybrid-mul-ws & 0.844 & 0.010 & 23.74 & .20 & 0.863 & 0.006 \\
     \bottomrule
   \end{tabular}
-\end{table}
+\end{table*}
 
 
 
@@ -478,9 +486,13 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 
 \section{Appendices}
 
+\subsection{RNN architecture and baselines}
+\label{section:architectures}
 
 \subsection{Further training details}
 \label{section:train_details}
 
+\subsection{Details on the Fashion dataset}
+\label{section:dataset_details}
 
 \end{document}
