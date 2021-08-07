@@ -329,7 +329,43 @@ As $U^n_T$ is not observed, the loglikelihood of the observations cannot be writ
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T})
 \\ = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{multline*}
-where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$  \textcolor{red}{details to add in appendix}.
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$  \textcolor{red}{details to add in appendix}. \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the FFNN and the RNN and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
+$$
+\omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
+$$
+Then,
+\begin{multline*}
+\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \omega_p^n\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
++ (1-\omega_p^n)\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
+\end{multline*}
+The loss function is then given by
+\begin{multline*}
+\theta\mapsto - \omega_p^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
+- (1-\omega_p^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,,
+\end{multline*} 
+where no gradient is computed on $\omega_p^n$. In both terms, $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ and $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ are simply given by the output of the FFNN.  Choices for the model.
+\begin{itemize}
+\item In the case where the  $\varepsilon^n_{T+i}$ are Gaussian and independent, up to an additive constant
+$$
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T})^2
+$$
+and
+\begin{multline*}
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
+ = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i})^2\,.
+\end{multline*}
+Choice of $c$ ?
+\item In the case where the  $\varepsilon^n_{T+i}$ are Laplace and independent, up to an additive constant
+$$
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T}|
+$$
+and
+\begin{multline*}
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
+ = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i}|\,.
+\end{multline*}
+Choice of $c$ ?
+\end{itemize}}
 
 \section{Fashion dataset with external weak signals}
 \label{sec:dataset}
