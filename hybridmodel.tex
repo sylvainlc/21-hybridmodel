@@ -288,7 +288,7 @@ $$
 \ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
 %  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with \textcolor{red}{specify here the right distribution} and $ U^n_T$ an unobserved regime switching Bernoulli random variable.
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with \textcolor{red}{specify here the right distribution} and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a Feed Forward Neural Network (FFNN) with input \textcolor{red}{complete here}.
 %$$
 %\ts^n_{T+i} = \rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
 %$$
@@ -306,17 +306,30 @@ In addition to the $N$ target time series, we consider $K \times N$ external seq
 \fullconcatinput^n_T &= \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}\,, \\
 &= \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 \end{align*}
-Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final forecast $\{\tspred^{n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ become:
-$$
-\tspred^n_{T+i|T} 
-= \etspred^{ets,n}_{T+i|T} +  \rnnmodel(\fullconcatinput^n_T)_{T+i} \times \meants^n_T
-$$
+Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final model becomes:
+%$$
+%\tspred^n_{T+i|T} 
+%= \etspred^{ets,n}_{T+i|T} +  \rnnmodel(\fullconcatinput^n_T)_{T+i} \times \meants^n_T
+%$$
+\begin{equation}
+\label{eq:full:model}
+\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
+\end{equation}
+\textcolor{red}{specify here the right distribution for $U$ (depends on the weak signal or no)}. The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \begin{figure}
   \centering
     \includegraphics[width=0.8\linewidth]{figure/hybrid_model_archi.png}
-  \caption{Hybrid model with weak signals architecture}
+  \caption{Hybrid model with weak signals architecture.}
+\label{fig:architecture}
 \end{figure}
+
+As $U^n_T$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of the RNN and of the FFNN denoted by $\theta$. The score is
+\begin{multline*}
+\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T})
+\\ = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
+\end{multline*}
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$  \textcolor{red}{details to add in appendix}.
 
 \section{Fashion dataset with external weak signals}
 \label{sec:dataset}
