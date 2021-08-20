@@ -429,6 +429,11 @@ Our code is developed in Python using the Tensorflow library and it allows the u
 %For more details about the general hybrid training, a complete description of the training process can be found in the M4 hybrid model paper or in an interesting application of the method on electric load forecasting, see \citep{dudek2020hybrid}.
 
 \textcolor{red}{Detail here or in the appendix the training details: number of samples, optimizers, learning rates, etc.}
+
+\vspace{.2cm}
+
+\textcolor{red}{Detail Train/test split.}
+
 \subsection{Benchmarks, hybrid models and Metrics}
 
 As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package {\em forecast}, we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters \textcolor{red}{add a reference for these models (paper or R package help section)}. We also considered a Long-Short Term Memory (\textit{lstm}) neural network. %Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. 
@@ -438,13 +443,22 @@ Finally, we evaluate the model with  inclusion of external signals referred to a
 
 To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (mase), the Symmetric Mean Absolute Percentage Error (smape) and the final M4 competition metric, the Overall Weighted Average (owa) of the smape and the mase defined as follows:
 \begin{align*}
-\mathrm{mase} &= \frac{\frac{1}{h}\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\frac{1}{T-m}\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,\\
+\mathrm{mase} &= \frac{T-m}{h}\frac{\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,\\
 \mathrm{smape} &= \frac{1}{h} \sum_{i=1}^h \frac{2|Y_i - \hat{Y}_i|}{|Y_i| + |\hat{Y}_i|}\,,\\
-\mathrm{owa} &= \frac{1}{2}(\frac{mase}{mase_{snaive}} + \frac{smape}{smape_{snaive}})\,,
+\mathrm{owa} &= \frac{1}{2}\left(\frac{mase}{mase_{snaive}} + \frac{smape}{smape_{snaive}}\right)\,,
 \end{align*}
 \textcolor{red}{where $\mathrm{smape_{snaive}}$ and $\mathrm{mase_{snaive}}$ are}.
 
-\subsection{Heuritech Fashion dataset results}
+\subsection{Results for XXX Dataset}
+\textcolor{red}{If possible, a few results of the hybrid approach without weak signals on a dataset other than Heuritech.}
+
+\subsection{Result for Heuritech Fashion dataset}
+
+\textcolor{red}{Add a figure of a time series with all models (and others in Appendix).}
+
+\vspace{.2cm}
+
+\textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
 
 In a first place, Table 2 shows the final accuracy of the statistical models, the LSTM model and our 2 hybrid models without external data. Even without the weak signals, our 2 hybrid approaches largely outperform the statistical references. The multiplicative model show the best accuracy with a OWA equal to 0.875. We can note that the additive model slightly under-performs the traditional multiplicative one on average. This doesn't show a weakness of the additive version but more that a large part of our dataset is more-suited for multiplicative modelization. At the end, the strength of training both methods, additive and multiplicative, is in the final porposed ensembling \textit{ensembling} that combines the two approaches with the FForma ensembling.
 
