@@ -330,7 +330,7 @@ As $U^n_T$ is not observed, the loglikelihood of the observations cannot be writ
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T})
 \\ = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{multline*}
-where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$  \textcolor{red}{details to add in appendix}. \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the FFNN and the RNN and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.  \textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the FFNN and the RNN and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
 $$
 \omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
 $$
@@ -370,9 +370,12 @@ Choice of $c$ ?
 
 \section{Fashion dataset with external weak signals}
 \label{sec:dataset}
-In image of language processing, there are available reference datasets covering varieties of applications. However, for time series forecasting, there is a lack of large, rich and public datasets where neural network approaches can express their potential. With the M4 and M5 competitions, we can find large amounts of data but they show several limitation. For example the M4 dataset does not propose external signals in addition to the time series. Conversely, the M5 one does so but like other sales datasets \citep{C.Favorita}, it includes a majority of sporadic time series that do not allow the application of some kinds of models\citep{makridakis2020m5}. With this paper, we aim at widening the set of available datasets for time series forecasting with the first fashion dataset including external weak signals.
+%In image of language processing, there are available reference datasets covering varieties of applications. However, for time series forecasting, there is a lack of large, rich and public datasets where neural network approaches can express their potential. 
+\textcolor{red}{Other datasets for time series (see Alice paper on the SMC Transformer): air quality, weather, energy, Covid. These datasets exist but no easy weak signals to derive from them i guess. }
+M4 and M5 competitions\textcolor{red}{Add link in footnote} provide a large amount of time series data but they show several limitations. For example, the M4 dataset does not propose external signals in addition to the target time series. Conversely, the M5 dataset does include weak signals, but like other sales datasets \citep{C.Favorita}, it includes a majority of sporadic time series that cannot be included straightforwadly in a statistical model, see \citep{makridakis2020m5}. With this paper, we aim at overcoming this limitation of available datasets for time series forecasting with the first fashion dataset including external weak signals.
 
-Heuritech is the first company to adopt a data-intensive approach  for the fashion forecasting. It analyzes every day images shared on social networks thanks to a high throughput computer vision systems. Aggregating detected clothes by trends, we create thousands of time series with the same good properties: same weekly seasonality, shared behaviours and the same length: from 2015-01-05 to 2020-09-01. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
+%Heuritech is the first company to adopt a data-intensive approach  for the fashion forecasting. 
+Every day images shared on social networks are analyzed thanks to a high throughput computer vision systems. Aggregating detected clothes by trends, we create thousands of time series with the same good properties: same weekly seasonality, shared behaviours and the same length: from 2015-01-05 to 2020-09-01 \textcolor{red}{Add a few details here or in the appendix}. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
 
 
@@ -399,54 +402,47 @@ Heuritech is the first company to adopt a data-intensive approach  for the fashi
 
 
 
-In addition to this large dataset we design for each sequence several weak signals :
-\begin{itemize}
-    \item Firstly, we create a specific fashion-oriented panel of micro-influencers. In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters adopt a trend in succession, resulting in several adoption waves. With this specific panel, we aim at detecting the first waves announcing emerging trends or the collapse of other ones. By analyzing images shared by this specific panel on social medias, we create a first weak signal named \textit{fashion-forwards} for each of the previous trends.
-    \item for the other weak signals, we analyzed only a specific part of social media users depending of the number of followers. With three thresholds we create the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high}. The first one represents users with few followers, the second one is made of users with a moderate amount of followers and the last one gathers superstar and users of any fields with thousands of influencers. Again, the motivation here is to detect behaviour gaps between this three segments that could announce bigger changes in the main signal.
-\end{itemize}
+In addition to this large dataset we design for each sequence several weak signals.  Firstly, we create a specific fashion-oriented panel of micro-influencers. In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. With this specific panel, we aim at detecting the first waves announcing emerging trends or the collapse of other ones. By analyzing images shared by this specific panel on social medias, we create a first weak signal named \textit{fashion-forwards} for each of the previous trends. We also analyzed only a specific part of social media users depending of the number of followers. With three thresholds we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high}. The first one represents users with few followers, the second one is made of users with a moderate amount of followers and the last one gathers superstar and users of any fields with thousands of influencers. Again, the motivation here is to detect behaviour gaps between this three segments that could announce bigger changes in the main signal.
+
 
 At the end, we have for each trends 4 linked weak signals representing this trends on a specific panel of social media users. These extra signals are frequently sparse for micro trends and they often lack of interest for common fashion trends. However on several examples, they are fundamental to detect the future fashion evolution. 
 
-As an example, an impressive emerging fashion trend is represented in figure 2. The graph shows the evolution of one of our shoes trends on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and our panel of mode-influencers share the same behaviour. The trend start to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change there behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users and more generally on the society. Finally, after a pick reached at the end of 2018 for our fashion-influencers, a regular decrease appear. They leave gradually the old trend to focus more on the latest or propose new ones. 
+As an example, an impressive emerging fashion trend is represented in Figure 2, \textcolor{red}{see other examples in Appendix~\ref{}}. It shows the evolution of one shoes trends on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and the panel of mode-influencers share the same behaviour. The trend start to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change there behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users. Finally, after a pick reached at the end of 2018 for the fashion-influencers, a regular decrease appear. %They leave gradually the old trend to focus more on the latest or propose new ones. 
 
 \begin{figure}
   \centering
     \includegraphics[width=1.\linewidth]{figure/good_example.png}
-  \caption{A shoes trend of our dataset. In black the main signal and in red its associated \textit{fashion-forward} weak signal. The Gap between our two signals in the end of 2017/beginning of 2018 announces the future explosion of the fashion trend.}
+  \caption{A shoes trend of our dataset. In black the main signal and in red its associated \textit{fashion-forward} weak signal. The Gap between our two signals in the end of 2017/beginning of 2018 announces the future explosion of the fashion trend. \textcolor{red}{Provide other examples in the appendix to hightlight the variety of the proposed data.}}
 \end{figure}
 
 
 
 \section{Experimental results}
 \label{sec:exp}
-In this section, we evaluate how our hybrid framework is able to deal with the fashion dataset and leverage our complex external weak signals. To lead our experience, we keep hide the last year of each time series as our test set. For each method and each time series, based on the first five years of data, we predict the last year and compute our accuracy on it.
+%In this section, we evaluate how our hybrid framework is able to deal with the fashion dataset and leverage our complex external weak signals. To lead our experience, we keep hide the last year of each time series as our test set. For each method and each time series, based on the first five years of data, we predict the last year and compute our accuracy on it.
 
 \subsection{Training}
 
-To train our hybrid models, we made the choice of don't using the original code of the hybrid method provided during the M4 competition. Indeed, the proposed implementation is difficult to use in a more general framework and it is quite slow because it doesn't enable the use of GPU. Thereby, we propose with this paper, a new version of the hybrid framework, including the original multiplicative model and the new additive one. Our proposed code is developed in Python using the Tensorflow library and it allows the use of a GPU to speed up the training process.
+%To train our hybrid models, we made the choice of don't using the original code of the hybrid method provided during the M4 competition. Indeed, the proposed implementation is difficult to use in a more general framework and it is quite slow because it doesn't enable the use of GPU. Thereby, we propose with this paper, a new version of the hybrid framework, including the original multiplicative model and the new additive one. 
+Our code is developed in Python using the Tensorflow library and it allows the use of a GPU to speed up the training process contrary to other methods \textcolor{red}{\cite{} developed for the M4 competition}. In addition, our approach offers the possibility of providing forecasts for a totally  new collection of sequences without retraining the entire hybrid model. Given a new time series,  the weights of the error-corrector recurrent model are frozen and only the new time-series-specific statistical model has to be trained.% It remains the responsibility of the users to provide new sequences sharing same behaviours than the dataset using for the training to keep the same accuracy level.
 
-In addition to a more general framework, we add the possibility of doing inference with our new implementation. We design a new process to compute and provide a forecast for a totally  new collection of sequences without retraining the entire hybrid model. Given a new time series, we freeze the weights of the error-corrector recurrent model and we only train the new time-series-specific statistical model linked to the new sequence. It remains the responsibility of the users to provide new sequences sharing same behaviours than the dataset using for the training to keep the same accuracy level.
+%For more details about the general hybrid training, a complete description of the training process can be found in the M4 hybrid model paper or in an interesting application of the method on electric load forecasting, see \citep{dudek2020hybrid}.
 
-For more details about the general hybrid training, a complete description of the training process can be found in the M4 hybrid model paper or in an interesting application of the method on electric load forecasting, see \citep{dudek2020hybrid}.
-
+\textcolor{red}{Detail here or in the appendix the training details: number of samples, optimizers, learning rates, etc.}
 \subsection{Benchmarks, hybrid models and Metrics}
 
-As benchmarks, we chose several well-known statistical methods and a full Machine Learning (ML) model. For the statistical part, using the R package "forecast", we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. For the full ML method, we train a global Long-Short Term Memory (\textit{lstm}) neural network on all our dataset. Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. To reach a higher accuracy level we propose at the end an ensembling (\textit{ensembling} of our two hybrid approaches using the FFORMA method created during the M4 competition, see \citep{fforma} . 
-
-Finally, to evaluate the power of our external signals and the capacity of our hybrid models to leverage them, we propose for our two approaches a version with the external weak signals. We name them respectively \textit{hybrid-mul-ws} for the multiplicative version and \textit{hybrid-add-ws} for the additive one. As benchmarks we propose the same comparison with our previous full ML model \textit{lstm} with a version including weak signals \textit{lstm-ws}.
-
-
-To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (MASE), the Symmetric Mean Absolute Percentage Error (SMAPE) and the final M4 competition metric, the Overall Weighted Average (OWA) of the SMAPE and the MASE. 
+As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package {\em forecast}, we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters \textcolor{red}{add a reference for these models (paper or R package help section)}. We also considered a Long-Short Term Memory (\textit{lstm}) neural network. %Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. 
+To reach a higher accuracy level we also propose an ensembling (\textit{ensembling} of our hybrid approach using the FFORMA method created during the M4 competition, see \citep{fforma}). 
+Finally, we evaluate the model with  inclusion of external signals referred to as \textit{hybrid-add-ws} \textcolor{red}{together with a multiplicative version described in Appendix~\ref{}}. In order to provide fair comparisons, we also include a \textit{lstm} with inclusion of weak signals, referred to as \textit{lstm-ws}.
 
 
-$$
-MASE = \frac{\frac{1}{h}\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\frac{1}{T-m}\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|} \quad
-SMAPE = \frac{1}{h} \sum_{i=1}^h \frac{2|Y_i - \hat{Y}_i|}{|Y_i| + |\hat{Y}_i|}
-$$
-
-$$
-OWA = \frac{1}{2}(\frac{MASE}{MASE_{snaive}} + \frac{SMAPE}{SMAPE_{snaive}})
-$$
+To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (mase), the Symmetric Mean Absolute Percentage Error (smape) and the final M4 competition metric, the Overall Weighted Average (owa) of the smape and the mase defined as follows:
+\begin{align*}
+\mathrm{mase} &= \frac{\frac{1}{h}\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\frac{1}{T-m}\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,\\
+\mathrm{smape} &= \frac{1}{h} \sum_{i=1}^h \frac{2|Y_i - \hat{Y}_i|}{|Y_i| + |\hat{Y}_i|}\,,\\
+\mathrm{owa} &= \frac{1}{2}(\frac{mase}{mase_{snaive}} + \frac{smape}{smape_{snaive}})\,,
+\end{align*}
+\textcolor{red}{where $\mathrm{smape_{snaive}}$ and $\mathrm{mase_{snaive}}$ are}.
 
 \subsection{Heuritech Fashion dataset results}
 
