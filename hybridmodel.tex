@@ -258,13 +258,14 @@ Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\l
 \subsection{Per time series statistical model}
 %The first step in our additive hybrid model is to consider, for each time series, an exponential smoothing  statistical model.
 The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series). Given the sequence $\fullts^n$, the two components  $\fulllvl^n$ and $\fullseas^n$ are computed using exponential smoothing.
-For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n,\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
+For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. We have finally for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, \textcolor{blue}{Now, I initialize alpha, gamma, the 52 first seasons and the first level with a python package}
+%We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
 \begin{align*}
     \lvl^n_{t} &= \lsmooth^n (\ts^n_t - \seas^n_{t-m}) + (1- \lsmooth^n)\lvl^n_{t-1}\,, \\
     \seas^n_t &= \ssmooth^n (\ts^n_t - \lvl^n_{t-1}) + (1 - \ssmooth^n)\seas^n_{t-1}\,. 
 \end{align*}
 
-For all $n \in \{1,\ldots,N\}$, given the level component $\fulllvl^n$, the seasonality component $\fullseas^n$ and the forecast horizon $\lag \in \mathbb{N}$, the exponential smoothing forecast $\{\etspred^{ets,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ is, for all $i \in \{1,\ldots,\lag\}$,
+For all $1\leqslant n \leqslant N$, given the level component $\fulllvl^n$, the seasonality component $\fullseas^n$ and the forecast horizon $\lag \in \mathbb{N}$, the exponential smoothing forecast $\{\etspred^{ets,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ is, for all $i \in \{1,\ldots,\lag\}$,
 $$
 \etspred^{ets,n}_{T+i|T} = \lvl^n_T + \seas^n_{T+i-m(k+1)}\,,
 $$
