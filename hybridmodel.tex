@@ -285,12 +285,12 @@ $$
 \rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} - \lvl^n_T - \seas^n_{T-w+i}}{\meants^n_T}\,,
 $$
 where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$. This new input is used to correct the exponential smoothing prediction. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$. 
-Consider then a recurrent neural network denoted by RNN which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
+Consider then a recurrent neural network denoted by RNN-p which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
 $$
 \ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
 %  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with \textcolor{red}{specify here the right distribution} and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a Feed Forward Neural Network (FFNN) with input \textcolor{red}{complete here}.
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with a Laplace distribution and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN-p corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a recurrent neural network denoted by RNN-c with the same input than RNN-p \textcolor{blue}{RNN-p for the predictor and RNN-c for the classifier, maybe names are confusing. They have, for now, the same archi/inputs}.
 %$$
 %\ts^n_{T+i} = \rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
 %$$
@@ -326,12 +326,15 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 \label{fig:architecture}
 \end{figure}
 
-As $U^n_T$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of the RNN and of the FFNN denoted by $\theta$. The score is
+
+\subsection{Hidden regime}
+
+As $U^n_T$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta$. The score is
 \begin{multline*}
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T})
 \\ = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{multline*}
-where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.  \textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the FFNN and the RNN and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.  \textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the RNN-p and the RNN-c and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
 $$
 \omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
 $$
