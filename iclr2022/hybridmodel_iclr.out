@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Hybrid model with external signals}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Per time series statistical model}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Regime switching error-corrector recurrent model}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Weak signal}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Hidden regime}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Fashion dataset with external weak signals}{}% 7
+\BOOKMARK [1][-]{section.4}{Experimental results}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{Training}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{Benchmarks, hybrid models and Metrics}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.3}{Results for XXX Dataset}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.4}{Result for Heuritech Fashion dataset}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.5}{Discussion}{section.4}% 13
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 14
+\BOOKMARK [1][-]{appendix.A}{Appendix}{}% 15

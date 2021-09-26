@@ -1,183 +1,43 @@
-\def\year{2022}\relax
-%File: formatting-instructions-latex-2022.tex
-%release 2022.1
-\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
-\usepackage{aaai22}  % DO NOT CHANGE THIS
-\usepackage{times}  % DO NOT CHANGE THIS
-\usepackage{helvet}  % DO NOT CHANGE THIS
-\usepackage{courier}  % DO NOT CHANGE THIS
-\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
-\usepackage{graphicx} % DO NOT CHANGE THIS
-\urlstyle{rm} % DO NOT CHANGE THIS
-\def\UrlFont{\rm}  % DO NOT CHANGE THIS
-\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
-\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
-\DeclareCaptionStyle{ruled}{labelfont=normalfont,labelsep=colon,strut=off} % DO NOT CHANGE THIS
-\frenchspacing  % DO NOT CHANGE THIS
-\setlength{\pdfpagewidth}{8.5in}  % DO NOT CHANGE THIS
-\setlength{\pdfpageheight}{11in}  % DO NOT CHANGE THIS
-%
-% These are recommended to typeset algorithms but not required. See the subsubsection on algorithms. Remove them if you don't have algorithms in your paper.
-\usepackage{algorithm}
-\usepackage{algorithmic}
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2022_conference,times}
 
-%
-% These are are recommended to typeset listings but not required. See the subsubsection on listing. Remove this block if you don't have listings in your paper.
-\usepackage{newfloat}
-\usepackage{listings}
-\usepackage{multirow}
-\usepackage{hhline}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{dsfont}
-\usepackage{amsthm}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
 \usepackage{amssymb}
-\usepackage{booktabs}
-\usepackage{xcolor}
+\usepackage{graphicx}
 
-\lstset{%
-	basicstyle={\footnotesize\ttfamily},% footnotesize acceptable for monospace
-	numbers=left,numberstyle=\footnotesize,xleftmargin=2em,% show line numbers, remove this entire line if you don't want the numbers.
-	aboveskip=0pt,belowskip=0pt,%
-	showstringspaces=false,tabsize=2,breaklines=true}
-\floatstyle{ruled}
-\newfloat{listing}{tb}{lst}{}
-\floatname{listing}{Listing}
-%
-%\nocopyright
-%
-% PDF Info Is REQUIRED.
-% For /Title, write your title in Mixed Case.
-% Don't use accents or commands. Retain the parentheses.
-% For /Author, add all authors within the parentheses,
-% separated by commas. No accents, special characters
-% or commands are allowed.
-% Keep the /TemplateVersion tag as is
-\pdfinfo{
-/Title (Hybrid recurrent model for regime switching nonstationary time series)
-/Author (Etienne David, Jean Bellot, Sylvain Le Corff)
-/TemplateVersion (2022.1)
-}
 
-% DISALLOWED PACKAGES
-% \usepackage{authblk} -- This package is specifically forbidden
-% \usepackage{balance} -- This package is specifically forbidden
-% \usepackage{color (if used in text)
-% \usepackage{CJK} -- This package is specifically forbidden
-% \usepackage{float} -- This package is specifically forbidden
-% \usepackage{flushend} -- This package is specifically forbidden
-% \usepackage{fontenc} -- This package is specifically forbidden
-% \usepackage{fullpage} -- This package is specifically forbidden
-% \usepackage{geometry} -- This package is specifically forbidden
-% \usepackage{grffile} -- This package is specifically forbidden
-% \usepackage{hyperref} -- This package is specifically forbidden
-% \usepackage{navigator} -- This package is specifically forbidden
-% (or any other package that embeds links such as navigator or hyperref)
-% \indentfirst} -- This package is specifically forbidden
-% \layout} -- This package is specifically forbidden
-% \multicol} -- This package is specifically forbidden
-% \nameref} -- This package is specifically forbidden
-% \usepackage{savetrees} -- This package is specifically forbidden
-% \usepackage{setspace} -- This package is specifically forbidden
-% \usepackage{stfloats} -- This package is specifically forbidden
-% \usepackage{tabu} -- This package is specifically forbidden
-% \usepackage{titlesec} -- This package is specifically forbidden
-% \usepackage{tocbibind} -- This package is specifically forbidden
-% \usepackage{ulem} -- This package is specifically forbidden
-% \usepackage{wrapfig} -- This package is specifically forbidden
-% DISALLOWED COMMANDS
-% \nocopyright -- Your paper will not be published if you use this command
-% \addtolength -- This command may not be used
-% \balance -- This command may not be used
-% \baselinestretch -- Your paper will not be published if you use this command
-% \clearpage -- No page breaks of any kind may be used for the final version of your paper
-% \columnsep -- This command may not be used
-% \newpage -- No page breaks of any kind may be used for the final version of your paper
-% \pagebreak -- No page breaks of any kind may be used for the final version of your paperr
-% \pagestyle -- This command may not be used
-% \tiny -- This is not an acceptable font size.
-% \vspace{- -- No negative value may be used in proximity of a caption, figure, table, section, subsection, subsubsection, or reference
-% \vskip{- -- No negative value may be used to alter spacing above or below a caption, figure, table, section, subsection, subsubsection, or reference
-
-\setcounter{secnumdepth}{0} %May be changed to 1 or 2 if section numbers are desired.
-
-% The file aaai22.sty is the style file for AAAI Press
-% proceedings, working notes, and technical reports.
-%
-
-% Title
-
-% Your title must be in mixed case, not sentence case.
-% That means all verbs (including short verbs like be, is, using,and go),
-% nouns, adverbs, adjectives should be capitalized, including both words in hyphenated terms, while
-% articles, conjunctions, and prepositions are lower case unless they
-% directly follow a colon or long dash
 \title{Hybrid recurrent model for regime switching nonstationary time series}
-\author{
-    %Authors
-    % All authors must be in the same font size and format.
-    Etienne David,\textsuperscript{\rm 1,\rm 2}\\
-    Jean Bellot,\textsuperscript{\rm 1}\\
-    Sylvain Le Corff\textsuperscript{\rm 2}\\
+
+\author{Etienne DAVID \\
+Heuritech \\
+Paris \\
+\texttt{etienne.david@heuritech.com} \\
+\And
+Sylvain Le Corff \\
+Samovar, T\'el\'ecom SudParis, d\'epartement CITI, TIPIC \\
+Institut Polytechnique de Paris, Palaiseau \\
+\texttt{sylvain.le$\_$corff@telecom-sudparis.eu} \\
+\And 
+Jean Bellot \\
+Heuritech \\
+Paris \\
+\texttt{jean.bellot@heuritech.com} \\
 }
-\affiliations{
-    %Afiliations
-    \textsuperscript{\rm 1}Heuritech, Paris\\
-    \textsuperscript{\rm 2}Samovar, T\'el\'ecom SudParis, d\'epartement CITI, TIPIC, Institut Polytechnique de Paris, Palaiseau
-    % If you have multiple authors and multiple affiliations
-    % use superscripts in text and roman font to identify them.
-    % For example,
 
-    % Sunil Issar, \textsuperscript{\rm 2}
-    % J. Scott Penberthy, \textsuperscript{\rm 3}
-    % George Ferguson,\textsuperscript{\rm 4}
-    % Hans Guesgen, \textsuperscript{\rm 5}.
-    % Note that the comma should be placed BEFORE the superscript for optimum readability
-
-    %2275 East Bayshore Road, Suite 160\\
-    %Palo Alto, California 94303\\
-    % email address must be in roman text type, not monospace or sans serif
-    etienne.david@heuritech.com, jean.bellot@heuritech.com, sylvain.le$\_$corff@telecom-sudparis.eu
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
 %
-% See more examples next
-}
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
 
-%Example, Single Author, ->> remove \iffalse,\fi and place them surrounding AAAI title to use it
-\iffalse
-\title{My Publication Title --- Single Author}
-\author {
-    Author Name
-}
-\affiliations{
-    Affiliation\\
-    Affiliation Line 2\\
-    name@example.com
-}
-\fi
-
-\iffalse
-%Example, Multiple Authors, ->> remove \iffalse,\fi and place them surrounding AAAI title to use it
-\title{My Publication Title --- Multiple Authors}
-\author {
-    % Authors
-    First Author Name,\textsuperscript{\rm 1}
-    Second Author Name, \textsuperscript{\rm 2}
-    Third Author Name \textsuperscript{\rm 1}
-}
-\affiliations {
-    % Affiliations
-    \textsuperscript{\rm 1} Affiliation 1\\
-    \textsuperscript{\rm 2} Affiliation 2\\
-    firstAuthor@affiliation1.com, secondAuthor@affilation2.com, thirdAuthor@affiliation1.com
-}
-\fi
-
-
-% REMOVE THIS: bibentry
-% This is only needed to show inline citations in the guidelines document. You should not need it and can safely delete it.
-\usepackage{bibentry}
-% END REMOVE bibentry
-
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
 
 \newcommand{\ts}{y}
 \newcommand{\fullts}{{\bf \ts}}
@@ -207,18 +67,15 @@
 \newcommand{\fullconcatinput}{{ \bf \concatinput}}
 \newcommand{\numberts}{14000}
 
-
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
 
 
 \maketitle
 
-
-
 \begin{abstract}
 Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decision and avoid massive wastes. By tracking thousands of fashion trends on social media with stat-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series several external weak signals representing behaviors of influencers towards the trend. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the fashion dataset, and illustrates the benefit of the contribution of  external weak signals.
 \end{abstract}
-
 
 \section{Introduction}
 
@@ -242,7 +99,7 @@ Recurrent neural network seems to be the perfect candidate to tackle our forecas
 However, the hybrid model has not been designed to deal with external signals even if it include a neural network.
 
 Following this work, we present in this paper a new hyrbid recurrent model for time series forecasting with inclusion of external weak signals. %We design a more general hybrid framework including the original multiplicative model and a new additive one. 
-Our approach enriches existing hybrd models  by incorporating an unobserved regime switching feature to account for the need neural network based correction. In order to leverage external signals, we modify the hybrid framework to allow the regime shift and the  global error-corrector neural network to deal with external data. By adding our fashion external weak signals in our proposed framework, we show the real potential of the hybrid approach: a global neural network, able to leverage large amount of data, deal with any kind of external weak signals, learn context and finally correct weaknesses and errors of the parametric models.
+Our approach enriches existing hybrid models  by incorporating an unobserved regime switching feature to account for the need neural network based correction. In order to leverage external signals, we modify the hybrid framework to allow the regime shift and the  global error-corrector neural network to deal with external data. By adding our fashion external weak signals in our proposed framework, we show the real potential of the hybrid approach: a global neural network, able to leverage large amount of data, deal with any kind of external weak signals, learn context and finally correct weaknesses and errors of the parametric models.
 
 The paper is organized as follow. Section~\ref{sec:hybrid} describes our hybrid framework which consists of an exponential smoothing model and a recurrent neural network combining the target sequences with external weak signals. Then, we present our new fashion dataset in Section~\ref{sec:dataset}. Section~\ref{sec:exp} describes our results and comparisons with several benchmarks. Finally, we conclude our paper and detail research perspectives in Section~\ref{sec:discussion}.
 
@@ -397,17 +254,17 @@ With this paper, we provide the first dataset dedicated to fashion. Our fashion 
   \centering
   \resizebox{\textwidth}{!}{
   \begin{tabular}{lllllllllll}
-    \toprule
+    \hline
     &  Top  & Pants & Short & Skirt & Dress & Coat & Shoes & Color & Texture &  \\
-    \midrule
+    \hline
      United States & 587/290 & 195/158  & 64/37 & 38/- & 38/- & 271/218 & 439/114 & 59/59 & 129/103\\
      Europe & 587/290 &  195/158& 64/37 & 38/- & 38/- & 271/218 & 439/114 & 59/59 & 135/111\\
      Japan &  587/290 & 193/158 & 64/37 & 38/- &  37/- & 271/218 &  429/114 & 59/59 &  124/98\\
      China &  586/290 & 195/158 & 64/37 & 38/- &  37/- & 271/218 &  433/114 & 59/59 &  128/113\\
      Brazil &  587/290 & 195/158 & 64/37 & 38/- &  38/- & 271/218 & 439/114 & 59/59 & 136/110\\
-     \midrule
+     \hline
      Total & 2934/1450 & 973/790 & 320/185 & 190/- & 188/- & 1355/1090 & 2179/570 & 295/294 & 652/535 & \numberts\\
-    \bottomrule
+    \hline
   \end{tabular}
   }
 \end{table*}
@@ -496,9 +353,9 @@ Finally, with our results, we can make two interesting conclusions:
   \label{sample-table}
   \centering
   \begin{tabular}{lllllll}
-    \toprule
+    \hline
     &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std  \\
-    \midrule
+    \hline
      snaive & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
      thetam & 0.924/0.869  & 0.35 & 25.82/22.54  & 14.6 & 0.952/0.915 & 0.26\\
      stlm & 0.893/0.834 & 0.35 & 25.07/21.93  & 14.3 & 0.917/0.895 & 0.21\\
@@ -507,7 +364,7 @@ Finally, with our results, we can make two interesting conclusions:
      hybrid-add & 0.863/0.812  & 0.32 & 24.17/21.36 & 13.0 & 0.877/0.880 & 0.08 \\
      hybrid-mul & 0.858/0.817 & 0.30 & 24.06/21.30 & 13.0 & 0.876/0.873 & 0.11 \\
      Ensembling & 0.846/0.804 & 0.30 & 23.78/21.07 & 12.9 & 0.864/0.863 & 0.10  \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table*}
 
@@ -516,9 +373,9 @@ Finally, with our results, we can make two interesting conclusions:
   \label{sample-table}
   \centering
   \begin{tabular}{lllllll}
-    \toprule
+    \hline
     &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
-    \midrule
+    \hline
     lstm & 0.881/0.824 & 0.34 & 24.41/21.56 & 12.81 & 0.895/0.885 & 0.11 \\
     lstm-ws & 0.869/0.814 & 0.33 & 24.56/21.33 & 14.40 & 0.890/0.874 & 0.132 \\
      hybrid-add & 0.863/0.812  & 0.32 & 24.17/21.36 & 13.0 & 0.877/0.880 & 0.08 \\
@@ -526,7 +383,7 @@ Finally, with our results, we can make two interesting conclusions:
      hybrid-add-ws & 0.852/0.807 & 0.30 & 24.03/21.17 & 13.0 & 0.872/0.869 & 0.10 \\
      hybrid-mul-ws & 0.836/0.798 & 0.29 & 23.67/20.87 & 12.9 & 0.860/0.858 & 0.12 \\
      Ensembling & 0.827/0.787 & 0.29 & 23.43/20.63 & 12.8 & 0.849/0.849 & 0.11\\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table*}
 
@@ -537,14 +394,14 @@ Finally, with our results, we can make two interesting conclusions:
   \label{sample-table}
   \centering
   \begin{tabular}{lllllll}
-    \toprule
+    \hline
     &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
-    \midrule
+    \hline
      hybrid-add & 0.861  & 0.004 & 24.16 & 0.18 & 0.877 & 0.002 \\
      hybrid-mul & 0.856 & 0.008 & 23.95 & 0.25 & 0.870 & 0.005 \\
      hybrid-add-ws & 0.848 & 0.004 & 24.00 & 0.18 & 0.869 & 0.002 \\
      hybrid-mul-ws & 0.844 & 0.010 & 23.74 & .20 & 0.863 & 0.006 \\
-    \bottomrule
+    \hline
   \end{tabular}
 \end{table*}
 
@@ -557,20 +414,12 @@ In this paper, we propose the first hybrid model including external weak signals
 
 With this first contribution, we join the first fashion dataset gathering \numberts\ mode times series and a complex collection of extra signals. We believe that this dataset hide really fine dynamics and interactions where complex models would express their potential. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting and pave the way for further explorations.
 
-\bibliography{aaai22.bib}
 
-\section{Appendices}
+\bibliography{iclr2022_conference}
+\bibliographystyle{iclr2022_conference}
 
-\subsection{RNN architecture and baselines}
-\label{section:architectures}
+\appendix
+\section{Appendix}
 
-\subsection{Further training details}
-\label{section:train_details}
-
-\subsection{Details on the Fashion dataset}
-\label{section:dataset_details}
-
-\subsection{Examples from the dataset}
-\label{section:examples}
 
 \end{document}
