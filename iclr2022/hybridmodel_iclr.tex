@@ -66,6 +66,7 @@ Paris \\
 \newcommand{\concatinput}{x}
 \newcommand{\fullconcatinput}{{ \bf \concatinput}}
 \newcommand{\numberts}{14000}
+\newcommand{\threshold}{\eta}
 
 %\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
@@ -114,8 +115,8 @@ Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\l
 
 \subsection{Per time series statistical model}
 %The first step in our additive hybrid model is to consider, for each time series, an exponential smoothing  statistical model.
-The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series). Given the sequence $\fullts^n$, the two components  $\fulllvl^n$ and $\fullseas^n$ are computed using exponential smoothing.
-For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. We have finally for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, \textcolor{blue}{Now, I initialize alpha, gamma, the 52 first seasons and the first level with a python package}
+The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series).
+For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. Given the sequence $\fullts^n$ and the parameters $\Theta^n$ , the two components  $\fulllvl^n$ and $\fullseas^n$ are computed as follow :
 %We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
 \begin{align*}
     \lvl^n_{t} &= \lsmooth^n (\ts^n_t - \seas^n_{t-m}) + (1- \lsmooth^n)\lvl^n_{t-1}\,, \\
@@ -144,10 +145,15 @@ $$
 where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$. This new input is used to correct the exponential smoothing prediction. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$. 
 Consider then a recurrent neural network denoted by RNN-p which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
 $$
-\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
-%  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
+\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
+%  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with a Laplace distribution and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN-p corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a recurrent neural network denoted by RNN-c with the same input than RNN-p \textcolor{blue}{RNN-p for the predictor and RNN-c for the classifier, maybe names are confusing. They have, for now, the same archi/inputs}.
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with a Laplace distribution and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN-p corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a recurrent neural network denoted by RNN-c with the same input than RNN-p.
+\begin{align*}
+U^n_T = \mathbf{1}_{\rnnmodel_p(\rnnwindow^n_T) > \threshold}
+\end{align*}
+
+\textcolor{blue}{RNN-p for the predictor and RNN-c for the classifier, maybe names are confusing. They have, for now, the same archi/inputs}.
 %$$
 %\ts^n_{T+i} = \rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
 %$$
@@ -172,9 +178,13 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 %$$
 \begin{equation}
 \label{eq:full:model}
-\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
+\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\fullconcatinput^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
 \end{equation}
-\textcolor{red}{specify here the right distribution for $U$ (depends on the weak signal or no)}. The complete architecture is displayed in Figure~\ref{fig:architecture}.
+with :
+\begin{align*}
+U^n_T = \mathbf{1}_{\rnnmodel_p(\fullconcatinput^n_T) > \threshold}
+\end{align*}
+The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \begin{figure}
   \centering
