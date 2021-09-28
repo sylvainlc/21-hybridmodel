@@ -42,16 +42,11 @@ Paris \\
 \newcommand{\ts}{y}
 \newcommand{\fullts}{{\bf \ts}}
 \newcommand{\tspred}{\hat{\ts}}
-\newcommand{\lvl}{\hat{l}}
-\newcommand{\fulllvl}{{\bf \lvl}}
-\newcommand{\seas}{\hat{s}}
-\newcommand{\fullseas}{{\bf \seas}}
-\newcommand{\lsmooth}{\alpha}
-\newcommand{\ssmooth}{\beta}
+\newcommand{\stat}{f}
+\newcommand{\statparam}{\Theta}
+\newcommand{\fullstat}{{\bf \stat}}
 \newcommand{\lag}{h}
 \newcommand{\window}{w}
-\newcommand{\etspred}{\hat{y}}
-\newcommand{\fulletspred}{{\bf \etspred}}
 \newcommand{\tswindow}{{\bf \ts}}
 \newcommand{\meants}{\Bar{\ts}}
 \newcommand{\rnnwindow}{{\bf \rnn}}
@@ -59,14 +54,18 @@ Paris \\
 \newcommand{\err}{err}
 \newcommand{\errwindow}{{\bf \err}}
 \newcommand{\rnnmodel}{\textsc{rnn}}
-\newcommand{\etsmodel}{\textsc{ets(n,n,a)}}
 \newcommand{\ws}{w}
 \newcommand{\fullws}{{\bf \ws}}
 \newcommand{\wswindow}{{\bf \ws}}
 \newcommand{\concatinput}{x}
 \newcommand{\fullconcatinput}{{ \bf \concatinput}}
-\newcommand{\numberts}{14000}
+\newcommand{\numberts}{10000}
 \newcommand{\threshold}{\eta}
+\newcommand{\predictor}{RNN_p}
+\newcommand{\classifier}{RNN_c}
+\newcommand{\remainer}{r}
+\newcommand{\hiddenregime}{U}
+
 
 %\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
 \begin{document}
@@ -75,7 +74,7 @@ Paris \\
 \maketitle
 
 \begin{abstract}
-Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decision and avoid massive wastes. By tracking thousands of fashion trends on social media with stat-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series several external weak signals representing behaviors of influencers towards the trend. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the fashion dataset, and illustrates the benefit of the contribution of  external weak signals.
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decision and avoid massive wastes. By tracking thousands of fashion trends on social media with stat-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series several external weak signals representing behaviors of influencers towards the trend. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the fashion dataset, and illustrates the benefit of the contribution of external weak signals.
 \end{abstract}
 
 \section{Introduction}
@@ -100,14 +99,14 @@ Recurrent neural network seems to be the perfect candidate to tackle our forecas
 However, the hybrid model has not been designed to deal with external signals even if it include a neural network.
 
 Following this work, we present in this paper a new hyrbid recurrent model for time series forecasting with inclusion of external weak signals. %We design a more general hybrid framework including the original multiplicative model and a new additive one. 
-Our approach enriches existing hybrid models  by incorporating an unobserved regime switching feature to account for the need neural network based correction. In order to leverage external signals, we modify the hybrid framework to allow the regime shift and the  global error-corrector neural network to deal with external data. By adding our fashion external weak signals in our proposed framework, we show the real potential of the hybrid approach: a global neural network, able to leverage large amount of data, deal with any kind of external weak signals, learn context and finally correct weaknesses and errors of the parametric models.
+Our approach enriches existing hybrid models by incorporating an unobserved regime switching feature to account for the need neural network based correction. In order to leverage external signals, we modify the hybrid framework to allow the regime shift and the  global error-corrector neural network to deal with external data. By adding our fashion external weak signals in our proposed framework, we show the real potential of the hybrid approach: a global neural network, able to leverage large amount of data, deal with any kind of external weak signals, learn context and finally correct weaknesses and errors of any parametric models.
 
-The paper is organized as follow. Section~\ref{sec:hybrid} describes our hybrid framework which consists of an exponential smoothing model and a recurrent neural network combining the target sequences with external weak signals. Then, we present our new fashion dataset in Section~\ref{sec:dataset}. Section~\ref{sec:exp} describes our results and comparisons with several benchmarks. Finally, we conclude our paper and detail research perspectives in Section~\ref{sec:discussion}.
+The paper is organized as follow. Section~\ref{sec:hybrid} describes our hybrid framework which consists of a per-time-series parametric model and a recurrent neural network combining the target sequences with external weak signals. Then, we present our new fashion dataset in Section~\ref{sec:dataset}. Section~\ref{sec:exp} describes our results and comparisons with several benchmarks. Finally, we conclude our paper and detail research perspectives in Section~\ref{sec:discussion}.
 
 
 \section{Hybrid model with external signals}
 \label{sec:hybrid}
-We introduce a new hybrid approach for time series forecasting  composed of two parts: an additive exponential smoothing (ETS) per time series and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network. Then, we use a recurrent neural network and weak signals to correct the predictions provided by the ETS.
+We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network. Then, we use a recurrent neural network and weak signals to correct the predictions provided by the first collection of parametric models.
 
 Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, let $\ts_t^n$ be the value of the $n$-th sequence at time $t$ and  $\fullts^n = \{\ts_t^n\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.   The objective of this paper is to propose a model to  forecast all time series in a given time frame  $\lag \in \mathbb{N}$, i.e. we aim at sampling $\{\ts^n_{T+1:T+\lag}\}_{1\leqslant n \leqslant N}$ based on $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$.
 
@@ -115,45 +114,79 @@ Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\l
 
 \subsection{Per time series statistical model}
 %The first step in our additive hybrid model is to consider, for each time series, an exponential smoothing  statistical model.
-The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series).
-For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. Given the sequence $\fullts^n$ and the parameters $\Theta^n$ , the two components  $\fulllvl^n$ and $\fullseas^n$ are computed as follow :
-%We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
-\begin{align*}
-    \lvl^n_{t} &= \lsmooth^n (\ts^n_t - \seas^n_{t-m}) + (1- \lsmooth^n)\lvl^n_{t-1}\,, \\
-    \seas^n_t &= \ssmooth^n (\ts^n_t - \lvl^n_{t-1}) + (1 - \ssmooth^n)\seas^n_{t-1}\,. 
-\end{align*}
+%The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series).
+The time-series-specific models compute, for each sequence, a first $\lag$-ahead prediction based on the past. For all $1\leqslant n \leqslant N$, we note $\stat^n$ the $n$-th parametric model linked to the $n$-th sequence. Each model gather a collection of parameters in order to provide a forecast. We note $\statparam^n$ the parameters of the statistical model $\stat^n$. Given the sequences $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$, the parametric models, $\{\stat^n\}_{1\leqslant n \leqslant N}$ and the associated paramters $\{\statparam^n\}_{1\leqslant n \leqslant N}$, the first time-series-specific forecasts $\{\tspred^{stat,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+$$
+\tspred^{stat,n}_{T+i|T} = \stat^n(\ts^n_{1:T}|\statparam^n)_i\,,
+$$
 
-For all $1\leqslant n \leqslant N$, given the level component $\fulllvl^n$, the seasonality component $\fullseas^n$ and the forecast horizon $\lag \in \mathbb{N}$, the exponential smoothing forecast $\{\etspred^{ets,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ is, for all $i \in \{1,\ldots,\lag\}$,
-$$
-\etspred^{ets,n}_{T+i|T} = \lvl^n_T + \seas^n_{T+i-m(k+1)}\,,
-$$
-where $k = \lfloor(i-1)/m\rfloor$. 
+During the M4 competition, the hybrid model's author based his framework on a multiplicative exponential smoothing model as the time-series-specific model. However, on sporadic time series, this choice could lead to poor result and instability. In our approach, we decided to go deeper and provide a general framework able to deal with any kind of per-time-series models. In the Section~\ref{sec:exp}, we present two versions of our framework. The first one use an additive exponential smoothing as reference and the second one use a TBATS model as reference. At the end, The main complexity is in the next stage: succeed in training a global RNN to understand all the per-time-series statistical models and correct their mistakes if needed.
+% Indeed, depending on time series, some family of parametric models can achieve really heterogeneous level of accuracy. 
+%For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. Given the sequence $\fullts^n$ and the parameters $\Theta^n$ , the two components  $\fulllvl^n$ and $\fullseas^n$ are computed as follow :
+%We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
+%\begin{align*}
+    %\lvl^n_{t} &= \lsmooth^n (\ts^n_t - \seas^n_{t-m}) + (1- \lsmooth^n)\lvl^n_{t-1}\,, \\
+    %\seas^n_t &= \ssmooth^n (\ts^n_t - \lvl^n_{t-1}) + (1 - \ssmooth^n)\seas^n_{t-1}\,. 
+%\end{align*}
+
+%For all $1\leqslant n \leqslant N$, given the level component $\fulllvl^n$, the seasonality component $\fullseas^n$ and the forecast horizon $\lag \in \mathbb{N}$, the exponential smoothing forecast $\{\etspred^{ets,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ is, for all $i \in \{1,\ldots,\lag\}$,
+%$$
+%\etspred^{ets,n}_{T+i|T} = \lvl^n_T + \seas^n_{T+i-m(k+1)}\,,
+%$$
+%where $k = \lfloor(i-1)/m\rfloor$. 
 
 %For this first stage, we decided to use an additive exponential smoothing for many reasons: firstly, it is easily understandable and it is pretty robust for any kind of sequences. 
 
-This statistical model offers a fine approach to normalize and deseasonnalize the sequences. In addition, with its two recurrent equations only, it is simple to code and incorporate in a larger framework using deep learning model and GPUs. However, other statistical methods could have been used as the basis of our hybrid approach. For example, S. Smyl created his hybrid model with a multiplicative exponential smoothing model instead of the additive form. At the end, The main complexity is in the next stage: succeed in training a global RNN to understand all the per-time-series statistical models and correct their mistakes.
+%This statistical model offers a fine approach to normalize and deseasonnalize the sequences. In addition, with its two recurrent equations only, it is simple to code and incorporate in a larger framework using deep learning model and GPUs. However, other statistical methods could have been used as the basis of our hybrid approach. For example, S. Smyl created his hybrid model with a multiplicative exponential smoothing model instead of the additive form. At the end, The main complexity is in the next stage: succeed in training a global RNN to understand all the per-time-series statistical models and correct their mistakes.
 
 \subsection{Regime switching error-corrector recurrent model}
 
-Then, we train a global RNN on all sequences to compute a correction of the initial prediction. %We motivate this choice for two reasons. Firstly, pure machine learning methods achieve relatively poor results in time series forecasting. Turning a full forecasting task into a correcting task largely simplifies the RNN goals. 
-This task requires a thorough data pre-processing and with our collection of exponential smoothing models  we propose a fine way to normalize and deseasonalize the RNN inputs and outputs. %We describe bellow how we design a RNN able to understand the first exponential smoothing models and estimate a correction of their forecasting errors.
+%At this stage, we want to train a global RNN, trained on all the N sequences and able to understand and correct the weaknesses of the first per-time-series parametric models.
+%At this stage, we can write that for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+%$$
+%\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \varepsilon^n_{T+i}\,,
+%$$
+At this stage, we assume that we have two different regimes. In the regime 0, the first parametric forecast succed at catching all the information of the $n$-th sequence. Conversely, in the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainer$. Our regime-switching system is then :
 
-Let $\window \in \mathbb{N}$ be the window size, usually this input window is equal to the forecast horizon $\window = \lag$. Consider the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnn^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
 $$
-\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} - \lvl^n_T - \seas^n_{T-w+i}}{\meants^n_T}\,,
+\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \hiddenregime^n_T * \remainer^{n}_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$. This new input is used to correct the exponential smoothing prediction. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$. 
-Consider then a recurrent neural network denoted by RNN-p which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
-$$
-\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
-%  &= \lvl^n_T + \seas^n_{T+i-m(k+1)} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
-$$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with a Laplace distribution and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN-p corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a recurrent neural network denoted by RNN-c with the same input than RNN-p.
-\begin{align*}
-U^n_T = \mathbf{1}_{\rnnmodel_p(\rnnwindow^n_T) > \threshold}
-\end{align*}
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent \textcolor{blue}{centered} random variables and $U^n_T$ an unobserved regime switching Bernoulli random variable.
+%In the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainer$.
+%For this regime, we have for all $i \in \{1,\ldots,\lag\}$ :
+%$$
+%\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \remainer^{n}_{T+i} + \varepsilon^n_{T+i}\,,
+%$$
 
-\textcolor{blue}{RNN-p for the predictor and RNN-c for the classifier, maybe names are confusing. They have, for now, the same archi/inputs}.
+To estimate this system, we introduce our new regime swithing error-corrector framework. We train two global RNN on all sequences, a classifier ($\classifier$) and a predictor ($\predictor$). We train the classifier to provide a probability of being in the regime 1 and we train the predictor to estimate the first per-time-series forecasts errors if we are in the regime 1. However, these tasks require a thorough data pre-processing and with our collection of parametric models, we propose a fine way to normalize and deseasonalize the RNNs inputs.
+
+%Then, we train a global RNN on all sequences to compute a correction of the initial prediction.
+%Then, we train a global RNN on all sequences to compute a correction of the initial prediction. %We motivate this choice for two reasons. Firstly, pure machine learning methods achieve relatively poor results in time series forecasting. Turning a full forecasting task into a correcting task largely simplifies the RNN goals. 
+%This task requires a thorough data pre-processing and with our collection of parametric models, we propose a fine way to normalize and deseasonalize the RNN inputs and outputs. %We describe bellow how we design a RNN able to understand the first exponential smoothing models and estimate a correction of their forecasting errors.
+
+Let $\window \in \mathbb{N}$ be the window size, usually this window is equal to the forecast horizon $\window = \lag$. Consider the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnn^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
+$$
+\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} -\tspred^{stat,n}_{T-w+i|T-w}}{\meants^n_T}\,,
+$$
+where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$.
+We use this sequence as input of our two neural network, $\classifier$ and $\predictor$. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$.
+
+Given $\rnnwindow^n_T$, the proposed regime swithing error-corrector reccurent model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by :
+$$
+\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  \mathbf{1}_{\classifier(\rnnwindow^n_T) > \threshold} \times \predictor(\rnnwindow^n_T)_{T+i} \times \meants^n_T + \varepsilon^n_{T+i}\
+$$
+
+where $\mathbf{1}$ is the indicatrice function and $\threshold$ a threshold parameter.\\
+
+%Consider then a recurrent neural network denoted by RNN-p which aims at predicting the exponential smoothing error. Given $\rnnwindow^n_T$, the proposed model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by
+%$$
+%\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,%\\
+%  &= \stat^n(\ts^n_{1:T}|\statparam^n)_i +  U^n_T\times\meants^n_T\times \rnnmodel_p(\rnnwindow^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
+%$$
+%where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables with a Laplace distribution and $U^n_T$ an unobserved regime switching Bernoulli random variable. The random variable $U^n_T$ allows to provide RNN-p corrections only when ETS prediction is not sharp enough \textcolor{red}{Show in appendix cases where ETS alone is enough and cases where correction is required}. The law of $U^n_T$ is parameterized by a recurrent neural network denoted by RNN-c with the same input than RNN-p.
+%\begin{align*}
+%U^n_T = \mathbf{1}_{\rnnmodel_p(\rnnwindow^n_T) > \threshold}
+%\end{align*}
 %$$
 %\ts^n_{T+i} = \rnnmodel(\rnnwindow^n_T)_{T+i} = \frac{\hat{\err}^{n,T}_{T+i|T}}{\meants^n_T}
 %$$
@@ -166,11 +199,12 @@ U^n_T = \mathbf{1}_{\rnnmodel_p(\rnnwindow^n_T) > \threshold}
 \subsection{Weak signal}
 
 Using a time-series-specific statistical model, the hybrid network achieves striking accuracy on single sequences. Then, the shared recurrent neural network relies on the strength of machine learning methods at leveraging a huge quantities of heterogeneous data.
-In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
+In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our two RNN,   
 \begin{align*}
 \fullconcatinput^n_T &= \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}\,, \\
 &= \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 \end{align*}
+
 Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final model becomes:
 %$$
 %\tspred^n_{T+i|T} 
@@ -178,12 +212,8 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 %$$
 \begin{equation}
 \label{eq:full:model}
-\ts^n_{T+i}  = \etspred^{ets,n}_{T+i|T} +  U^n_T\times\meants^n_T\times \rnnmodel_p(\fullconcatinput^n_T)_{T+i} + \varepsilon^n_{T+i}\,,
+\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  \mathbf{1}_{\classifier(\fullconcatinput^n_T) > \threshold} \times \predictor(\fullconcatinput^n_T)_{T+i} \times \meants^n_T + \varepsilon^n_{T+i}\,,
 \end{equation}
-with :
-\begin{align*}
-U^n_T = \mathbf{1}_{\rnnmodel_p(\fullconcatinput^n_T) > \threshold}
-\end{align*}
 The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \begin{figure}
@@ -196,48 +226,15 @@ The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \subsection{Hidden regime}
 
-As $U^n_T$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta$. The score is
-\begin{multline*}
-\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T})
-\\ = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
-\end{multline*}
-where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.  \textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the RNN-p and the RNN-c and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
-$$
-\omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
-$$
-Then,
-\begin{multline*}
-\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \omega_p^n\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
-+ (1-\omega_p^n)\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
-\end{multline*}
-The loss function is then given by
-\begin{multline*}
-\theta\mapsto - \omega_p^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
-- (1-\omega_p^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,,
-\end{multline*} 
-where no gradient is computed on $\omega_p^n$. In both terms, $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ and $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ are simply given by the output of the FFNN.  Choices for the model.
-\begin{itemize}
-\item In the case where the  $\varepsilon^n_{T+i}$ are Gaussian and independent, up to an additive constant
-$$
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T})^2
-$$
-and
-\begin{multline*}
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
- = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i})^2\,.
-\end{multline*}
-Choice of $c$ ?
-\item In the case where the  $\varepsilon^n_{T+i}$ are Laplace and independent, up to an additive constant
-$$
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T}|
-$$
-and
-\begin{multline*}
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
- = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \etspred^{ets,n}_{T+i|T} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i}|\,.
-\end{multline*}
-Choice of $c$ ?
-\end{itemize}}
+As $\hiddenregime$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta$. The score is
+\begin{equation}
+\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
+\end{equation}
+\\
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.
+A complete description of the training process can be found in Appendix.
+
+
 
 \section{Fashion dataset with external weak signals}
 \label{sec:dataset}
@@ -431,5 +428,43 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 \appendix
 \section{Appendix}
 
+
+\textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the RNN-p and the RNN-c and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
+$$
+\omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
+$$
+Then,
+\begin{multline*}
+\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \omega_p^n\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
++ (1-\omega_p^n)\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
+\end{multline*}
+The loss function is then given by
+\begin{multline*}
+\theta\mapsto - \omega_p^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
+- (1-\omega_p^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,,
+\end{multline*} 
+where no gradient is computed on $\omega_p^n$. In both terms, $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ and $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ are simply given by the output of the FFNN.  Choices for the model.
+\begin{itemize}
+\item In the case where the  $\varepsilon^n_{T+i}$ are Gaussian and independent, up to an additive constant
+$$
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w})^2
+$$
+and
+\begin{multline*}
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
+ = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i})^2\,.
+\end{multline*}
+Choice of $c$ ?
+\item In the case where the  $\varepsilon^n_{T+i}$ are Laplace and independent, up to an additive constant
+$$
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w}|
+$$
+and
+\begin{multline*}
+\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
+ = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i}|\,.
+\end{multline*}
+Choice of $c$ ?
+\end{itemize}}
 
 \end{document}
