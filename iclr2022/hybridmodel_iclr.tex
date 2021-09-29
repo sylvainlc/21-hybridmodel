@@ -63,7 +63,7 @@ Paris \\
 \newcommand{\threshold}{\eta}
 \newcommand{\predictor}{RNN_p}
 \newcommand{\classifier}{RNN_c}
-\newcommand{\remainer}{r}
+\newcommand{\remainder}{r}
 \newcommand{\hiddenregime}{U}
 
 
@@ -74,7 +74,7 @@ Paris \\
 \maketitle
 
 \begin{abstract}
-Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decision and avoid massive wastes. By tracking thousands of fashion trends on social media with stat-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series several external weak signals representing behaviors of influencers towards the trend. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the fashion dataset, and illustrates the benefit of the contribution of external weak signals.
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series several external weak signals representing behaviors of influencers towards the trend. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the fashion dataset, and illustrates the benefit of the contribution of external weak signals.
 \end{abstract}
 
 \section{Introduction}
@@ -84,7 +84,7 @@ Multivariate time series forecasting is a widespread statistical problem with  m
  Parametric generative models allow to provide explainable predictions with statistical guarantees based on a precise modeling of the predictive distributions of new data based on a record of past observations. %The parameters of these models are usually estimated using a sequence of observations of the target time series. 
 Calibrating these models, for instance using maximum likelihood inference, often requires a fair amount of tuning to design a time series-specific model to provide  accurate forecasts and sharp confidence intervals.  Depending on the use case, statistical properties of the signal and the available data, many families of models have been proposed for time series.  The exponential smoothing model \citep{RePEc:inm:oropre:v:9:y:1961:i:5:p:673-685} or the ARIMA with the Box-Jenkins approach \citep{box2015time} are for instance very popular parametric linear generative models.  Hidden Markov models (HMM) are also widespread and presuppose that available observations are defined using missing data, possibly lying in a high dimensional state space, describing the dynamical system. This hidden state is assumed to be a Markov chain such that at each time step the received observation is a random function of the corresponding latent data.  Although hidden states are modeled as a Markov chain (or a mixing process)  the observations arising therefrom present a highly complex statistical structure. %Introducing latent hidden states, they assume that the predictive distribution is not unique and constant in time but multiple and lead by the values of the hidden states changing during time. 
  In various applications where signals exhibit non-stationarities such as trends and seasonality, classical HMM are not adapted. However, \citep{touron2017modeling}  recently proposed seasonal HMM, assuming that transition probabilities between the states, as well as the emission distributions, are not constant in time but evolve in a periodic manner. Strong consistency results were established in \citep{touron2019consistency} and Expectation Maximization based numerical experiments were proposed.
-Altough thes works provide promising results, HMM are computationally expensive to train and are not yet well studied for sequences with thousands of components with a seasonal behavior.
+Altough these works provide promising results, HMM are computationally expensive to train and are not yet well studied for sequences with thousands of components with a seasonal behavior \textcolor{blue}{with thousands of components or with a seasonal behavior ?}.
  
  %However, for a large part of applications, parametric generative approaches show limitation to capture  complexity. Accurate candidates can be found with latent data models.  
 
@@ -106,7 +106,7 @@ The paper is organized as follow. Section~\ref{sec:hybrid} describes our hybrid 
 
 \section{Hybrid model with external signals}
 \label{sec:hybrid}
-We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network. Then, we use a recurrent neural network and weak signals to correct the predictions provided by the first collection of parametric models.
+We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network. Then, we use 2 recurrent neural networks and weak signals to correct the predictions provided by the first collection of parametric models.
 
 Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, let $\ts_t^n$ be the value of the $n$-th sequence at time $t$ and  $\fullts^n = \{\ts_t^n\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.   The objective of this paper is to propose a model to  forecast all time series in a given time frame  $\lag \in \mathbb{N}$, i.e. we aim at sampling $\{\ts^n_{T+1:T+\lag}\}_{1\leqslant n \leqslant N}$ based on $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$.
 
@@ -146,16 +146,16 @@ During the M4 competition, the hybrid model's author based his framework on a mu
 %$$
 %\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \varepsilon^n_{T+i}\,,
 %$$
-At this stage, we assume that we have two different regimes. In the regime 0, the first parametric forecast succed at catching all the information of the $n$-th sequence. Conversely, in the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainer$. Our regime-switching system is then :
+At this stage, we assume that we have two different regimes. In the regime 0, the first parametric forecast succeeds at catching all the information of the $n$-th sequence. Conversely, in the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainder$. Our regime-switching system is then :
 
 $$
-\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \hiddenregime^n_T * \remainer^{n}_{T+i} + \varepsilon^n_{T+i}\,,
+\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \hiddenregime^n_T * \remainder^{n}_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent \textcolor{blue}{centered} random variables and $U^n_T$ an unobserved regime switching Bernoulli random variable.
-%In the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainer$.
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent \textcolor{blue}{centered} random variables, $\{\remainder^n_{T+i}\}_{i\leqslant 1}$ are non null remainders and $U^n_T$ an unobserved regime switching Bernoulli random variable.
+%In the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainder$.
 %For this regime, we have for all $i \in \{1,\ldots,\lag\}$ :
 %$$
-%\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \remainer^{n}_{T+i} + \varepsilon^n_{T+i}\,,
+%\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \remainder^{n}_{T+i} + \varepsilon^n_{T+i}\,,
 %$$
 
 To estimate this system, we introduce our new regime swithing error-corrector framework. We train two global RNN on all sequences, a classifier ($\classifier$) and a predictor ($\predictor$). We train the classifier to provide a probability of being in the regime 1 and we train the predictor to estimate the first per-time-series forecasts errors if we are in the regime 1. However, these tasks require a thorough data pre-processing and with our collection of parametric models, we propose a fine way to normalize and deseasonalize the RNNs inputs.
@@ -172,9 +172,11 @@ where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$.
 We use this sequence as input of our two neural network, $\classifier$ and $\predictor$. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$.
 
 Given $\rnnwindow^n_T$, the proposed regime swithing error-corrector reccurent model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by :
-$$
-\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  \mathbf{1}_{\classifier(\rnnwindow^n_T) > \threshold} \times \predictor(\rnnwindow^n_T)_{T+i} \times \meants^n_T + \varepsilon^n_{T+i}\
-$$
+\begin{align*}
+\ts^n_{T+i}  &= \tspred^{stat,n}_{T-w+i|T-w} +  \hat{\hiddenregime}^n_T * \hat{\remainder}^{n}_{T+i} + \varepsilon^n_{T+i} \\
+\hat{\hiddenregime}^n_T &= \mathbf{1}_{\classifier(\rnnwindow^n_T) > \threshold} \\
+\hat{\remainder}^{n}_{T+i} &= \predictor(\rnnwindow^n_T)_{T+i} \times \meants^n_T
+\end{align*}
 
 where $\mathbf{1}$ is the indicatrice function and $\threshold$ a threshold parameter.\\
 
@@ -201,8 +203,8 @@ where $\mathbf{1}$ is the indicatrice function and $\threshold$ a threshold para
 Using a time-series-specific statistical model, the hybrid network achieves striking accuracy on single sequences. Then, the shared recurrent neural network relies on the strength of machine learning methods at leveraging a huge quantities of heterogeneous data.
 In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our two RNN,   
 \begin{align*}
-\fullconcatinput^n_T &= \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}\,, \\
-&= \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
+\fullconcatinput^n_T &= \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}\, \\
+&= \{\rnn^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,
 \end{align*}
 
 Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final model becomes:
@@ -218,7 +220,7 @@ The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \begin{figure}
   \centering
-    \includegraphics[width=0.8\linewidth]{figure/hybrid_model_archi.png}
+    \includegraphics[width=1.2\linewidth]{figure/Regime_switching_recurrent_model}
   \caption{Hybrid model with weak signals architecture.}
 \label{fig:architecture}
 \end{figure}
@@ -242,7 +244,6 @@ A complete description of the training process can be found in Appendix.
 %\textcolor{red}{Other datasets for time series (see Alice paper on the SMC Transformer): air quality, weather, energy, Covid. These datasets exist but no easy weak signals to derive from them i guess. }
 %M4 and M5 competitions\textcolor{red}{Add link in footnote} provide a large amount of time series data but they show several limitations. For example, the M4 dataset does not propose external signals in addition to the target time series. Conversely, the M5 dataset does include weak signals, but like other sales datasets \citep{C.Favorita}, it includes a majority of sporadic time series that cannot be included straightforwadly in a statistical model, see \citep{makridakis2020m5}. With this paper, we aim at overcoming this limitation of available datasets for time series forecasting with the first fashion dataset including external weak signals.
 
-\textcolor{blue}{WIP}
 %With this paper, we provide the first dataset dedicated to fashion. Our fashion dataset is built with a high throughput computer vision systems analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousand of time series representing fashion trends life on social media. Moreover, our sequences show desirable properties. They have all the same length, weekly time step, shared behaviours, no sporadic sequence and no missing values. We provide publicly a selection of $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
 \subsection{Fashion dataset}
@@ -282,15 +283,35 @@ With in-house fashion experts, we selected especially a collection of $\numberts
   }
 \end{table*}
 
+\subsection{Weak signal}
 
 In addition to this large dataset we design for each sequence several weak signals.  Firstly, we create a specific fashion-oriented panel of micro-influencers. In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. With this specific panel, we aim at detecting the first waves announcing emerging trends or the collapse of other ones. By analyzing images shared by this specific panel on social medias, we create a first weak signal named \textit{fashion-forwards} for each of the previous trends. We also analyzed only a specific part of social media users depending of the number of followers. With three thresholds we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high}. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal.These extra signals are frequently sparse for micro trends and they often lack of interest for common fashion trends. However on several examples, they are fundamental to detect the future fashion evolution. 
+
+
+%\subsection{Emerging/Declining fashion trend}
+
+
+%One of the main objectifs of the fashion industry is to correctly understand and anticipate the futur tendances. 
+%With in-house fashion experts, we selected a collection of $\tsnumber$ fashion trend representing finely the issues that face the fashion industry. Our dataset gather 3 types of trends, the common trends, the declining trends and the emerging trends. 
+
+
+%A large part of our time series are regular, their evolutions are slow and constant in time.
+
+
+
+%A large part of these trends are commom, their evolutions are regular and well anticipated. In addition to these trends, we find two   
+
+%One of the today main objectifs of the fashion industry is to drastically reduce the massive waste due to wrong inventory decisions, see for instance \citep{}. With our new dataset, we want to create a focus at detecting precisely 
+
 
 %The first one represents users with few followers, the second one is made of users with a moderate amount of followers and the last one gathers superstar and users of any fields with thousands of influencers. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal.
 
 
 %At the end, we have for each trends 4 linked weak signals representing this trends on a specific panel of social media users. These extra signals are frequently sparse for micro trends and they often lack of interest for common fashion trends. However on several examples, they are fundamental to detect the future fashion evolution. 
 
-As an example, an impressive emerging fashion trend is represented in Figure 2, \textcolor{red}{see other examples in Appendix~\ref{}}. It shows the evolution of one shoes trends on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and the panel of mode-influencers share the same behaviour. The trend start to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change there behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users. Finally, after a pick reached at the end of 2018 for the fashion-influencers, a regular decrease appear. %They leave gradually the old trend to focus more on the latest or propose new ones. 
+\subsection{Example}
+
+As an example, an impressive emerging fashion trend is represented in Figure 2, see other examples in Appendix~\ref{}. It shows the evolution of one shoes trends on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and the panel of mode-influencers share the same behaviour. The trend start to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change there behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users. Finally, after a pick reached at the end of 2018 for the fashion-influencers, a regular decrease appear. %They leave gradually the old trend to focus more on the latest or propose new ones. 
 
 \begin{figure}
   \centering
@@ -307,6 +328,8 @@ As an example, an impressive emerging fashion trend is represented in Figure 2, 
 %In this section, we evaluate how our hybrid framework is able to deal with the fashion dataset and leverage our complex external weak signals. To lead our experience, we keep hide the last year of each time series as our test set. For each method and each time series, based on the first five years of data, we predict the last year and compute our accuracy on it.
 
 \subsection{Training}
+
+To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. In order to increase our train set, we use a commom moving window as in Figure~\ref{fig:architecture}.
 
 %To train our hybrid models, we made the choice of don't using the original code of the hybrid method provided during the M4 competition. Indeed, the proposed implementation is difficult to use in a more general framework and it is quite slow because it doesn't enable the use of GPU. Thereby, we propose with this paper, a new version of the hybrid framework, including the original multiplicative model and the new additive one. 
 Our code is developed in Python using the Tensorflow library and it allows the use of a GPU to speed up the training process contrary to other methods \textcolor{red}{\cite{} developed for the M4 competition}. In addition, our approach offers the possibility of providing forecasts for a totally  new collection of sequences without retraining the entire hybrid model. Given a new time series,  the weights of the error-corrector recurrent model are frozen and only the new time-series-specific statistical model has to be trained.% It remains the responsibility of the users to provide new sequences sharing same behaviours than the dataset using for the training to keep the same accuracy level.
