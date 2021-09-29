@@ -151,7 +151,7 @@ At this stage, we assume that we have two different regimes. In the regime 0, th
 $$
 \ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \hiddenregime^n_T * \remainder^{n}_{T+i} + \varepsilon^n_{T+i}\,,
 $$
-where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent \textcolor{blue}{centered} random variables, $\{\remainder^n_{T+i}\}_{i\leqslant 1}$ are non null remainders and $U^n_T$ an unobserved regime switching Bernoulli random variable.
+where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables, $\{\remainder^n_{T+i}\}_{i\leqslant 1}$ are non null remainders and $U^n_T$ an unobserved regime switching Bernoulli random variable.
 %In the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainder$.
 %For this regime, we have for all $i \in \{1,\ldots,\lag\}$ :
 %$$
@@ -228,7 +228,7 @@ The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \subsection{Hidden regime}
 
-As $\hiddenregime$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta$. The score is
+As $\hiddenregime$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta = \{\theta_p,\theta_c\}$. The score is
 \begin{equation}
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{equation}
@@ -329,44 +329,78 @@ As an example, an impressive emerging fashion trend is represented in Figure 2, 
 
 \subsection{Training}
 
-To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. In order to increase our train set, we use a commom moving window as in Figure~\ref{fig:architecture}.
+To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction with $\window$ and $\lag$ equal to 52. In order to increase our train set, we use a moving window as in Figure~\ref{fig:movingwindow}. All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
+
+For the first parametric per-time-series models, we used existing Python or R librarys to set the different parameters $\statparam^n$. There are then fixed during the training of the recurrent models.
+For $\classifier$ and $\predictor$, we built an architecture summaryse in Figure~\ref{fig:rnnarchi}. There are both composed of 3 LSTM layer and a different final Dense layer to provide the correct output. After the $\classifier$ final dense layer, we add a sigmoid activation to return a probability. We use 2 Adam otpimizers with the same learning rate equal to 0.001 and we fix the batch size at 64. At the end, we use the eval set to fix the $\threshold$ parameter of the $classifier$. 
+
+We propose two versions of our regime switching hybrid recurrent model. The first one is an hybrid model with an additive exponential smoothing model as parametric model.For the second one, we use the TBATS approach as paramteric model.
+
 
 %To train our hybrid models, we made the choice of don't using the original code of the hybrid method provided during the M4 competition. Indeed, the proposed implementation is difficult to use in a more general framework and it is quite slow because it doesn't enable the use of GPU. Thereby, we propose with this paper, a new version of the hybrid framework, including the original multiplicative model and the new additive one. 
-Our code is developed in Python using the Tensorflow library and it allows the use of a GPU to speed up the training process contrary to other methods \textcolor{red}{\cite{} developed for the M4 competition}. In addition, our approach offers the possibility of providing forecasts for a totally  new collection of sequences without retraining the entire hybrid model. Given a new time series,  the weights of the error-corrector recurrent model are frozen and only the new time-series-specific statistical model has to be trained.% It remains the responsibility of the users to provide new sequences sharing same behaviours than the dataset using for the training to keep the same accuracy level.
+%Our code is developed in Python using the Tensorflow library and it allows the use of a GPU to speed up the training process contrary to other methods \textcolor{red}{\cite{} developed for the M4 competition}. In addition, our approach offers the possibility of providing forecasts for a totally  new collection of sequences without retraining the entire hybrid model. Given a new time series,  the weights of the error-corrector recurrent model are frozen and only the new time-series-specific statistical model has to be trained.% It remains the responsibility of the users to provide new sequences sharing same behaviours than the dataset using for the training to keep the same accuracy level.
 
 %For more details about the general hybrid training, a complete description of the training process can be found in the M4 hybrid model paper or in an interesting application of the method on electric load forecasting, see \citep{dudek2020hybrid}.
 
-\textcolor{red}{Detail here or in the appendix the training details: number of samples, optimizers, learning rates, etc.}
+%\textcolor{red}{Detail here or in the appendix the training details: number of samples, optimizers, learning rates, etc.}
 
-\vspace{.2cm}
+%\vspace{.2cm}
 
-\textcolor{red}{Detail Train/test split.}
+%\textcolor{red}{Detail Train/test split.}
 
 \subsection{Benchmarks, hybrid models and Metrics}
 
-As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package {\em forecast}, we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters \textcolor{red}{add a reference for these models (paper or R package help section)}. We also considered a Long-Short Term Memory (\textit{lstm}) neural network. %Against these models, we propose two versions of the hybrid approach without the external weak signal. The first one is the original multiplicative form of the hybrid model that we name \textit{hybrid-mul}. The second one is the additive variant described in Section~\ref{sec:hybrid} and we named it \textit{hybrid-add}. 
-To reach a higher accuracy level we also propose an ensembling (\textit{ensembling} of our hybrid approach using the FFORMA method created during the M4 competition, see \citep{fforma}). 
-Finally, we evaluate the model with  inclusion of external signals referred to as \textit{hybrid-add-ws} \textcolor{red}{together with a multiplicative version described in Appendix~\ref{}}. In order to provide fair comparisons, we also include a \textit{lstm} with inclusion of weak signals, referred to as \textit{lstm-ws}.
+As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package {\em forecast} and the Python packages {\em statsmodels, tbats} , we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{ets}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{ets} model is an additive exponential smoothing with a level component and a seasonal component. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. A complete description and references for these models can be found in \citep{packageforecast}. As a deep learning approach, we considered a full LSTM (\textit{lstm}) neural network composed of 3 LSTM layers of shape 50 and a final Dense layer of shape 52.
+
+Against these models, we propose our two versions of our regime switching hybrid reccurent model (rshm) called respectively \textit{rshm-ets} and \textit{rshm-tbats} according to the per-time-series model choice.
+%Against these models, we propose two versions of our regime switching hybrid recurrent model \textit{rshm}. The first one, that we name \textit{rshm-ets}, is the hybrid model with an additive exponential smoothing model as parametric model. For the second one, we use the TBATS approach as paramteric model and we named it \textit{rshm-tbats}. 
+%To reach a higher accuracy level we also propose an ensembling (\textit{ensembling} of our hybrid approach using the FFORMA method created during the M4 competition, see \citep{fforma}). 
+Finally, we evaluate our hybrid framework with the inclusion of external signals referred to as \textit{rshm-ets-ws} and \textit{rshm-tbats-ws}. In order to provide a fair comparison, we also train a \textit{lstm} with the weak signals, referred to as \textit{lstm-ws}.
 
 
-To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (mase), the Symmetric Mean Absolute Percentage Error (smape) and the final M4 competition metric, the Overall Weighted Average (owa) of the smape and the mase defined as follows:
+To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (MASE), the Symmetric Mean Absolute Percentage Error (sMAPE) and the final M4 competition metric, the Overall Weighted Average (OWA) of the sMAPE and the MASE defined as follows:
 \begin{align*}
-\mathrm{mase} &= \frac{T-m}{h}\frac{\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,\\
-\mathrm{smape} &= \frac{1}{h} \sum_{i=1}^h \frac{2|Y_i - \hat{Y}_i|}{|Y_i| + |\hat{Y}_i|}\,,\\
-\mathrm{owa} &= \frac{1}{2}\left(\frac{mase}{mase_{snaive}} + \frac{smape}{smape_{snaive}}\right)\,,
+\mathrm{MASE} &= \frac{T-m}{h}\frac{\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,\\
+\mathrm{sMAPE} &= \frac{1}{h} \sum_{i=1}^h \frac{2|Y_i - \hat{Y}_i|}{|Y_i| + |\hat{Y}_i|}\,,\\
+\mathrm{OWA} &= \frac{1}{2}\left(MASE/MASE_{snaive} + sMAPE/sMAPE_{snaive}\right)\,,
 \end{align*}
-\textcolor{red}{where $\mathrm{smape_{snaive}}$ and $\mathrm{mase_{snaive}}$ are}.
 
-\subsection{Results for XXX Dataset}
-\textcolor{red}{If possible, a few results of the hybrid approach without weak signals on a dataset other than Heuritech.}
+where $\hat{Y}$ is a model prediction, $\lag$ is the horizon, $m$ the seasonality and $MASE_{snaive}$ is the $MASE$ computed with the $snaive$ model prediction, idem for the $sMAPE_{snaive}$.
+
+
+
+Detecting emerging and declining trends is a crucial issue for the fashion industry. A correct or incorrect prediction could lead to good returns or massive waste due to overstock or unsold clothes. In a given year, we define an increasing trend as a trend that do more than 10\% of growth in term of Year and Year.In the same way, we define a decreasing trend as a trend that decline of 10\% or more. We classify the other trend as flat trend. On the test set, the year 2019, we have 1871 increasing trends, 2016 decreasing trends and 6113 flat trends. In addition to the accuracy metrics, we compare also the different methods on this classification task.
+
+
+
+%As detecting emerging and declining trends is a fondamental issue that is facing the fashion industry, we evaluate also the different methods on this task. In a given year, we define an increasing trend as a trend that do more than 10\% of growth in term of Year and Year.A decreasing trend is a trend that decline of -10\% or more. We classify the other trend as flat trend. On the test set, the year 2019, we have 1871 increasing trends, 2016 decreasing trends and 6113 flat trends. We evaluate all the methods on this classification task.
+
+
+
+%\textcolor{red}{where $\mathrm{smape_{snaive}}$ and $\mathrm{mase_{snaive}}$ are}.
+
+%\subsection{Results for XXX Dataset}
+%\textcolor{red}{If possible, a few results of the hybrid approach without weak signals on a dataset other than Heuritech.}
+
+
+
+
+
 
 \subsection{Result for Heuritech Fashion dataset}
 
 \textcolor{red}{Add a figure of a time series with all models (and others in Appendix).}
 
-\vspace{.2cm}
+%\vspace{.2cm}
 
 \textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
+
+
+
+
+
+
+
 
 In a first place, Table 2 shows the final accuracy of the statistical models, the LSTM model and our 2 hybrid models without external data. Even without the weak signals, our 2 hybrid approaches largely outperform the statistical references. The multiplicative model show the best accuracy with a OWA equal to 0.875. We can note that the additive model slightly under-performs the traditional multiplicative one on average. This doesn't show a weakness of the additive version but more that a large part of our dataset is more-suited for multiplicative modelization. At the end, the strength of training both methods, additive and multiplicative, is in the final porposed ensembling \textit{ensembling} that combines the two approaches with the FForma ensembling.
 
@@ -455,7 +489,29 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 \bibliographystyle{iclr2022_conference}
 
 \appendix
-\section{Appendix}
+
+\section{Fashion Dataset overview}
+\section{Hidden regime algorithm}
+
+In our framework, we assume that our sequence are generated with a regime with 2 hidden regime. As this regime, noted $\hiddenregime$, is never observed, we can compute explicitely the following quantity : 
+%$p(\ts^n_{T+1:T+h}|\ts^n_{1:T})$
+
+
+%Based on the Expectation-Maximization (EM) algorithm and the Fisher's identity, we write a new algorithm to estimate jointly $\theta = \{\theta_p,\theta_c\}$, the weights of RNN-p and of RNN-c. 
+
+%During our training, we note $\theta^{(t)}$ the value of $\theta$ at an epoch $t$.
+
+
+%\begin{equation}
+%\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
+%\end{equation}
+
+
+
+
+\section{}
+
+
 
 
 \textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the RNN-p and the RNN-c and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
