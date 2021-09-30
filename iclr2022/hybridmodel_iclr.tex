@@ -43,7 +43,7 @@ Paris \\
 \newcommand{\fullts}{{\bf \ts}}
 \newcommand{\tspred}{\hat{\ts}}
 \newcommand{\stat}{f}
-\newcommand{\statparam}{\Theta}
+\newcommand{\statparam}{\theta_{stat}}
 \newcommand{\fullstat}{{\bf \stat}}
 \newcommand{\lag}{h}
 \newcommand{\window}{w}
@@ -63,6 +63,7 @@ Paris \\
 \newcommand{\threshold}{\eta}
 \newcommand{\predictor}{RNN_p}
 \newcommand{\classifier}{RNN_c}
+\newcommand{\rnnparam}{\theta}
 \newcommand{\remainder}{r}
 \newcommand{\hiddenregime}{U}
 
@@ -146,7 +147,7 @@ During the M4 competition, the hybrid model's author based his framework on a mu
 %$$
 %\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \varepsilon^n_{T+i}\,,
 %$$
-At this stage, we assume that we have two different regimes. In the regime 0, the first parametric forecast succeeds at catching all the information of the $n$-th sequence. Conversely, in the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainder$. Our regime-switching system is then :
+At this stage, we assume that we have two different regimes. In the regime 0, the first parametric forecast succeeds at catching all the information of the $n$-th sequence. the final forecast of our framework is the prediction of the per-time-series parametric model. Conversely, in the regime 1, the first parametric forecast is unaccurate and it remains a non-forecasted quantity that we note $\remainder$. Our regime-switching system is then :
 
 $$
 \ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \hiddenregime^n_T * \remainder^{n}_{T+i} + \varepsilon^n_{T+i}\,,
@@ -228,7 +229,7 @@ The complete architecture is displayed in Figure~\ref{fig:architecture}.
 
 \subsection{Hidden regime}
 
-As $\hiddenregime$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\theta = \{\theta_p,\theta_c\}$. The score is
+As $\hiddenregime$ is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\rnnparam = \{\rnnparam_c,\rnnparam_p\}$. The score is
 \begin{equation}
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{equation}
@@ -248,7 +249,7 @@ A complete description of the training process can be found in Appendix.
 
 \subsection{Fashion dataset}
 
-With this paper, we provide the first dataset dedicated to fashion. Our fashion dataset is built with a high throughput computer vision systems analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousand of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2020-09-01 with weekly values and no missing walues. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
+With this paper, we provide the first dataset dedicated to fashion. Our fashion dataset is built with a high throughput computer vision systems analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousand of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing walues. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
 With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trend in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with huge changes. We call them emerging or declining trends depending of the change direction. One central point is to accurately detect and forecast these trends. 
 
@@ -271,13 +272,13 @@ With in-house fashion experts, we selected especially a collection of $\numberts
     \hline
     &  Top  & Pants & Short & Skirt & Dress & Coat & Shoes & Color & Texture &  \\
     \hline
-     United States & 587/290 & 195/158  & 64/37 & 38/- & 38/- & 271/218 & 439/114 & 59/59 & 129/103\\
-     Europe & 587/290 &  195/158& 64/37 & 38/- & 38/- & 271/218 & 439/114 & 59/59 & 135/111\\
-     Japan &  587/290 & 193/158 & 64/37 & 38/- &  37/- & 271/218 &  429/114 & 59/59 &  124/98\\
-     China &  586/290 & 195/158 & 64/37 & 38/- &  37/- & 271/218 &  433/114 & 59/59 &  128/113\\
-     Brazil &  587/290 & 195/158 & 64/37 & 38/- &  38/- & 271/218 & 439/114 & 59/59 & 136/110\\
+United States & 411/208 & 149/112 & 47/22 & 29/- & 20/- & 208/151 & 293/86 & 38/44 & 85/81\\
+     Europe & 409/228 &  134/114 & 48/21 & 28/- & 20/- & 211/159 & 303/78 & 41/42 & 87/74\\
+     Japan &  403/218 & 136/107 & 49/31 & 28/- &  23/- & 185/149 &  311/78 & 46/42 &  92/65\\
+     China &  424/202 & 147/114 & 46/29 & 27/- &  27/- & 178/161 &  310/78 & 41/47 &  88/77\\
+     Brazil &  431/222 & 134/117 & 49/27 & 30/- &  28/- & 203/152 & 311/76 & 48/41 & 107/84\\
      \hline
-     Total & 2934/1450 & 973/790 & 320/185 & 190/- & 188/- & 1355/1090 & 2179/570 & 295/294 & 652/535 & \numberts\\
+     Total & 2078/1078 & 700/564 & 239/130 & 142/- & 118/- & 985/772 & 1528/396 & 214/216 & 459/381 & \numberts\\
     \hline
   \end{tabular}
   }
@@ -315,7 +316,7 @@ As an example, an impressive emerging fashion trend is represented in Figure 2, 
 
 \begin{figure}
   \centering
-    \includegraphics[width=1.\linewidth]{figure/good_example.png}
+    \includegraphics[width=1.\linewidth]{figure/emergering_trend.png}
   \caption{A shoes trend of our dataset. In black the main signal and in red its associated \textit{fashion-forward} weak signal. The Gap between our two signals in the end of 2017/beginning of 2018 announces the future explosion of the fashion trend. \textcolor{red}{Provide other examples in the appendix to hightlight the variety of the proposed data.}}
 \end{figure}
 
@@ -329,12 +330,26 @@ As an example, an impressive emerging fashion trend is represented in Figure 2, 
 
 \subsection{Training}
 
-To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction with $\window$ and $\lag$ equal to 52. In order to increase our train set, we use a moving window as in Figure~\ref{fig:movingwindow}. All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
+To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction with $\window$ and $\lag$ equal to 52. In order to increase our train set, we use a moving window as in Figure~\ref{fig:train_eval_test_set}. All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
 
 For the first parametric per-time-series models, we used existing Python or R librarys to set the different parameters $\statparam^n$. There are then fixed during the training of the recurrent models.
 For $\classifier$ and $\predictor$, we built an architecture summaryse in Figure~\ref{fig:rnnarchi}. There are both composed of 3 LSTM layer and a different final Dense layer to provide the correct output. After the $\classifier$ final dense layer, we add a sigmoid activation to return a probability. We use 2 Adam otpimizers with the same learning rate equal to 0.001 and we fix the batch size at 64. At the end, we use the eval set to fix the $\threshold$ parameter of the $classifier$. 
 
 We propose two versions of our regime switching hybrid recurrent model. The first one is an hybrid model with an additive exponential smoothing model as parametric model.For the second one, we use the TBATS approach as paramteric model.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.\linewidth]{figure/train_eval_test_set}
+  \caption{$\classifier$ and $\predictor$ architecture.}
+\label{fig:rnn_architecture}
+\end{figure}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.8\linewidth]{figure/rnn_archi}
+  \caption{$\classifier$ and $\predictor$ architecture.}
+\label{fig:rnn_architecture}
+\end{figure}
 
 
 %To train our hybrid models, we made the choice of don't using the original code of the hybrid method provided during the M4 competition. Indeed, the proposed implementation is difficult to use in a more general framework and it is quite slow because it doesn't enable the use of GPU. Thereby, we propose with this paper, a new version of the hybrid framework, including the original multiplicative model and the new additive one. 
@@ -389,34 +404,17 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 
 \subsection{Result for Heuritech Fashion dataset}
 
-\textcolor{red}{Add a figure of a time series with all models (and others in Appendix).}
+%\textcolor{red}{Add a figure of a time series with all models (and others in Appendix).}
 
 %\vspace{.2cm}
 
-\textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
+%\textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
 
-
-
-
-
-
-
-
-In a first place, Table 2 shows the final accuracy of the statistical models, the LSTM model and our 2 hybrid models without external data. Even without the weak signals, our 2 hybrid approaches largely outperform the statistical references. The multiplicative model show the best accuracy with a OWA equal to 0.875. We can note that the additive model slightly under-performs the traditional multiplicative one on average. This doesn't show a weakness of the additive version but more that a large part of our dataset is more-suited for multiplicative modelization. At the end, the strength of training both methods, additive and multiplicative, is in the final porposed ensembling \textit{ensembling} that combines the two approaches with the FForma ensembling.
-
-In a second place, Table 3 shows the evaluation of our 4 trained hybrid models: the 2 previous ones without weak signals, and our 2 full hybrid models with weak signals. We present also the accuracy of a simple LSTM model with and without weak signals. We can show the impressive improvement due to our external signals. Again, the multiplicative method achieves the best accuracy with OWA metric equal to 0.860. We propose like previously, an ensembling mixing our two full hybrid models with weak signals and it reach the high level of accuracy with an OWA equal to 0.849.
-
-In a third place, table 4 presents the result of our inference process. We split our dataset in five equal parts of 2800 sequences and hide the last year for each trends. Then, like a cross validation, we train a model on 4 parts and compute its accuracy on the last one on the last year. The model never saw the last part so we use our inference process to compute predictions. With a permutation of the parts, we can repeat the process and train 5 models, each trained on a specific pool of 4 parts and tested on the remaining part of the dataset. For each hybrid model (additive/multiplicative with and without weak signals) Table 4 shows the average accuracy and the Standard Deviation of the 5 trained hybrid models. We can see that our inference process achieve really accurate results and practically the same that our hybrid models trained on the entire dataset. These results prove that, even without having seen a sequence during the training, if the time series share same behaviours that the training sample, our hybrid approaches can perfectly compute accurate predictions. Furthermore, the Standard Deviation is really low for all our metrics. This result shows that our hybrid framework is robust and reach constant accuracy level on large dataset.
-
-
-Finally, with our results, we can make two interesting conclusions: 
+The Table ??? present the final result for all our methods on the three metrics presented above.
 \begin{itemize}
-    \item Firstly, the hybird modeling is a really promising framework. By mixing the performance of local parametric models and a global DNN, our two versions clearly outperform traditional statistical methods. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our two models succeed at leveraging our complex extra data and reach an impressive accuracy levels.
-    \item Secondly, our results bring to light the quality of our new Fashion dataset. Even without weak signal, our DNN based model outperforms time series specific model. This show that our dataset is well suited to train complex neural network architectures able to learn information cross sequences. With the addition of our weak signals, we give a totally new dimension to our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by DNN architecture. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting.
-\end{itemize} 
-
-
-\subsection{Discussion}
+	\item For the statistical models, we can see a large domination of the TBATS model with a MASE equal to ... It is one of the main reason why we use this model on one of our hybrid framwork as the parametric model. However, we can see that the full LSTM model \textit{lstm} is the best model over our benchmarck candidates. This result show that, with a large dataset, deep learning model can outperform the traditional approaches on average. An example of prediction of all the benchmarck methods is displayed in the Figure ????.
+	\item Our two different regime switching hybrid model achieve higher level of accuracy compare to the \textit{ets} or \textit{tbats} results. For the \textit{rshm-ets}, we pass from ??? for the \textit{ets} model alone to ???? for the hybrid model. Its $\classifier$ threshold $\threshold$ was fix at ???. With this threshold, the error-corrector model correct ???? sequences of the $\numberts$. On these corrected time series, compare to the \textit{ets} apporach, our appoach MASE fall from ??? to ???. However \textit{rshm-ets} doesn't succed at outperform some of the benchmarck model, for example \textit{tbats} of \textit{lstm}. The \textit{rshm-tbats} version clearly outperform all the previous model. Based on a \textit{tbats} model, wich already achieve a interesting level of accuracy, \textit{rshm-tbats} reach the higher level of accuracy with a MASE equal to ????, that is -??? compare at the top-2 model. With a threshold fixed at ???, this version of our hybrid framework correct ??? sequences of the $\numberts$. An example of our two regime-switching hybrid recurrent model is presented in the Figure ....
+\end{itemize}
 
 \begin{table*}
   \caption{Results summary (Mean/Median) on our Fashion dataset. In a first time, we train our hybrid approaches without our external weak signals.}
@@ -426,54 +424,71 @@ Finally, with our results, we can make two interesting conclusions:
     \hline
     &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std  \\
     \hline
-     snaive & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     thetam & 0.924/0.869  & 0.35 & 25.82/22.54  & 14.6 & 0.952/0.915 & 0.26\\
-     stlm & 0.893/0.834 & 0.35 & 25.07/21.93  & 14.3 & 0.917/0.895 & 0.21\\
-     tbats & 0.886/0.822  & 0.34 &  24.81/21.60 & 14.0 &  0.910/0.882 & 0.22 \\
-     lstm & 0.881/0.824 & 0.34 & 24.41/21.56 & 12.81 & 0.895/0.885 & 0.11 \\
-     hybrid-add & 0.863/0.812  & 0.32 & 24.17/21.36 & 13.0 & 0.877/0.880 & 0.08 \\
-     hybrid-mul & 0.858/0.817 & 0.30 & 24.06/21.30 & 13.0 & 0.876/0.873 & 0.11 \\
-     Ensembling & 0.846/0.804 & 0.30 & 23.78/21.07 & 12.9 & 0.864/0.863 & 0.10  \\
-    \hline
-  \end{tabular}
-\end{table*}
-
-\begin{table*}
-  \caption{Comparison between our hybrid models without and with our external weak signals, (Mean/Median)}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lllllll}
-    \hline
-    &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
-    \hline
-    lstm & 0.881/0.824 & 0.34 & 24.41/21.56 & 12.81 & 0.895/0.885 & 0.11 \\
-    lstm-ws & 0.869/0.814 & 0.33 & 24.56/21.33 & 14.40 & 0.890/0.874 & 0.132 \\
-     hybrid-add & 0.863/0.812  & 0.32 & 24.17/21.36 & 13.0 & 0.877/0.880 & 0.08 \\
-     hybrid-mul & 0.858/0.817 & 0.30 & 24.06/21.30 & 13.0 & 0.876/0.873 & 0.11 \\
-     hybrid-add-ws & 0.852/0.807 & 0.30 & 24.03/21.17 & 13.0 & 0.872/0.869 & 0.10 \\
-     hybrid-mul-ws & 0.836/0.798 & 0.29 & 23.67/20.87 & 12.9 & 0.860/0.858 & 0.12 \\
-     Ensembling & 0.827/0.787 & 0.29 & 23.43/20.63 & 12.8 & 0.849/0.849 & 0.11\\
+     \textit{snaive} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{ets} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{thetam} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{stlm} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{tbats} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{auto.arima} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{lstm} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{rshm-ets} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{\textbf{rshm-tbat}} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
     \hline
   \end{tabular}
 \end{table*}
 
 
 
-\begin{table*}
-  \caption{Cross-Validation. we split our dataset in 5 equal parts. We train for each hybrid approach, 5 models on 4 specific parts of the dataset and we test them of the remaining parts with our inference process.}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lllllll}
-    \hline
-    &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
-    \hline
-     hybrid-add & 0.861  & 0.004 & 24.16 & 0.18 & 0.877 & 0.002 \\
-     hybrid-mul & 0.856 & 0.008 & 23.95 & 0.25 & 0.870 & 0.005 \\
-     hybrid-add-ws & 0.848 & 0.004 & 24.00 & 0.18 & 0.869 & 0.002 \\
-     hybrid-mul-ws & 0.844 & 0.010 & 23.74 & .20 & 0.863 & 0.006 \\
-    \hline
-  \end{tabular}
-\end{table*}
+
+%In a first place, Table 2 shows the final accuracy of the statistical models, the LSTM model and our 2 hybrid models without external data. Even without the weak signals, our 2 hybrid approaches largely outperform the statistical references. The multiplicative model show the best accuracy with a OWA equal to 0.875. We can note that the additive model slightly under-performs the traditional multiplicative one on average. This doesn't show a weakness of the additive version but more that a large part of our dataset is more-suited for multiplicative modelization. At the end, the strength of training both methods, additive and multiplicative, is in the final porposed ensembling \textit{ensembling} that combines the two approaches with the FForma ensembling.
+
+%In a second place, Table 3 shows the evaluation of our 4 trained hybrid models: the 2 previous ones without weak signals, and our 2 full hybrid models with weak signals. We present also the accuracy of a simple LSTM model with and without weak signals. We can show the impressive improvement due to our external signals. Again, the multiplicative method achieves the best accuracy with OWA metric equal to 0.860. We propose like previously, an ensembling mixing our two full hybrid models with weak signals and it reach the high level of accuracy with an OWA equal to 0.849.
+
+%In a third place, table 4 presents the result of our inference process. We split our dataset in five equal parts of 2800 sequences and hide the last year for each trends. Then, like a cross validation, we train a model on 4 parts and compute its accuracy on the last one on the last year. The model never saw the last part so we use our inference process to compute predictions. With a permutation of the parts, we can repeat the process and train 5 models, each trained on a specific pool of 4 parts and tested on the remaining part of the dataset. For each hybrid model (additive/multiplicative with and without weak signals) Table 4 shows the average accuracy and the Standard Deviation of the 5 trained hybrid models. We can see that our inference process achieve really accurate results and practically the same that our hybrid models trained on the entire dataset. These results prove that, even without having seen a sequence during the training, if the time series share same behaviours that the training sample, our hybrid approaches can perfectly compute accurate predictions. Furthermore, the Standard Deviation is really low for all our metrics. This result shows that our hybrid framework is robust and reach constant accuracy level on large dataset.
+
+
+With our results, we can make two interesting conclusions. Firstly, the regime switching hybrid framework is a really promising framework. By mixing the performance of local parametric models and a global DNN, our two versions clearly outperform traditional statistical methods. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our two models succeed at leveraging our complex extra data and reach an impressive accuracy levels. Secondly, our results bring to light the quality of our new Fashion dataset. We saw that the full LSTM model \textit{lstm} outperforms all time series specific models. This show that our dataset is well suited to train complex neural network architectures able to learn information cross sequences. With the addition of our weak signals, we give a totally new dimension to our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by DNN architecture. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting. 
+
+
+\subsection{Discussion}
+
+
+%\begin{table*}
+ % \caption{Comparison between our hybrid models without and with our external weak signals, (Mean/Median)}
+  %\label{sample-table}
+  %\centering
+  %\begin{tabular}{lllllll}
+   % \hline
+    %&  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
+    %\hline
+    %lstm & 0.881/0.824 & 0.34 & 24.41/21.56 & 12.81 & 0.895/0.885 & 0.11 \\
+    %lstm-ws & 0.869/0.814 & 0.33 & 24.56/21.33 & 14.40 & 0.890/0.874 & 0.132 \\
+    % hybrid-add & 0.863/0.812  & 0.32 & 24.17/21.36 & 13.0 & 0.877/0.880 & 0.08 \\
+     %hybrid-mul & 0.858/0.817 & 0.30 & 24.06/21.30 & 13.0 & 0.876/0.873 & 0.11 \\
+  %   hybrid-add-ws & 0.852/0.807 & 0.30 & 24.03/21.17 & 13.0 & 0.872/0.869 & 0.10 \\
+%     hybrid-mul-ws & 0.836/0.798 & 0.29 & 23.67/20.87 & 12.9 & 0.860/0.858 & 0.12 \\
+ %    Ensembling & 0.827/0.787 & 0.29 & 23.43/20.63 & 12.8 & 0.849/0.849 & 0.11\\
+  %  \hline
+  %\end{tabular}
+%\end{table*}
+
+
+
+%\begin{table*}
+ % \caption{Cross-Validation. we split our dataset in 5 equal parts. We train for each hybrid approach, 5 models on 4 specific parts of the dataset and we test them of the remaining parts with our inference process.}
+  %\label{sample-table}
+  %\centering
+ % \begin{tabular}{lllllll}
+  %  \hline
+   % &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std \\
+   % \hline
+   %  hybrid-add & 0.861  & 0.004 & 24.16 & 0.18 & 0.877 & 0.002 \\
+   %  hybrid-mul & 0.856 & 0.008 & 23.95 & 0.25 & 0.870 & 0.005 \\
+   %  hybrid-add-ws & 0.848 & 0.004 & 24.00 & 0.18 & 0.869 & 0.002 \\
+   %  hybrid-mul-ws & 0.844 & 0.010 & 23.74 & .20 & 0.863 & 0.006 \\
+   % \hline
+  %\end{tabular}
+%\end{table*}
 
 
 
@@ -491,6 +506,9 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 \appendix
 
 \section{Fashion Dataset overview}
+
+
+
 \section{Hidden regime algorithm}
 
 In our framework, we assume that our sequence are generated with a regime with 2 hidden regime. As this regime, noted $\hiddenregime$, is never observed, we can compute explicitely the following quantity : 
