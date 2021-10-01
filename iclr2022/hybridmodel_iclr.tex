@@ -107,7 +107,8 @@ The paper is organized as follow. Section~\ref{sec:hybrid} describes our hybrid 
 
 \section{Hybrid model with external signals}
 \label{sec:hybrid}
-We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network. Then, we use 2 recurrent neural networks and weak signals to correct the predictions provided by the first collection of parametric models.
+%We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global RNN. We use a per time series statistical model to learn local behaviour and to normalize sequences before feeding them to the neural network.
+We introduce a new hybrid approach for time series forecasting  composed of two parts: a first per time series parametric model with seasonal component and a global neural network framework composed of 2 RNN. We use a per time series statistical model to learn local behaviour, to normalize sequences and to compute a first forecast. Then, we use 2 recurrent neural networks and weak signals to correct, if needed, the predictions provided by the first collection of parametric models.
 
 Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, let $\ts_t^n$ be the value of the $n$-th sequence at time $t$ and  $\fullts^n = \{\ts_t^n\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.   The objective of this paper is to propose a model to  forecast all time series in a given time frame  $\lag \in \mathbb{N}$, i.e. we aim at sampling $\{\ts^n_{T+1:T+\lag}\}_{1\leqslant n \leqslant N}$ based on $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$.
 
@@ -116,7 +117,7 @@ Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\l
 \subsection{Per time series statistical model}
 %The first step in our additive hybrid model is to consider, for each time series, an exponential smoothing  statistical model.
 %The time-series-specific models compute, for each sequence, two components,  level  and  seasonality. For all $1\leqslant n \leqslant N$ and $0\leqslant t \leqslant T$, let $\lvl_t^n$ be the value of the $n$-th level component at time $t$ and  $\fulllvl^n = \{\lvl_t^n\}_{0\leqslant t \leqslant T}$ be all the values of this level component. For all $1\leqslant n \leqslant N$ and $-m+1\leqslant t \leqslant T$, let $\seas_t^n$ be the value of the $n$-th seasonality component at time $t$ and  $\fullseas^n = \{\seas_t^n\}_{-m+1\leqslant t \leqslant T}$ be all the values of this season component. $m \in \mathbb{N}$ is the seasonality (4 for quarterly, 12 for monthly or 52 for weekly time series).
-The time-series-specific models compute, for each sequence, a first $\lag$-ahead prediction based on the past. For all $1\leqslant n \leqslant N$, we note $\stat^n$ the $n$-th parametric model linked to the $n$-th sequence. Each model gather a collection of parameters in order to provide a forecast. We note $\statparam^n$ the parameters of the statistical model $\stat^n$. Given the sequences $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$, the parametric models, $\{\stat^n\}_{1\leqslant n \leqslant N}$ and the associated paramters $\{\statparam^n\}_{1\leqslant n \leqslant N}$, the first time-series-specific forecasts $\{\tspred^{stat,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+The time-series-specific models compute, for each sequence, a first $\lag$-ahead prediction based on the past. For all $1\leqslant n \leqslant N$, we note $\stat^n$ the $n$-th parametric model linked to the $n$-th sequence and $\statparam^n$ its parameters. Given the sequences $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$, the parametric models $\{\stat^n\}_{1\leqslant n \leqslant N}$ and its associated parameters $\{\statparam^n\}_{1\leqslant n \leqslant N}$, the time-series-specific forecasts $\{\tspred^{stat,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 $$
 \tspred^{stat,n}_{T+i|T} = \stat^n(\ts^n_{1:T}|\statparam^n)_i\,,
 $$
@@ -159,7 +160,7 @@ where $\{\varepsilon^n_{T+i}\}_{i\leqslant 1}$ are independent random variables,
 %\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \remainder^{n}_{T+i} + \varepsilon^n_{T+i}\,,
 %$$
 
-To estimate this system, we introduce our new regime swithing error-corrector framework. We train two global RNN on all sequences, a classifier ($\classifier$) and a predictor ($\predictor$). We train the classifier to provide a probability of being in the regime 1 and we train the predictor to estimate the first per-time-series forecasts errors if we are in the regime 1. However, these tasks require a thorough data pre-processing and with our collection of parametric models, we propose a fine way to normalize and deseasonalize the RNNs inputs.
+To estimate this system, we introduce our new regime swithing error-corrector framework. We train two global RNN on all sequences, a classifier ($\classifier$) and a predictor ($\predictor$). We train the classifier to provide a probability of being in the regime 1 and we train the predictor to estimate the first per-time-series forecasts errors if we are in the regime 1. However, these 2 tasks require a thorough data pre-processing and with our collection of parametric models, we propose a fine way to normalize and deseasonalize the RNNs inputs.
 
 %Then, we train a global RNN on all sequences to compute a correction of the initial prediction.
 %Then, we train a global RNN on all sequences to compute a correction of the initial prediction. %We motivate this choice for two reasons. Firstly, pure machine learning methods achieve relatively poor results in time series forecasting. Turning a full forecasting task into a correcting task largely simplifies the RNN goals. 
@@ -217,7 +218,7 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 \label{eq:full:model}
 \ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  \mathbf{1}_{\classifier(\fullconcatinput^n_T) > \threshold} \times \predictor(\fullconcatinput^n_T)_{T+i} \times \meants^n_T + \varepsilon^n_{T+i}\,,
 \end{equation}
-The complete architecture is displayed in Figure~\ref{fig:architecture}.
+An illustration of our proposed architecture is displayed in Figure~\ref{fig:architecture}.
 
 \begin{figure}
   \centering
@@ -251,7 +252,11 @@ A complete description of the training process can be found in Appendix.
 
 With this paper, we provide the first dataset dedicated to fashion. Our fashion dataset is built with a high throughput computer vision systems analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousand of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing walues. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
-With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trend in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with huge changes. We call them emerging or declining trends depending of the change direction. One central point is to accurately detect and forecast these trends. 
+With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trend in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending of the change direction. A central point of our work is to accurately detect and forecast these trends.
+
+%With only the historical data, predict this breaking point is challenging and some time impossible. 
+
+%a large part of this One central point is to accurately detect and forecast these trends. 
 
 %Our sequences show several desirable properties: same length (from 2015-01-05 to 2020-09-01), same yearly seasonality, shared behaviours and no missing values. We provide publicly a selection of $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
@@ -330,18 +335,18 @@ As an example, an impressive emerging fashion trend is represented in Figure 2, 
 
 \subsection{Training}
 
-To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction with $\window$ and $\lag$ equal to 52. In order to increase our train set, we use a moving window as in Figure~\ref{fig:train_eval_test_set}. All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
+To train our hybrid model, we split our dataset in 3 parts, train,eval and test set. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction with $\window$ and $\lag$ equal to 52. In order to increase our train set, we use a moving window that provide 53 input/output couples per sequences, being 530000 couples in total. An example of our splitting is shown in  Figure~\ref{fig:train_eval_test_set}. All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
 
 For the first parametric per-time-series models, we used existing Python or R librarys to set the different parameters $\statparam^n$. There are then fixed during the training of the recurrent models.
-For $\classifier$ and $\predictor$, we built an architecture summaryse in Figure~\ref{fig:rnnarchi}. There are both composed of 3 LSTM layer and a different final Dense layer to provide the correct output. After the $\classifier$ final dense layer, we add a sigmoid activation to return a probability. We use 2 Adam otpimizers with the same learning rate equal to 0.001 and we fix the batch size at 64. At the end, we use the eval set to fix the $\threshold$ parameter of the $classifier$. 
+For $\classifier$ and $\predictor$, we built an architecture summaryse in Figure~\ref{fig:rnnarchi}. There are both composed of 3 LSTM layer and a different final Dense layer to provide the correct output. After the $\classifier$ final dense layer, we add a sigmoid activation to return a probability. We use 2 Adam otpimizers with the same learning rate equal to ??? and we fix the batch size at 64. At the end, we use the eval set to fix the $\threshold$ parameter that determine, depending of the output of $\predictor$, when use the $\predictor$ correction. 
 
-We propose two versions of our regime switching hybrid recurrent model. The first one is an hybrid model with an additive exponential smoothing model as parametric model.For the second one, we use the TBATS approach as paramteric model.
+We propose two versions of our regime switching hybrid recurrent model. The first one is an hybrid model with an additive exponential smoothing model as the reference. For the second one, we use the TBATS approach as the reference.
 
 \begin{figure}
   \centering
     \includegraphics[width=1.\linewidth]{figure/train_eval_test_set}
   \caption{$\classifier$ and $\predictor$ architecture.}
-\label{fig:rnn_architecture}
+\label{fig:train_eval_test_set}
 \end{figure}
 
 \begin{figure}
@@ -365,12 +370,12 @@ We propose two versions of our regime switching hybrid recurrent model. The firs
 
 \subsection{Benchmarks, hybrid models and Metrics}
 
-As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package {\em forecast} and the Python packages {\em statsmodels, tbats} , we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{ets}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{Snaive} forecasts are only the repetition of the last same past period. \textit{ets} model is an additive exponential smoothing with a level component and a seasonal component. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. A complete description and references for these models can be found in \citep{packageforecast}. As a deep learning approach, we considered a full LSTM (\textit{lstm}) neural network composed of 3 LSTM layers of shape 50 and a final Dense layer of shape 52.
+As benchmarks, we chose several well-known statistical methods and deep learning approaches. Using the R package \texttt{forecast} and the Python packages \texttt{statsmodels, tbats} , we compute for each time series a prediction with the following methods: \textit{snaive}, \textit{ets}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. \textit{snaive} forecasts are only the repetition of the last same past period. \textit{ets} model is an additive exponential smoothing with a level component and a seasonal component. \textit{stlm} approach use a multiplicative decomposition and models the seasonality adjusted time series with an exponenantial smoothing model. \textit{Thetam} model decompose the original signal in $\theta$-lines, forecast each one separately and recompose them to produce the final forecast. \textit{tbats} is a powerful statistical model using a trigonometrical seasonality modelization. The last one \textit{auto.arima} is the R implementation of ARIMA model with an automatic selection of the best parameters. A complete description and references for these models can be found in \citep{packageforecast}. As a deep learning approach, we considered a full LSTM (\textit{lstm}) neural network composed of 3 LSTM layers of shape 50 and a final Dense layer of shape 52.
 
-Against these models, we propose our two versions of our regime switching hybrid reccurent model (rshm) called respectively \textit{rshm-ets} and \textit{rshm-tbats} according to the per-time-series model choice.
+Against these models, we propose our two versions of our regime switching hybrid reccurent model (rshm) called respectively rshm-ets and rshm-tbats according to the per-time-series model choice.
 %Against these models, we propose two versions of our regime switching hybrid recurrent model \textit{rshm}. The first one, that we name \textit{rshm-ets}, is the hybrid model with an additive exponential smoothing model as parametric model. For the second one, we use the TBATS approach as paramteric model and we named it \textit{rshm-tbats}. 
 %To reach a higher accuracy level we also propose an ensembling (\textit{ensembling} of our hybrid approach using the FFORMA method created during the M4 competition, see \citep{fforma}). 
-Finally, we evaluate our hybrid framework with the inclusion of external signals referred to as \textit{rshm-ets-ws} and \textit{rshm-tbats-ws}. In order to provide a fair comparison, we also train a \textit{lstm} with the weak signals, referred to as \textit{lstm-ws}.
+For our two versions, in a first time, we propose a version without our weak signal called \textit{rshm-ets} and \textit{rshm-tbats}. Then we evaluate our hybrid framework with the inclusion of our weak signals (ws) referred to as \textit{rshm-ets-ws} and \textit{rshm-tbats-ws}. In order to provide a fair comparison, we also train a \textit{lstm} with the weak signals named \textit{lstm-ws}.
 
 
 To compare the different methods, we use the same metrics as in the M4 competition: the Mean Absolute Scaled Error (MASE), the Symmetric Mean Absolute Percentage Error (sMAPE) and the final M4 competition metric, the Overall Weighted Average (OWA) of the sMAPE and the MASE defined as follows:
@@ -384,7 +389,7 @@ where $\hat{Y}$ is a model prediction, $\lag$ is the horizon, $m$ the seasonalit
 
 
 
-Detecting emerging and declining trends is a crucial issue for the fashion industry. A correct or incorrect prediction could lead to good returns or massive waste due to overstock or unsold clothes. In a given year, we define an increasing trend as a trend that do more than 10\% of growth in term of Year and Year.In the same way, we define a decreasing trend as a trend that decline of 10\% or more. We classify the other trend as flat trend. On the test set, the year 2019, we have 1871 increasing trends, 2016 decreasing trends and 6113 flat trends. In addition to the accuracy metrics, we compare also the different methods on this classification task.
+Detecting emerging and declining trends is a crucial issue for the fashion industry. A correct or incorrect prediction could lead to good returns or massive waste due to overstock or unsold clothes. In a given year, we define an increasing trend as a trend that do more than 10\% of growth in term of Year and Year.In the same way, we define a decreasing trend as a trend that decline of 10\% or more. We classify other trends as flat trends. On the test set, the year 2019, we have 1871 increasing trends, 2016 decreasing trends and 6113 flat trends. In addition to the accuracy metrics, we compare also the different methods on this classification task.
 
 
 
