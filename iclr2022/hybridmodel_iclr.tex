@@ -427,33 +427,165 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 
 %\textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
 
-The Table ??? present the final result for all our methods on the three metrics presented above.
+\textcolor{blue}{Result on 1000ts}  \\
+\textcolor{blue}{hybrid model correct all time series and not only a a group of hundred. WIP}  \\
+In a first time, we present the accuracy of all our methods without using our weak signals.for our 3 metrics and for each model, we compute the average and standard deviation on all our sequences on the final year. Results are shown in the Table ???.  
 \begin{itemize}
 	\item For the statistical models, we can see a large domination of the TBATS model with a MASE equal to ... It is one of the main reason why we use this model on one of our hybrid framwork as the parametric model. However, we can see that the full LSTM model \textit{lstm} is the best model over our benchmarck candidates. This result show that, with a large dataset, deep learning model can outperform the traditional approaches on average. An example of prediction of all the benchmarck methods is displayed in the Figure ????.
 	\item Our two different regime switching hybrid model achieve higher level of accuracy compare to the \textit{ets} or \textit{tbats} results. For the \textit{rshm-ets}, we pass from ??? for the \textit{ets} model alone to ???? for the hybrid model. Its $\classifier$ threshold $\threshold$ was fix at ???. With this threshold, the error-corrector model correct ???? sequences of the $\numberts$. On these corrected time series, compare to the \textit{ets} apporach, our appoach MASE fall from ??? to ???. However \textit{rshm-ets} doesn't succed at outperform some of the benchmarck model, for example \textit{tbats} of \textit{lstm}. The \textit{rshm-tbats} version clearly outperform all the previous model. Based on a \textit{tbats} model, wich already achieve a interesting level of accuracy, \textit{rshm-tbats} reach the higher level of accuracy with a MASE equal to ????, that is -??? compare at the top-2 model. With a threshold fixed at ???, this version of our hybrid framework correct ??? sequences of the $\numberts$. An example of our two regime-switching hybrid recurrent model is presented in the Figure ....
 \end{itemize}
 
 \begin{table*}
-  \caption{Results summary (Mean/Median) on our Fashion dataset. In a first time, we train our hybrid approaches without our external weak signals.}
+  \caption{Results summary on our Fashion dataset. For each metric, we compute the average and the standard deviation on all the test set.}
   \label{sample-table}
   \centering
   \begin{tabular}{lllllll}
     \hline
-    &  MASE  & MASE-std & SMAPE & SMAPE-std & OWA & OWA-std  \\
+    &  MASE-mean  & MASE-std & SMAPE-mean & SMAPE-std & OWA-mean & OWA-std  \\
     \hline
-     \textit{snaive} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{ets} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{thetam} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{stlm} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{tbats} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{auto.arima} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{lstm} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{rshm-ets} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
-     \textit{\textbf{rshm-tbat}} & 0.983/0.936 & 0.33 & 27.68/24.42 & 15.0 & 1./1. & 0.\\
+     \textit{snaive} & 0.871 & 0.255 & 25.29 & 14.90 & 1. & 0.\\
+     \textit{ets} & 0.801 & 0.274 & 24.18 & 17.51 & 0.944 & 0.286\\
+     \textit{thetam} & 0.849 & 0.364 & 24.58 & 17.07 & 0.980 & 0.333\\
+     \textit{stlm} & 0.765 & 0.265 & 22.22 & 13.77 & 0.885 & 0.188\\
+     \textit{tbats} & 0.734 & 0.254 & 21.19 & 13.79 & 0.847 & 0.171\\
+     \textit{auto.arima} & 0. & 0. & . & . & . & 0.\\
+     \textit{lstm} & 0.765 & 0.278 & 21.00 & 11.42 & 0.872 & 0.160\\
+     \textit{rshm-ets} & 0. & 0. & . & . & . & 0.\\
+     \textit{\textbf{rshm-tbats}} & 0.726 & 0.242 & 21.09 & 13.60 & 0.840 & 0.157\\
+     \textit{oracle} & 0.709 & 0.235 & 20.55 & 13.30 & 0.812 & 0.153\\
     \hline
   \end{tabular}
 \end{table*}
 
+
+We also compute for each method a confusion matrix in order to evaluate in what matter, each candidate is able to detect and accurately forecast increasing/decreasing trends.
+
+\begin{table*}
+  \caption{\textit{tbats} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 33 & 167 & 8 \\
+    true-flat-trend & 21 & 578 & 22 \\
+    true-inc-trend & 7 & 136 & 28 \\
+    \hline
+  \end{tabular}
+\end{table*}
+
+\begin{table*}
+  \caption{\textit{ets} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 43 & 145 & 20 \\
+    true-flat-trend & 43 & 544 & 34 \\
+    true-inc-trend & 16 & 122 & 33 \\
+    \hline
+  \end{tabular}
+\end{table*}
+\begin{table*}
+  \caption{\textit{lstm} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 0 & 208 & 0 \\
+    true-flat-trend & 0 & 621 & 0 \\
+    true-inc-trend & 0 & 171 & 0 \\
+    \hline
+  \end{tabular}
+\end{table*}
+\begin{table*}
+  \caption{\textit{rshm-tbats} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 33 & 166 & 9 \\
+    true-flat-trend & 13 & 596 & 12 \\
+    true-inc-trend & 7 & 139 & 25 \\
+    \hline
+  \end{tabular}
+\end{table*}
+
+
+
+In a seconde time, we evaluate how our framework is able to understand and leverage our weak signals. The Table ??? presents the result of our three candidates that we train with our weak signals : \textit{lstm-ws}, \textit{rshm-ets-ws} and \textit{rshm-tbats-ws}.  
+
+
+\begin{table*}
+  \caption{Results summary on our Fashion dataset. We compare methods without our weak signal and than method but train with our weak signals as an additional input}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{lllllll}
+    \hline
+    &  MASE-mean  & MASE-std & SMAPE-mean & SMAPE-std & OWA-mean & OWA-std  \\
+    \hline
+     \textit{lstm} & 0.765 & 0.278 & 21.00 & 11.42 & 0.872 & 0.160\\
+     \textit{rshm-ets} & 0. & 0. & . & . & . & 0.\\
+     \textit{\textbf{rshm-tbats}} & 0.726 & 0.242 & 21.09 & 13.60 & 0.840 & 0.157\\
+    \hline
+     \textit{lstm-ws} & 0.758 & 0.271 & 20.89 & 11.46 & 0.867 & 0.163\\
+     \textit{rshm-ets-ws} & 0. & 0. & . & . & . & 0.\\
+     \textit{\textbf{rshm-tbats-ws}} & 0. & 0. & . & . & 0. & 0.\\
+    \hline
+  \end{tabular}
+\end{table*}
+
+Again, we show the result of our model with external signal on the classifier task. The Table ???/???/??? present their results.
+
+\begin{table*}
+  \caption{\textit{lstm-ws} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 1 & 205 & 2 \\
+    true-flat-trend & 2 & 619 & 0 \\
+    true-inc-trend & 0 & 168 & 3 \\
+    \hline
+  \end{tabular}
+\end{table*}
+\begin{table*}
+  \caption{\textit{rshm-ets-ws} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 0 & 0 & 0 \\
+    true-flat-trend & 0 & 0 & 0 \\
+    true-inc-trend & 0 & 0 & 0 \\
+    \hline
+  \end{tabular}
+\end{table*}
+\begin{table*}
+  \caption{\textit{rshm-tbats-ws} model confusion matrix}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 0 & 0 & 9 \\
+    true-flat-trend & 0 & 0 & 0 \\
+    true-inc-trend & 0 & 0 & 0 \\
+    \hline
+  \end{tabular}
+\end{table*}
 
 
 
