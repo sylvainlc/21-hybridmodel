@@ -230,10 +230,23 @@ An illustration of our proposed architecture is displayed in Figure~\ref{fig:arc
 
 As the regime is not observed, the loglikelihood of the observations cannot be written explicitly to train the model. Therefore we use Fisher's identity to compute the score function and write a gradient ascent algorithm to estimate simultaneously the weights of RNN-p and of RNN-c denoted by $\rnnparam = \{\rnnparam_c,\rnnparam_p\}$. The score is
 \begin{equation}
+\label{eq:score}
 \nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
 \end{equation}
-\\
-where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$.
+where the joint likelihood $p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) = p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$ is given by \eqref{eq:full:model} and the expectation is under the posterior distribution of $U_T^n$ given $\ts^n_{1:T+h}$. Write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
+$$
+\omega^n \propto \mathbb{P}_{\theta}(U_T^n = 1|\ts^n_{1:T})p_{\theta}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,,
+$$
+where $ \mathbb{P}_{\theta}(U_T^n = 1|\ts^n_{1:T})$ is parameterized by $\classifier$ and the predictive probability density $p_{\theta}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})$ is parameterized by $\predictor$ and the statistical model.
+Then, by \eqref{eq:score},
+\begin{multline*}
+\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \omega^n\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
++ (1-\omega^n)\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
+\end{multline*}
+The loss function is then given by
+$$
+\theta\mapsto - \omega^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})- (1-\omega^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
+$$
 A complete description of the training process can be found in Appendix.
 
 
