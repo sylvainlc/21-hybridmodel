@@ -169,13 +169,13 @@ To estimate this model, we introduce our new regime swithing error-corrector fra
 
 Let $\window \in \mathbb{N}$ be the window size, usually this window is equal to the forecast horizon $\window = \lag$. Consider the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnn^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
 $$
-\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} -\tspred^{stat,n}_{T-w+i|T-w}}{\meants^n_T}\,,
+\rnn^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} -\tspred^{stat,n}_{T-w+i|T}}{\meants^n_T}\,,
 $$
 where $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$.
 We use this sequence as input of  $\classifier$ and $\predictor$. %Write, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,H\}$, $\err^{n,T}_{T+i|T} = \ts^n_{T+i} - \etspred^{ets,n}_{T+i|T}$.
  Given $\rnnwindow^n_T$, the proposed regime swithing error-corrector reccurent model is given, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$, by :
 \begin{align*}
-\ts^n_{T+i}  &= \tspred^{stat,n}_{T-w+i|T-w} +  \hat{\hiddenregime}^n_T \cdot \hat{\remainder}^{n}_{T+i} + \varepsilon^n_{T+i}\,, \\
+\ts^n_{T+i}  &= \tspred^{stat,n}_{T-w+i|T} +  \hat{\hiddenregime}^n_T \cdot \hat{\remainder}^{n}_{T+i} + \varepsilon^n_{T+i}\,, \\
 \hat{\hiddenregime}^n_T &= \mathbf{1}_{\classifier(\rnnwindow^n_T) > \threshold}\,, \\
 \hat{\remainder}^{n}_{T+i} &= \predictor(\rnnwindow^n_T)_{T+i} \cdot \meants^n_T\,.
 \end{align*}
@@ -214,7 +214,7 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 %$$
 \begin{equation}
 \label{eq:full:model}
-\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T-w} +  \mathbf{1}_{\classifier(\fullconcatinput^n_T) > \threshold} \cdot \predictor(\fullconcatinput^n_T)_{T+i} \cdot \meants^n_T + \varepsilon^n_{T+i}\,,
+\ts^n_{T+i}  = \tspred^{stat,n}_{T-w+i|T} +  \mathbf{1}_{\classifier(\fullconcatinput^n_T) > \threshold} \cdot \predictor(\fullconcatinput^n_T)_{T+i} \cdot \meants^n_T + \varepsilon^n_{T+i}\,,
 \end{equation}
 An illustration of our proposed architecture is displayed in Figure~\ref{fig:architecture}.
 
@@ -668,56 +668,56 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 
 \section{Hidden regime algorithm}
 
-In our framework, we assume that our sequence are generated with a regime with 2 hidden regime. As this regime, noted $\hiddenregime$, is never observed, we can compute explicitely the following quantity : 
-%$p(\ts^n_{T+1:T+h}|\ts^n_{1:T})$
+In our framework, we assume that our sequence are generated with 2 hidden regime. As this regime, noted $\hiddenregime$, is never observed, we use the Expectation Maximization (EM) algorithm to write our loss function:
+We note $\rnnparam^{(t)} = \{\rnnparam_c^{(t)},\rnnparam_p^{(t)}\}$ the weights of $\classifier$ and of $\predictor$ at a fixed epoch $t$.
+
+As the EM algorithm, we want to compute the following value :
+
+\begin{align}
+\mathbb{Q}^n(\rnnparam|\rnnparam^{(t)}) &= \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h},\rnnparam^{(t)}\right]\ \\
+& = \sum_{U_T^n} p(U_T^n|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) \\
+& = \sum_{U_T^n} p(U_T^n|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \log[p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})]
+\end{align}
+
+where $ \mathbb{P}_{\theta}(U_T^n = 1|\ts^n_{1:T})$ is parameterized by $\classifier$ and the predictive probability density $p_{\theta}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})$ is parameterized by $\predictor$ and the statistical model.
+
+Write $\omega_{\rnnparam^{(t)}}^n = \mathbb{P}(U_T^n = 1|\ts^n_{1:T+h},\rnnparam^{(t)})$. We have:
+
+\begin{align*}
+\omega_{\rnnparam^{(t)}}^n &= \mathbb{P}_(U_T^n = 1|\ts^n_{1:T+h},\rnnparam^{(t)}) \\
+& =  \frac{p(\ts^n_{T+1:T+h},U_T^n = 1|\ts^n_{1:T},\rnnparam^{(t)})}{p_(\ts^n_{T+1:T+h}|\ts^n_{1:T})} \\
+& =  \frac{p(\ts^n_{T+1:T+h}|U_T^n = 1,\ts^n_{1:T},\rnnparam^{(t)}) \times p(U_T^n = 1|\ts^n_{1:T},\rnnparam^{(t)})}{\sum_{U_T^n}p(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T},\rnnparam^{(t)}) \times p(U_T^n|\ts^n_{1:T},\rnnparam^{(t)})}
+\end{align*}
+
+where , $\mathbb{P}(U_T^n=1|\ts^n_{1:T},\rnnparam^{(t)})$ is the output of $\classifier$ at epoch $t$ and the predictive probability density $p(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})$ is compute with the output of $\predictor$ at epoch $t$.
+
+To compute our final loss function, we have to define the predictive probability density $p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})$.
+
+In our model final equation~\ref{eq:full:model}, we assume that $\varepsilon^n_{T+i}$ are independent and follow a Laplace distribution.
+
+We have for the regime 0 :
+
+\begin{align*}
+p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) &= \prod_{i=1}^{h}\frac{1}{2b}e^{\frac{1}{b}|\ts^n_{T+i}  - \tspred^{stat,n}_{T+i|T}|} \\
+& = \frac{1}{(2b)^h}e^{\frac{1}{b}\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T+i|T}|}
+\end{align*}
+
+and for the regime 1 :
+\begin{align*}
+p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) &= \frac{1}{(2b)^h}e^{\frac{1}{b}\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T}-\meants^n_T \cdot \predictor(\fullconcatinput^n_T)_{T+i} |}
+\end{align*}
+
+with $b$ and constant that we fixed at $ \meants^n_T = \sum_{i = 1}^{w}  \ts^n_{T-w+i}/w$.
+
+Finally, we have all the values to compute the loss function :
+
+$$
+\theta\mapsto - \omega_{\rnnparam^{(t)}}^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})
+- (1-\omega_{\rnnparam^{(t)}}^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,, \\
+$$
+where no gradient is computed on $\omega_{\rnnparam^{(t)}}^n$. 
 
 
-%Based on the Expectation-Maximization (EM) algorithm and the Fisher's identity, we write a new algorithm to estimate jointly $\theta = \{\theta_p,\theta_c\}$, the weights of RNN-p and of RNN-c. 
-
-%During our training, we note $\theta^{(t)}$ the value of $\theta$ at an epoch $t$.
-
-
-%\begin{equation}
-%\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h}\right]\,,
-%\end{equation}
-
-\textcolor{red}{details to add in appendix.} \textcolor{red}{Assume that $\theta_p$ is the current value for the weights of the RNN-p and the RNN-c and write $\omega_p^n = \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T+h})$. Note that
-$$
-\omega_p^n \propto \mathbb{P}_{\theta_p}(U_T^n = 1|\ts^n_{1:T})p_{\theta_p}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\,.
-$$
-Then,
-\begin{multline*}
-\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h}|\ts^n_{1:T}) = \omega_p^n\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
-+ (1-\omega_p^n)\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,.
-\end{multline*}
-The loss function is then given by
-\begin{multline*}
-\theta\mapsto - \omega_p^n \log p_\theta(\ts^n_{T+1:T+h},U_T^n=1|\ts^n_{1:T})\\
-- (1-\omega_p^n) \log p_\theta(\ts^n_{T+1:T+h},U_T^n=0|\ts^n_{1:T})\,,
-\end{multline*} 
-where no gradient is computed on $\omega_p^n$. In both terms, $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ and $\log p_\theta(U_T^n=0|\ts^n_{1:T})$ are simply given by the output of the FFNN.  Choices for the model.
-\begin{itemize}
-\item In the case where the  $\varepsilon^n_{T+i}$ are Gaussian and independent, up to an additive constant
-$$
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w})^2
-$$
-and
-\begin{multline*}
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
- = -c\sum_{i=1}^{h}(\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i})^2\,.
-\end{multline*}
-Choice of $c$ ?
-\item In the case where the  $\varepsilon^n_{T+i}$ are Laplace and independent, up to an additive constant
-$$
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=0,\ts^n_{1:T}) = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w}|
-$$
-and
-\begin{multline*}
-\log p_\theta(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})\\
- = -c\sum_{i=1}^{h}|\ts^n_{T+i}  - \tspred^{stat,n}_{T-w+i|T-w} - \meants^n_T\times \rnnmodel(\fullconcatinput^n_T)_{T+i}|\,.
-\end{multline*}
-Choice of $c$ ?
-\end{itemize}}
 
 
 \section{Additional results, explorations and examples.}
