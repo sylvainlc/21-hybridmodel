@@ -675,8 +675,8 @@ As the EM algorithm, we want to compute the following value :
 
 \begin{align}
 \mathbb{Q}^n(\rnnparam|\rnnparam^{(t)}) &= \mathbb{E}\left[\nabla_\theta \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T})\middle|\ts^n_{1:T+h},\rnnparam^{(t)}\right]\ \\
-& = \sum_{U_T^n} p(U_T^n|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \log p_\theta(\ts^n_{T+1:T+h},U_T^n|\ts^n_{1:T}) \\
-& = \sum_{U_T^n} p(U_T^n|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \log[p_\theta(U_T^n|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n,\ts^n_{1:T})]
+& = \sum_{j} p(U_T^n = j|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \textcolor{red}{\nabla_\theta} \log p_\theta(\ts^n_{T+1:T+h},U_T^n = j|\ts^n_{1:T}) \\
+& = \sum_{j} p(U_T^n = j|\ts^n_{1:T+h},\rnnparam^{(t)}) \times \textcolor{red}{\nabla_\theta}\log[p_\theta(U_T^n = j|\ts^n_{1:T})p_\theta(\ts^n_{T+1:T+h}|U_T^n = j,\ts^n_{1:T})]
 \end{align}
 
 where $ \mathbb{P}_{\theta}(U_T^n = 1|\ts^n_{1:T})$ is parameterized by $\classifier$ and the predictive probability density $p_{\theta}(\ts^n_{T+1:T+h}|U_T^n=1,\ts^n_{1:T})$ is parameterized by $\predictor$ and the statistical model.
