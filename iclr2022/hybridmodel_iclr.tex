@@ -453,7 +453,10 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
      \textit{snaive} & 0.881 & - & 25.27 & - & 1. & -\\
      \textit{thetam}  & 0.844 & - & 24.17 & - & 0.970 & -\\
      \textit{arima} & 0.826 & - & 23.63 & - & 0.949 & -\\
+     \textit{ets} & 0.807 & - & 23.58 & - & 0.937 & -\\
+     \textit{hybrid-withws-ets} & 0.769 & 0.004 & 22.69 & 0.126 & 0.901 & 0.007\\
      \textit{stlm} & 0.770 & - & 22.05 & - & 0.882 & -\\
+     \textit{hybrid-nows-ets} & 0.759 & 0.001 & 22.16 & 0.026 & 0.875 & 0.001\\
      \textit{tbats} & 0.745 & - & 21.13 & - & 0.850 & -\\
      \textit{lstm-withws} & 0.728 & 0.004 & 20.18 & 0.085 & 0.837 & 0.004\\
      \textit{lstm-nows} & 0.724 & 0.003 & 20.08 & 0.052  & 0.825 & 0.004\\
@@ -474,6 +477,8 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
      \textit{snaive} & 0.871 & - & 25.29 & - & 1. & -\\
      \textit{thetam}  & 0.849 & - & 24.58 & - & 0.980 & -\\
      \textit{arima} & 0.821 & - & 23.69 & - & 0.951 & -\\
+     \textit{ets} & 0.801 & - & 24.18 & - & 0.944 & -\\
+     \textit{hybrid-nows-ets} & 0.768 & 0.002 & 22.91 & 0.111 & 0.902 & 0.005\\
      \textit{stlm} & 0.765 & - & 22.22 & - & 0.885 & -\\
      \textit{lstm-nows} & 0.740 & 0.007 & 20.56 & 0.154 & 0.856 & 0.008\\
      \textit{tbats} & 0.734 & - & 21.19 & - & 0.847 & -\\
@@ -501,6 +506,74 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
   \end{tabular}
 \label{tab:metricresults}
 \end{table*}
+
+
+
+\begin{table*}
+  \caption{\textit{tbats} model confusion matrix}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 327 & 1607 & 82 \\
+    true-flat-trend & 195 & 5586 & 232 \\
+    true-inc-trend & 68 & 1585 & 318 \\
+    \hline
+  \end{tabular}
+  \caption{\textit{hybrid} model confusion matrix}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 250 & 1747 & 19 \\
+    true-flat-trend & 131 & 5802 & 80 \\
+    true-inc-trend & 33 & 1639 & 299 \\
+    \hline
+  \end{tabular}
+  \caption{\textit{hybrid-withws} model confusion matrix}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 615 & 1365 & 36 \\
+    true-flat-trend & 510 & 5374 & 129 \\
+    true-inc-trend & 65 & 1444 & 462 \\
+    \hline
+  \end{tabular}
+\label{tab:tbatsclass}
+\end{table*}
+
+
+\begin{table*}
+  \caption{\textit{lstm} model confusion matrix}
+  \centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 447 & 1539 & 30 \\
+    true-flat-trend & 444 & 5324 & 245 \\
+    true-inc-trend & 66 & 1410 & 495 \\
+    \hline
+  \end{tabular}
+  \caption{\textit{lstm-withws} model confusion matrix}
+  %\centering
+  \begin{tabular}{llll}
+    \hline
+    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
+    \hline
+	true-dec-trend & 796 & 1161 & 59 \\
+    true-flat-trend & 1053 & 4701 & 259 \\
+    true-inc-trend & 90 & 1259 & 622 \\
+    \hline
+  \end{tabular}
+\label{tab:lstmclass}
+\end{table*}
+
+
 
 
 %We also compute for each method a confusion matrix on the increase/flat/decreasing classification task. Our two hybrid models show interesting results. They achieve a better accuracy by detecting new increasing/decreasing trends or reducing the number of huge errors, predicting the opposite change direction. For example \textit{rshm-tbats} divide by 2 the number of classification errors of its reference. Another interesting result is that \textit{lstm} predicts only flat trends.
