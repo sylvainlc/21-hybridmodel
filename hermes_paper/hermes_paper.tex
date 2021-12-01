@@ -8,6 +8,7 @@
 \usepackage{url}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\iclrfinalcopy
 %\setlength{\tabcolsep}{10pt}
 %\renewcommand{\arraystretch}{1.5}
 
@@ -311,14 +312,14 @@ With in-house fashion experts, we selected especially a collection of $\numberts
 
 
 \begin{table*}
-  \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male)}
+  \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male)\\}
   \label{sample-table}
   \centering
   \resizebox{0.85\width}{!}{
-  \begin{tabular}{l||llllllllll}
+  \begin{tabular}{l||lllllllll}
     %hline
     \\
-    &  \textbf{Top}  & \textbf{Pants} & \textbf{Short} & \textbf{Skirt} & \textbf{Dress} & \textbf{Coat} & \textbf{Shoes} & \textbf{Color} & \textbf{Texture} &  \\
+    &  \textbf{Top}  & \textbf{Pants} & \textbf{Short} & \textbf{Skirt} & \textbf{Dress} & \textbf{Coat} & \textbf{Shoes} & \textbf{Color} & \textbf{Texture}  \\
     \hline
     \hline
     \\
@@ -329,7 +330,7 @@ With in-house fashion experts, we selected especially a collection of $\numberts
      \textbf{Brazil} &  431/222 & 134/117 & 49/27 & 30/- &  28/- & 203/152 & 311/76 & 48/41 & 107/84\\
      \\
      %\hline
-     \textbf{Total} & 2078/1078 & 700/564 & 239/130 & 142/- & 118/- & 985/772 & 1528/396 & 214/216 & 459/381 & \textbf{\numberts}\\
+     \textbf{Total} & 2078/1078 & 700/564 & 239/130 & 142/- & 118/- & 985/772 & 1528/396 & 214/216 & 459/381\\
     %\hline
   \end{tabular}
   }
@@ -477,7 +478,7 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 
 For our 3 metrics and for each model, we compute the average on all our sequences \numberts on the final year. Results are displayed in the Table~\ref{tab:metricresults}. For our model using neural networks, we trained 10 models with different seeds and compute the average and the standard deviation for the three metrics. For the statistical models, we can see a large domination of the TBATS model with an OWA equal to 0.850. It is one of the main reasons why we use this model on one of our HERMES frameworks as the predictor model. However, we can see that the full LSTM model \textit{lstm} is the best model over our benchmark candidates with a OWA equal to 0.825.
 
-Considering our new HERMES approach, we see a large domination of our \textit{hermes-tbats} version with a OWA equal to 0.816 and a strong stability across the different trainings. Regarding \textit{hermes-ets}, we see a huge increase compared to its predictor choice \textit{ets} with a descrease from 0.937 to 0.875 in term of OWA. However, its accuracy remains low in comparison to the \textit{lstm} benchmarck or our HERMES's second version using Tbats. Some examples of forecast are given in the Figure~\ref{}. In Figure~\ref{}, we displayed some examples of our HERMES model and some weaknessess that it is able to understand and accurately correct.
+Considering our new HERMES approach, we see a large domination of our \textit{hermes-tbats} version with a OWA equal to 0.816 and a strong stability across the different trainings. Regarding \textit{hermes-ets}, we see a huge increase compared to its predictor choice \textit{ets} with a descrease from 0.937 to 0.875 in term of OWA. However, its accuracy remains low in comparison to the \textit{lstm} benchmarck or our HERMES's second version using Tbats. In Figure~\ref{fig:hybrid-examples}, we displayed some examples of our HERMES model and some weaknessess that it is able to understand and accurately correct.
 
 \begin{table*}
   \caption{Results summary on our 10000ts Fashion dataset. For each metric, we compute the average on all our time series. For our approaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.\\}
@@ -506,6 +507,13 @@ Considering our new HERMES approach, we see a large domination of our \textit{he
   }
 \label{tab:metricresults}
 \end{table*}
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.\linewidth]{figure/hybrid_model_examples}
+  \caption{\textit{hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our hermes hybrid model \textit{hermes-tbats}.}
+\label{fig:hybrid-examples}
+\end{figure}
 
 
 \textbf{10000 Heuritech Fashion time series classification task}
@@ -770,7 +778,7 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 
 \appendix
 
-\section{Fashion Dataset overview}
+\%section{Fashion Dataset overview}
 
 
 
@@ -828,7 +836,7 @@ With this first contribution, we join the first fashion dataset gathering \numbe
 
 
 
-\section{Additional results, explorations and examples.}
+%\section{Additional results, explorations and examples.}
 
 
 
