@@ -472,7 +472,139 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 %\textcolor{red}{Add a table with the results on the trends classifications used in Heuritech.}
 
 %\textcolor{blue}{Result on 1000ts}  \\
-%For our 3 metrics and for each model, we compute the average and standard deviation on all our sequences on the final year on the \numberts sequences. Results are shown in the Table ???.  
+
+\textbf{10000 Heuritech Fashion time series global accuracy}
+
+For our 3 metrics and for each model, we compute the average on all our sequences \numberts on the final year. Results are displayed in the Table~\ref{tab:metricresults}. For our model using neural networks, we trained 10 models with different seeds and compute the average and the standard deviation for the three metrics. For the statistical models, we can see a large domination of the TBATS model with an OWA equal to 0.850. It is one of the main reasons why we use this model on one of our HERMES frameworks as the predictor model. However, we can see that the full LSTM model \textit{lstm} is the best model over our benchmark candidates with a OWA equal to 0.825.
+
+Considering our new HERMES approach, we see a large domination of our \textit{hermes-tbats} version with a OWA equal to 0.816 and a strong stability across the different trainings. Regarding \textit{hermes-ets}, we see a huge increase compared to its predictor choice \textit{ets} with a descrease from 0.937 to 0.875 in term of OWA. However, its accuracy remains low in comparison to the \textit{lstm} benchmarck or our HERMES's second version using Tbats. Some examples of forecast are given in the Figure~\ref{}. In Figure~\ref{}, we displayed some examples of our HERMES model and some weaknessess that it is able to understand and accurately correct.
+
+\begin{table*}
+  \caption{Results summary on our 10000ts Fashion dataset. For each metric, we compute the average on all our time series. For our approaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.\\}
+  \centering
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llllllllll}
+   &&\multicolumn{2}{c}{\textbf{MASE}} && \multicolumn{2}{c}{\textbf{SMAPE}} && \multicolumn{2}{c}{\textbf{M4}}& \\
+    &&  \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} \\
+    \hline
+	\hline
+	\rule{0pt}{2ex} \\
+     \textit{snaive} && 0.881 & - && 25.27 & - && 1. & -\\
+     \textit{thetam}  && 0.844 & - && 24.17 & - && 0.970 & -\\
+     \textit{arima} && 0.826 & - && 23.63 & - && 0.949 & -\\
+     \textit{ets} && 0.807 & - && 23.58 & - && 0.937 & -\\
+     \textit{hermes-ets-ws} && 0.769 & 0.004 && 22.69 & 0.126 && 0.901 & 0.007\\
+     \textit{stlm} && 0.770 & - && 22.05 & - && 0.882 & -\\
+     \textit{hermes-ets} && 0.759 & 0.001 && 22.16 & 0.026 && 0.875 & 0.001\\
+     \textit{tbats} && 0.745 & - && 21.13 & - && 0.850 & -\\
+     \textit{lstm-ws} && 0.728 & 0.004 && 20.18 & 0.085 && 0.837 & 0.004\\
+     \textit{lstm} && 0.724 & 0.003 && 20.08 & 0.052  && 0.825 & 0.004\\
+     \textit{hermes-tbats-ws} && 0.713 & 0.005 && 20.53 & 0.170 && 0.825 & 0.009\\
+     \textbf{\textit{hermes-tbats}} && \textbf{0.715} & 0.002 && \textbf{20.41} & 0.056 && \textbf{0.816} & 0.002\\
+    %\hline
+  \end{tabular}
+  }
+\label{tab:metricresults}
+\end{table*}
+
+
+\textbf{10000 Heuritech Fashion time series classification task}
+
+An interesting constat is that models using our weak signals underperform their relative without-weak-signals models on all our 3 metrics. We see an exception for our \textit{hermes-tabts-ws} that slightly outperform it relative \textit{hermes-tabts} in term of MASE (0.713 compare to 0.715) but its not clearly significative compare to the standard deviation. The impact of our weak signal is reveal with our classification result.
+
+When we compare our classification results between the \textit{tbats} model and our hybrid method \textit{hermes-tbats} given in Table~\ref{tab:tbatsclass}, we note an impresive diminution of that we called an "unforgiveable error" : forecast an increase instead of a decrease and vice versa. We divide the number of this error by 3 with only a slightly decrease of the number of correct increase/decrease prediction. However, with our weak signals, we see that \textit{hermes-tbats-ws} is able to catch twice as much as its relative model without weak signal while keeping a relatively low number of "unforgivable error".
+
+When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Table~\ref{tab:lstmclass}, we can also note an rise of the number of correct prediction but with an important increase of the number of classification errors.
+
+
+\begin{table}
+  \caption{\textit{tbats}, \textit{hermes-tbats} and \textit{hermes-tbats-ws} models confusion matrix}
+  \vspace{0.2cm}
+  \centering
+  \vspace{0.2cm}
+  \par \textit{tbats} model confusion matrix\\
+  \vspace{0.2cm}
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llll}
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 327 & 1607 & 82 \\
+    true-flat && 195 & 5586 & 232 \\
+    true-inc && 68 & 1585 & 318 \\
+  \end{tabular}
+  }
+  \vspace{0.2cm}
+  \par \textit{hermes-tbats} model confusion matrix\\
+  \vspace{0.2cm}
+  \centering
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llll}
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 250 & 1747 & 19 \\
+    true-flat && 131 & 5802 & 80 \\
+    true-inc && 33 & 1639 & 299 \\\
+  \end{tabular}
+  }
+  \centering
+  \vspace{0.2cm}
+  \par \textit{hermes-tbats-ws} model confusion matrix\\
+  \vspace{0.2cm}
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llll}
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 615 & 1365 & 36 \\
+    true-flat && 510 & 5374 & 129 \\
+    true-inc && 65 & 1444 & 462 \\
+  \end{tabular}
+  }
+\label{tab:tbatsclass}
+\end{table}
+
+
+
+\begin{table*}
+  \caption{\textit{lstm} and \textit{lstm-ws} model confusion matrix}
+  \vspace{0.2cm}
+  \centering
+  \vspace{0.2cm}
+  \par \textit{lstm} model confusion matrix\\
+  \vspace{0.2cm}
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llll}
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 447 & 1539 & 30 \\
+    true-flat && 444 & 5324 & 245 \\
+    true-inc && 66 & 1410 & 495 \\
+  \end{tabular}
+  }
+  \centering
+  \vspace{0.2cm}
+  \par \textit{lstm-ws} model confusion matrix\\
+  \vspace{0.2cm}
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llll}
+   	&& pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 796 & 1161 & 59 \\
+    true-flat && 1053 & 4701 & 259 \\
+    true-inc && 90 & 1259 & 622 \\
+  \end{tabular}
+  }
+\label{tab:lstmclass}
+\end{table*}
 %Table~\ref{tab:metricresults} summarize the results of all our benchmark models and our 2 hybrid methods for the 3 metrics described above. Values are errors averaged over our \numberts on the test set. For the statistical models, we can see a large domination of the TBATS model with an OWA equal to 0.847. It is one of the main reasons why we use this model on one of our hybrid frameworks as the parametric model. However, we can see that the full LSTM model \textit{lstm} is the best model over our benchmark candidates. This result shows that, with a large dataset, deep learning models can outperform the traditional approaches on average. An example of prediction of all the benchmark methods is displayed in the Figure~\ref{fig:forecastexample}.Our two different regime switching hybrid models achieve a higher level of accuracy compared to their references. For the \textit{rshm-ets}, we pass from ??? for the \textit{ets} model alone to ???? for the hybrid model. Its $\classifier$ threshold $\threshold$ was fixed at ???. With this threshold, the error-corrector model correct ???? sequences of the $\numberts$. On these corrected time series, compared to the \textit{ets} approach, our approach MASE falls from ??? to ???. However \textit{rshm-ets} doesn't succeed at outperforming some of the benchmark models, for example \textit{tbats} of \textit{lstm}. The \textit{rshm-tbats} version clearly outperforms all the previous models. Based on a \textit{tbats} model, which already achieves an interesting level of accuracy, \textit{rshm-tbats} reach the higher level with a MASE equal to 0.728 and and the lower OWA equal to 0.840. With a threshold fixed at 0.5, this version of our hybrid framework corrects 294 TBATS predictions. On these 294 trends, the \textit{tbats} has an OWA equal to 0.867 and with the regime switching model correction, we reach an OWA equal to 0.845. An example of prediction of our two regime-switching hybrid recurrent model is presented in the Figure~\ref{fig:hybridforecast}. Other additional examples and results can be found in Appendix.
 
 %\begin{figure}
@@ -492,10 +624,15 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 %\label{fig:hybridforecast}
 %\end{figure}
 
+\textbf{Importance of the size of the dataset}
+
+In addition to our results on our fashion dataset gathering 10000 time series, we also investigate the behaviours of our HERMES model when it is trained on smaller dataset. We did 2 experiences, we train our models on a dataset of 1000 time series and on a dataset of 100 time series. Results are given in Table~\ref{tab:1000metricresults} and Table~\ref{tab:100metricresults}.
+
+With these investigations, we can make two remarks. First, our hybrid framework \textit{hermes-tbats} achieves the first position in term of global accuracy on both datasets. Due to the strengh of its per-time-series predictor TBATS, our hybrid model succeds at correcting some of its weaknesses and logically reach a striking final accuracy. Secondly, we can note that the accuracy of the full neural network \textit{lstm} decrease according to the dataset size. With a small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} can largely outperform its accuracy level. In fact, neural networks need a large amount of data to perform well on a complex task. However, with our hybrid framework, the neural network task is largely easier than create a full prediction from scratch. Consequently our approach needs less data to succeed at performing well.
+
 
 \begin{table*}
-  \caption{Results summary on our 10000ts Fashion dataset. For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
-  %\centering
+  \caption{Results summary on our 1000ts Fashion dataset.For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.\\}
   \centering
   \resizebox{1.2\width}{!}{
   \begin{tabular}{l||llllllllll}
@@ -503,256 +640,66 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
     &&  \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} \\
     \hline
 	\hline
-     \textit{snaive} && 0.881 & - && 25.27 & - && 1. & -\\
-     \textit{thetam}  && 0.844 & - && 24.17 & - && 0.970 & -\\
-     \textit{arima} && 0.826 & - && 23.63 & - && 0.949 & -\\
-     \textit{ets} && 0.807 & - && 23.58 & - && 0.937 & -\\
-     \textit{hybrid-withws-ets} && 0.769 & 0.004 && 22.69 & 0.126 && 0.901 & 0.007\\
-     \textit{stlm} && 0.770 & - && 22.05 & - && 0.882 & -\\
-     \textit{hybrid-nows-ets} && 0.759 & 0.001 && 22.16 & 0.026 && 0.875 & 0.001\\
-     \textit{tbats} && 0.745 & - && 21.13 & - && 0.850 & -\\
-     \textit{lstm-withws} && 0.728 & 0.004 && 20.18 & 0.085 && 0.837 & 0.004\\
-     \textit{lstm-nows} && 0.724 & 0.003 && 20.08 & 0.052  && 0.825 & 0.004\\
-     \textit{hybrid-withws} && 0.713 & 0.005 && 20.53 & 0.170 && 0.825 & 0.009\\
-     \textbf{\textit{hybrid-nows}} && \textbf{0.715} & 0.002 && \textbf{20.41} & 0.056 && \textbf{0.816} & 0.002\\
-    %\hline
+	\rule{0pt}{2ex} \\
+     \textit{snaive} && 0.871 & - && 25.29 & - && 1. & -\\
+     \textit{thetam}  && 0.849 & - && 24.58 & - && 0.980 & -\\
+     \textit{arima} && 0.821 & - && 23.69 & - && 0.951 & -\\
+     \textit{ets} && 0.801 & - && 24.18 & - && 0.944 & -\\
+     \textit{stlm} && 0.765 & - && 22.22 & - && 0.885 & -\\
+     \textit{lstm-nows} && 0.740 & 0.007 && 20.56 & 0.154 && 0.856 & 0.008\\
+     \textit{tbats} && 0.734 & - && 21.19 & - && 0.847 & -\\
+     \textbf{\textit{hybrid-nows}} && \textbf{0.719} & 0.002 && \textbf{20.79} & 0.094 && \textbf{0.833} & 0.004\\
   \end{tabular}
   }
-\label{tab:metricresults}
+\label{tab:1000metricresults}
 \end{table*}
-
-\begin{table*}
-  \caption{Results summary on our 1000ts Fashion dataset.For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
-  \centering
-  \begin{tabular}{lllllll}
-    \hline
-    &  MASE-mean  & MASE-std & SMAPE-mean & SMAPE-std & OWA-mean & OWA-std  \\
-    \hline
-     \textit{snaive} & 0.871 & - & 25.29 & - & 1. & -\\
-     \textit{thetam}  & 0.849 & - & 24.58 & - & 0.980 & -\\
-     \textit{arima} & 0.821 & - & 23.69 & - & 0.951 & -\\
-     \textit{ets} & 0.801 & - & 24.18 & - & 0.944 & -\\
-     \textit{hybrid-nows-ets} & 0.768 & 0.002 & 22.91 & 0.111 & 0.902 & 0.005\\
-     \textit{stlm} & 0.765 & - & 22.22 & - & 0.885 & -\\
-     \textit{lstm-nows} & 0.740 & 0.007 & 20.56 & 0.154 & 0.856 & 0.008\\
-     \textit{tbats} & 0.734 & - & 21.19 & - & 0.847 & -\\
-     \textit{hybrid-nows} & 0.719 & 0.002 & 20.79 & 0.094 & 0.833 & 0.004\\
-    \hline
-  \end{tabular}
-\label{tab:metricresults}
-\end{table*}
-
-\begin{table*}
-  \caption{Results summary on our 100ts Fashion dataset. For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
-  \centering
-  \begin{tabular}{lllllll}
-    \hline
-    &  MASE-mean  & MASE-std & SMAPE-mean & SMAPE-std & OWA-mean & OWA-std  \\
-    \hline
-     \textit{snaive} & 0.876 & - & 26.98 & - & 1. & -\\
-     \textit{thetam}  & 0.823 & - & 25.11 & - & 0.944 & -\\
-     \textit{arima} & 0.814 & - & 24.61 & - & 0.940 & -\\
-     \textit{lstm-nows} & 0.767 & 0.045 & 22.22 & 0.848 & 0.877 & 0.051\\
-     \textit{stlm} & 0.742 & - & 23.03 & - & 0.863 & -\\
-     \textit{tbats} & 0.745 & - & 22.16 & - & 0.856 & -\\
-     \textit{hybrid-nows} & 0.739 & 0.003 & 22.31 & 0.083 & 0.845 & 0.003\\
-    \hline
-  \end{tabular}
-\label{tab:metricresults}
-\end{table*}
-
-
-
-\begin{table*}
-  \caption{\textit{tbats} model confusion matrix}
-  \centering
-  \begin{tabular}{llll}
-    \hline
-    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-    \hline
-	true-dec-trend & 327 & 1607 & 82 \\
-    true-flat-trend & 195 & 5586 & 232 \\
-    true-inc-trend & 68 & 1585 & 318 \\
-    \hline
-  \end{tabular}
-  \caption{\textit{hybrid} model confusion matrix}
-  \centering
-  \begin{tabular}{llll}
-    \hline
-    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-    \hline
-	true-dec-trend & 250 & 1747 & 19 \\
-    true-flat-trend & 131 & 5802 & 80 \\
-    true-inc-trend & 33 & 1639 & 299 \\
-    \hline
-  \end{tabular}
-  \caption{\textit{hybrid-withws} model confusion matrix}
-  \centering
-  \begin{tabular}{llll}
-    \hline
-    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-    \hline
-	true-dec-trend & 615 & 1365 & 36 \\
-    true-flat-trend & 510 & 5374 & 129 \\
-    true-inc-trend & 65 & 1444 & 462 \\
-    \hline
-  \end{tabular}
-\label{tab:tbatsclass}
-\end{table*}
-
-
-\begin{table*}
-  \caption{\textit{lstm} model confusion matrix}
-  \centering
-  \begin{tabular}{llll}
-    \hline
-    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-    \hline
-	true-dec-trend & 447 & 1539 & 30 \\
-    true-flat-trend & 444 & 5324 & 245 \\
-    true-inc-trend & 66 & 1410 & 495 \\
-    \hline
-  \end{tabular}
-  \caption{\textit{lstm-withws} model confusion matrix}
-  %\centering
-  \begin{tabular}{llll}
-    \hline
-    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-    \hline
-	true-dec-trend & 796 & 1161 & 59 \\
-    true-flat-trend & 1053 & 4701 & 259 \\
-    true-inc-trend & 90 & 1259 & 622 \\
-    \hline
-  \end{tabular}
-\label{tab:lstmclass}
-\end{table*}
-
-
-
-
-%We also compute for each method a confusion matrix on the increase/flat/decreasing classification task. Our two hybrid models show interesting results. They achieve a better accuracy by detecting new increasing/decreasing trends or reducing the number of huge errors, predicting the opposite change direction. For example \textit{rshm-tbats} divide by 2 the number of classification errors of its reference. Another interesting result is that \textit{lstm} predicts only flat trends.
- 
-%\begin{table*}
-%  \caption{\textit{ets} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 43 & 145 & 20 \\
-%    true-flat-trend & 43 & 544 & 34 \\
-%    true-inc-trend & 16 & 122 & 33 \\
-%    \hline
-%  \end{tabular}
-%  \caption{\textit{rshm-ets} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 0 & 0 & 0 \\
-%    true-flat-trend & 0 & 0 & 0 \\
-%    true-inc-trend & 0 & 0 & 0 \\
-%    \hline
-%  \end{tabular}
-%  \caption{\textit{rshm-ets-ws} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 0 & 0 & 0 \\
-%    true-flat-trend & 0 & 0 & 0 \\
-%    true-inc-trend & 0 & 0 & 0 \\
-%    \hline
-%  \end{tabular}
-%\label{tab:etsclass}
-%\end{table*}
 
 %\begin{table*}
-%  \caption{\textit{tbats} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 33 & 167 & 8 \\
-%    true-flat-trend & 21 & 578 & 22 \\
-%    true-inc-trend & 7 & 136 & 28 \\
-%    \hline
-%  \end{tabular}
-%  \caption{\textit{rshm-tbats} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 27 & 174 & 7 \\
-%    true-flat-trend & 11 & 597 & 13 \\
-%    true-inc-trend & 5 & 140 & 26 \\
-%    \hline
-%  \end{tabular}
-%  \caption{\textit{rshm-tbats-ws} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 26 & 171 & 11 \\
-%    true-flat-trend & 17 & 579 & 25 \\
-%    true-inc-trend & 3 & 136 & 32 \\
-%    \hline
-%  \end{tabular}
-%\label{tab:tbatsclass}
-%\end{table*}
-
-%\begin{table*}
-%  \caption{\textit{lstm} model confusion matrix}
-%  \centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 0 & 208 & 0 \\
-%    true-flat-trend & 0 & 621 & 0 \\
-%    true-inc-trend & 0 & 171 & 0 \\
-%    \hline
-%  \end{tabular}
-%  \caption{\textit{lstm-ws} model confusion matrix}
-%  %\centering
-%  \begin{tabular}{llll}
-%    \hline
-%    &  dec-trend-pred  & flat-trend-pred & inc-trend-pred  \\
-%    \hline
-%	true-dec-trend & 1 & 205 & 2 \\
-%    true-flat-trend & 2 & 619 & 0 \\
-%    true-inc-trend & 0 & 168 & 3 \\
-%    \hline
-%  \end{tabular}
-%\label{tab:lstmclass}
-%\end{table*}
-
-%The Table~\ref{tab:metricresultsws},Table~\ref{tab:etsclass} and Table~\ref{tab:tbatsclass} presents how our candidates are able to understand and leverage our weak signals in terms of accuracy and classification. The full lstm approach shows a slight increase, from 0.872 to 0.867 for the OWA metric, and correctly predicts 4 increasing/decreasing trends. \textcolor{blue}{No for now, WIP} A real improvement is shown by our proposed regime switching framework. With a threshold fixed at 0.465, this version of our hybrid framework corrects 118 TBATS predictions. On these 118 trends,   the \textit{tbats} has an OWA equal to 0.893 and with the regime switching model correction, we reach an OWA equal to 0.868.
-
-
-%\begin{table*}
-%  \caption{Results summary on our Fashion dataset. We compare methods without our weak signal and than method but train with our weak signals as an additional input}
+%  \caption{Results summary on our 1000ts Fashion dataset.For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
 %  \centering
 %  \begin{tabular}{lllllll}
 %    \hline
 %    &  MASE-mean  & MASE-std & SMAPE-mean & SMAPE-std & OWA-mean & OWA-std  \\
 %    \hline
-%     \textit{lstm} & 0.765 & 0.278 & 21.00 & 11.42 & 0.872 & 0.160\\
-%     \textit{rshm-ets} & 0. & 0. & . & . & . & 0.\\
-%     \textit{\textbf{rshm-tbats}} & 0.728 & 0.245 & 21.02 & 13.54 & 0.840 & 0.159\\
-%    \hline
-%     \textit{lstm-ws} & 0.758 & 0.271 & 20.89 & 11.46 & 0.867 & 0.163\\
-%     \textit{rshm-ets-ws} & 0. & 0. & . & . & . & 0.\\
-%     \textit{\textbf{rshm-tbats-ws}} & 0.731 & 0.248 & 21.10 & 13.53 & 0.844 & 16.23\\
+%     \textit{snaive} & 0.871 & - & 25.29 & - & 1. & -\\
+%     \textit{thetam}  & 0.849 & - & 24.58 & - & 0.980 & -\\
+%     \textit{arima} & 0.821 & - & 23.69 & - & 0.951 & -\\
+%     \textit{ets} & 0.801 & - & 24.18 & - & 0.944 & -\\
+%     \textit{hybrid-nows-ets} & 0.768 & 0.002 & 22.91 & 0.111 & 0.902 & 0.005\\
+%     \textit{stlm} & 0.765 & - & 22.22 & - & 0.885 & -\\
+%     \textit{lstm-nows} & 0.740 & 0.007 & 20.56 & 0.154 & 0.856 & 0.008\\
+%     \textit{tbats} & 0.734 & - & 21.19 & - & 0.847 & -\\
+%     \textit{hybrid-nows} & 0.719 & 0.002 & 20.79 & 0.094 & 0.833 & 0.004\\
 %    \hline
 %  \end{tabular}
-%\label{tab:metricresultsws}
+%\label{tab:metricresults}
 %\end{table*}
+\begin{table*}
+  \caption{Results summary on our 100ts Fashion dataset. For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.\\}
+  \centering
+  \resizebox{1.2\width}{!}{
+  \begin{tabular}{l||llllllllll}
+   &&\multicolumn{2}{c}{\textbf{MASE}} && \multicolumn{2}{c}{\textbf{SMAPE}} && \multicolumn{2}{c}{\textbf{M4}}& \\
+    &&  \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} && \textit{mean}  & \textit{std} \\
+    \hline
+	\hline
+	\rule{0pt}{2ex} \\
+     \textit{snaive} && 0.876 & - && 26.98 & - && 1. & -\\
+     \textit{thetam}  && 0.823 & - && 25.11 & - && 0.944 & -\\
+     \textit{arima} && 0.814 & - && 24.61 & - && 0.940 & -\\
+     \textit{lstm-nows} && 0.767 & 0.045 && 22.22 & 0.848 && 0.877 & 0.051\\
+     \textit{stlm} && 0.742 & - && 23.03 & - & 0.863 & -\\
+     \textit{tbats} && 0.745 & - && 22.16 & - & 0.856 & -\\
+     \textbf{\textit{hybrid-nows}} && \textbf{0.739} & 0.003 && \textbf{22.31} & 0.083 && \textbf{0.845} & 0.003\\
+  \end{tabular}
+  }
+\label{tab:100metricresults}
+\end{table*}
+
+
+%The Table~\ref{tab:metricresultsws},Table~\ref{tab:etsclass} and Table~\ref{tab:tbatsclass} presents how our candidates are able to understand and leverage our weak signals in terms of accuracy and classification. The full lstm approach shows a slight increase, from 0.872 to 0.867 for the OWA metric, and correctly predicts 4 increasing/decreasing trends. \textcolor{blue}{No for now, WIP} A real improvement is shown by our proposed regime switching framework. With a threshold fixed at 0.465, this version of our hybrid framework corrects 118 TBATS predictions. On these 118 trends,   the \textit{tbats} has an OWA equal to 0.893 and with the regime switching model correction, we reach an OWA equal to 0.868.
+
+
 
 
 %In a first place, Table 2 shows the final accuracy of the statistical models, the LSTM model and our 2 hybrid models without external data. Even without the weak signals, our 2 hybrid approaches largely outperform the statistical references. The multiplicative model show the best accuracy with a OWA equal to 0.875. We can note that the additive model slightly under-performs the traditional multiplicative one on average. This doesn't show a weakness of the additive version but more that a large part of our dataset is more-suited for multiplicative modelization. At the end, the strength of training both methods, additive and multiplicative, is in the final porposed ensembling \textit{ensembling} that combines the two approaches with the FForma ensembling.
@@ -762,15 +709,12 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 %In a third place, table 4 presents the result of our inference process. We split our dataset in five equal parts of 2800 sequences and hide the last year for each trends. Then, like a cross validation, we train a model on 4 parts and compute its accuracy on the last one on the last year. The model never saw the last part so we use our inference process to compute predictions. With a permutation of the parts, we can repeat the process and train 5 models, each trained on a specific pool of 4 parts and tested on the remaining part of the dataset. For each hybrid model (additive/multiplicative with and without weak signals) Table 4 shows the average accuracy and the Standard Deviation of the 5 trained hybrid models. We can see that our inference process achieve really accurate results and practically the same that our hybrid models trained on the entire dataset. These results prove that, even without having seen a sequence during the training, if the time series share same behaviours that the training sample, our hybrid approaches can perfectly compute accurate predictions. Furthermore, the Standard Deviation is really low for all our metrics. This result shows that our hybrid framework is robust and reach constant accuracy level on large dataset.
 
 
-%With our results, we can make two interesting conclusions. Firstly, the regime switching hybrid framework is a really promising framework. By mixing the performance of local parametric models and a global DNN, our two versions clearly outperform traditional statistical methods. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our two models succeed at leveraging our complex extra data and reach an impressive accuracy levels. Secondly, our results bring to light the quality of our new Fashion dataset. We saw that the full LSTM model \textit{lstm} outperforms all time series specific models. This show that our dataset is well suited to train complex neural network architectures able to learn information cross sequences. With the addition of our weak signals, we give a totally new dimension to our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by DNN architecture. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting. 
-
-
 \subsection{Discussion}
 \label{sec:discussion}
 
 %With our results, we can make two interesting conclusions. Firstly, the regime switching hybrid framework is a really promising framework. By mixing the performance of local parametric models and a global DNN, our two versions clearly outperform traditional statistical methods. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our two models succeed at leveraging our complex extra data and reach impressive accuracy levels. Secondly, our results bring to light the quality of our new Fashion dataset. We saw that the full LSTM model \textit{lstm} outperforms all time series specific models. This shows that our dataset is well suited to train complex neural network architectures able to learn information cross sequences. With the addition of our weak signals, we give a totally new dimension to our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by DNN architecture. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting.
 
-With our results, we can make two interesting conclusions. Firstly, the regime switching hybrid framework is a really promising framework. By mixing the performance of local parametric models and a global DNN, our two versions clearly outperform traditional statistical methods. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our two models succeed at leveraging our complex extra data and reach impressive accuracy levels. Secondly, our results bring to light the quality of our new Fashion dataset. We saw that the full LSTM model \textit{lstm} outperforms all time series specific models. This shows that our dataset is well suited to train complex neural network architectures able to learn information cross sequences. With the addition of our weak signals, we give a totally new dimension to our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by DNN architecture.
+With our results, we can make several interesting conclusions. Firstly, our new HERMES hybrid framework is a really promising framework. By mixing the performance of local parametric models and a global DNN, our \textit{hermes-tbats} version clearly outperform traditional statistical methods and full neural network models. Furthermore, this framework is totally suited for dealing with external signals. With a fine pre-processing and a well-designed architecture, our hybrid framework succeed at leveraging our complex extra data and reach impressive accuracy level in term of classification. Secondly, our results bring to light the quality of our new Fashion dataset. We saw that the full LSTM model \textit{lstm} outperforms all time series specific models when it is trained with the biggest dataset of 10000 time series but not with the smaller ones. This shows that complex neural network architectures involve large amount of data to be train and our full dataset is well suited for this. Finally, with the addition of our weak signals, we give a totally new dimension to our new hybrid architecture and our fashion dataset. Our results show that our external weak signals hide a complex but usable predictive power by our HERMES model. However, we believe that it remains a lot of ways to explore in order to leverage the full potential of these chaotic signals.
 
 %\begin{table*}
  % \caption{Comparison between our hybrid models without and with our external weak signals, (Mean/Median)}
@@ -816,9 +760,9 @@ With our results, we can make two interesting conclusions. Firstly, the regime s
 \label{sec:conclusion}
 %In this paper, we propose the first hybrid model including external weak signals for time series forecasting. We show that hybrid framework is a really promising way. With its extended error-corrector DNN part, it is clearly well-suited for dealing with any kind of external signals in order to correct weaknesses of first parametric models. Furthermore, With our additive version, we show that the hybrid model is not frozen in it original form. Thereby, future research explorations would be to improve its framework with new per-time-series approaches and test new error-corrector DNN part like the recent Transformer model.
 
-In this paper, we propose the first hybrid model including external weak signals for time series forecasting. We show that hybrid framework is a really promising way. With its extended error-corrector DNN part, it is clearly well-suited for dealing with any kind of external signals in order to correct weaknesses of first parametric models. Furthermore, With our general framework, we show that the hybrid model is able to include any kind of any per-time-series models. Thereby, future research explorations would be to evaluate its framework with different per-time-series approaches and understand relationships between first parametric model choice and final hybrid model accuracy. For our regime switching recurrent error-corrector, we assumed the existence of only 2 regimes. A logical exploration would be to extend our framework with multiple regimes: change the binary RNN classifier to a multi-label classifier and train several regime-specialized RNN predictors.
+In this paper, we propose the first hybrid model including external weak signals for time series forecasting. We show that hybrid framework is a really promising way and with its extended error-corrector DNN part, it is clearly well-suited for dealing with any kind of external signals. Furthermore, our general framework shows that the hybrid model is able to include any kind of any per-time-series models. Depending of the use cases, the nature of the observed time series, users can choose the best parametric models, correct some of its weaknessess and finally increase its accuracy with the HERMES framework. Thereby, future research explorations would be to evaluate its framework with a large collection of per-time-series approaches and understand relationships between first parametric model choice and final hybrid model accuracy. Is it the best parametric model always the best choice in our HERMES framework ? A other promising exploration would be to challenge the error-corrector DNN model with an other one using Transformer or a collection of DNN specialized on specific kind of weaknessess.
 
-With this first contribution, we join the first fashion dataset gathering \numberts\ mode times series and a complex collection of extra signals. We believe that this dataset hide really fine dynamics and interactions where complex models would express their potential. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting and pave the way for further explorations.
+With this first contribution, we join the first fashion dataset gathering \numberts\ fashion times series and a complex collection of external signals. We believe that this dataset hide really fine dynamics and interactions where complex models would express their potential. By making it publicly available, we hope that it will enhance the set of datasets for time series forecasting and pave the way for further explorations.
 
 
 \bibliography{hermes_paper}
