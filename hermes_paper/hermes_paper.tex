@@ -160,8 +160,8 @@ In the specific application of fashion trends prediction, we detected and define
 
 \subsection{Error-corrector recurrent model}
 
-At this stage, we want to train a global RNN, trained on all the N sequences and able to understand and correct the weaknesses of the first per-time-series parametric models. This task requires a thorough data pre-processing for two main reasons. Firstly, we want to give to the RNN the best input in order to understand the initial collection of forecasts and predict their future errors. Secondly, as we did not suppose any assumption about the scale of our time series, we have to carefully normalize them before feeding our RNN with.
-In this way, we define the following pre-processing :
+The second part of our model is a global RNN, trained on all the $N$ sequences to correct the weaknesses of the first per-time-series parametric models. This task requires a thorough data pre-processing for two main reasons. First, we provide  to the RNN the best input in order to understand the initial collection of forecasts and predict their future errors. Second, as we did not make any assumption about the scale of our time series, we have to carefully normalize them before feeding them to the RNN.
+Consider the following pre-processing. 
 %At this stage, we can write that for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 %$$
 %\ts^n_{T+i} = \tspred^{stat,n}_{T+i|T} + \varepsilon^n_{T+i}\,,
@@ -187,11 +187,11 @@ In this way, we define the following pre-processing :
 
 Let $\window \in \mathbb{N}$ be the window size, usually this window is proportional to the forecast horizon $\window \propto \lag$. We define as our RNN input the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnninput^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$, where, for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$, 
 $$
-\rnninput^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} -\tspred^{pred,n}_{T+i|T}}{\meants^n_T}\,,
+\rnninput^{n,T}_{T-w+i|T} = \frac{\ts^n_{T-w+i} -\tspred^{pred,n}_{T+i|T}}{\meants^n_T}\,,\quad\mbox{where}\quad \meants^n_T = \frac{1}{w}\sum_{i = 1}^{w}\ts^n_{T-w+i}\,.
 $$
-where $ \meants^n_T = \frac{1}{w}\sum_{i = 1}^{w}\ts^n_{T-w+i}$.
 
-We note $\rnn(.;\rnnparam)$ the recurrent neural network model where $\rnnparam$ are  unknown parameters. Given the RNN input sequences $\{\rnnwindow^n_T\}_{1\leqslant n \leqslant N}$ and the global RNN estimated parameters $\{\rnnparam\}$, the error-corrector predictions $\{\tspred^{corr,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+
+We note $\rnn(.;\rnnparam)$ the recurrent neural network model where $\rnnparam$ are  unknown parameters. Given the RNN input sequences $\{\rnnwindow^n_T\}_{1\leqslant n \leqslant N}$ and the global RNN estimated parameters $\rnnparam$, the error-corrector predictions $\{\tspred^{corr,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 $$
 \tspred^{corr,n}_{T+i|T} = \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\ \,.
 $$
@@ -238,8 +238,7 @@ Our hybrid model forecast is finally given, for all $1\leqslant n \leqslant N$ a
 
 \subsection{Weak signal}
 
-Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset. Then, for the second form of weakness, the shared recurrent neural network relies on the strength of machine learning methods at leveraging a huge quantities of heterogeneous data.
-In addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
+Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset, \textcolor{red}{see Table~XXX}. Then, to correct the second form of weakness, in addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
 $$
 \fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}= \{\rnninput^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 $$
