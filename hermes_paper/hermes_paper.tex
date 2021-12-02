@@ -301,6 +301,9 @@ We provide the first dataset dedicated to fashion trends forecasting. Our fashio
 
 With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
 
+\medskip
+\textcolor{red}{Est-ce pertinent de decrire les outils de computer vision utilises pour construire le jeu de donnees ? Ou de decrire plus precisement la nature des $y$ consideres ? De }
+
 %With only the historical data, predict this breaking point is challenging and some time impossible. 
 
 %a large part of this One central point is to accurately detect and forecast these trends. 
@@ -388,17 +391,18 @@ As an example, an impressive emerging fashion trend is represented in Figure~\re
 \subsection{Training}
 
 To train our hybrid model, we split our dataset into three blocks, train, eval and test sets. We use the 3 first years as our train set, we keep the 4th year for our eval set and we hide the last year for our test set. We train our hyrid model to compute a one-year ahead prediction, $\lag$ equal to 52, and we set the window size $\window$ equal to 104.
-Using the two first year of our train set, we fit a first per-time-series parametric model for each time series. With the resulting collection of local models, we compute a first forecast of the third year for each sequence. Using these forecasts, we preprocess our time series and finally determine our RNN inputs. We can, then, train our RNN at understanding and correcting the previous collection of parametric model's forecasts. In the same way, for the eval set, we fit a second time our per-time-series predictors using the three first years and we forecast the fourth year. We preprocess our time series and we evaluate how our error-corrector RNN is able to improve the first collection of predictions of the fourth year.
+Using the two first year of our train set, we fit a first per-time-series parametric model for each time series. With the resulting collection of local models, we compute a first forecast of the third year for each sequence. Using these forecasts, we preprocess our time series and finally determine our RNN inputs. In the same way, for the eval set, we fit a second time our per-time-series predictors using the three first years and we forecast the fourth year. We preprocess our time series and we evaluate how our error-corrector RNN is able to improve the first collection of predictions of the fourth year.
 At the end, we repeat the same process for the fifth year and compute our final accuracy measures. An example of our temporal split is shown in  Figure~\ref{fig:train_eval_test_set}.
 %We train our hyrid model to compute a one-year ahead prediction with $\window$ equal to 104 and a $\lag$ equal to 52. For each time series, we fitted 3 per-time-series parametric models: We fit the first one using the 2 first years and compute a forecast of the thrid year. 
 
 %In order to increase our train set, we use a moving window that provide 53 input/output couples per sequences, being 530000 couples in total. 
 
-For the first parametric per-time-series models, we used existing Python or R librarys to estimate the different parameters $\statparam^n$. During the M4 competition, parameters of the exponential smoothing of the porposed hybrid model could move during the training. In our framework,
-$\{\statparam^n\}_{1\leqslant n \leqslant N}$ are fixed during the training of the recurrent models. In this section we propose two versions of HERMES depending of the choice of local parametric models. The first one use as predictors an additive exponential smoothing model as a reference close to \cite{smyl2020hybrid}. The second one use as predictors the TBATS model of \cite{doi:10.1198/jasa.2011.tm09771} and  achieves striking accuracy results on our fashion dataset. For the neural network part, we built an architecture summarized in Figure~\ref{fig:rnn_architecture}. It is composed of 3 LSTM layer of shape 50 and a final Dense layer to provide the correct output dimension. We use a classical Adam optimizer with a learning rate equal to 0.005 and a batch size equal to 64. For our loss function, we tested several metrics and we finally converged on the following one :
+For the first parametric per-time-series models, we used existing Python or R libraries to estimate the different parameters $\statparam^n$. %During the M4 competition, parameters of the exponential smoothing of the porposed hybrid model could move during the training. In our framework,
+%$\{\statparam^n\}_{1\leqslant n \leqslant N}$ are fixed during the training of the recurrent models. 
+In this section we propose two versions of HERMES depending of the choice of local parametric models. The first one use as predictors an additive exponential smoothing model as a reference close to \cite{smyl2020hybrid}. The second one use as predictors the TBATS model of \cite{doi:10.1198/jasa.2011.tm09771} and  achieves striking accuracy results on our fashion dataset. For the neural network part, we built an architecture summarized in Figure~\ref{fig:rnn_architecture}. It is composed of 3 LSTM layer of shape 50 and a final Dense layer to provide the correct output dimension \textcolor{red}{Peut-on discuter/justifier ce choix ?}. We use a classical Adam optimizer with a learning rate equal to 0.005 and a batch size equal to 64 and the following loss function:
 
 $$
-l(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|}{\meants^n_T}
+\ell(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
 $$
 %
 
