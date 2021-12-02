@@ -528,7 +528,7 @@ Considering our new HERMES approach, we see a large domination of our \textit{he
 
  The impact of our weak signal is revealed with our classification results. Classification results between the \textit{tbats} model and our hybrid method \textit{hermes-tbats} are given in Table~\ref{tab:tbatsclass}, we note an impresive decrease of impactful errors: forecast an increase instead of a decrease and vice versa. Our \textit{hermes-tbats} divides  by 3 tis error rate in comparison to \textit{tbats} with only a slightly decrease of the number of correct increase/decrease predictions. However, with our weak signals, we see that \textit{hermes-tbats-ws} is able to catch twice as much as its relative model without weak signal while keeping a relatively low number of errors.
 
-When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Table~\ref{tab:lstmclass}, we can also note an rise of the number of correct prediction but with an important increase of the number of classification errors.
+When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Table~\ref{tab:lstmclass}, we can also note a rise of the number of correct predictions but with an important increase of the number of classification errors.
 
 
 \begin{table}
@@ -630,9 +630,9 @@ When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Ta
 
 \textbf{Importance of the size of the dataset}
 
-In addition to our results on our fashion dataset gathering 10000 time series, we also investigate the behaviours of our HERMES model when it is trained on smaller datasets. We did 2 experiences, we train our models on a dataset of 1000 time series and on a dataset of 100 time series. Results are given in Table~\ref{tab:1000metricresults} and Table~\ref{tab:100metricresults}.
+In addition to our results on our fashion dataset gathering 10000 time series, we also investigate the behaviours of our HERMES model when it is trained on smaller datasets. We did 2 experiments, we train our models on a dataset of 1000 time series and on a dataset of 100 time series. Results are given in Table~\ref{tab:1000metricresults} and Table~\ref{tab:100metricresults}.
 
-With these investigations, we can make two important remarks. First, our hybrid framework \textit{hermes-tbats} achieves the first position in term of global accuracy on both datasets. Due to the strengh of its per-time-series predictor TBATS, our hybrid model succeds at correcting some of its weaknesses and logically reach a striking final accuracy. Secondly, we can note that the accuracy of the full neural network \textit{lstm} decrease according to the dataset size. With a small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} can largely outperform its accuracy level. In fact, learn how to compute a full prediction from scratch is a complex task and for a neural network, it evolves a large amout of data. Nevertheless, with our hybrid framework, the RNN task is largely simplify. Our achitectures logicaly needs less data to be train and perform well.
+With these investigations, we can make two important remarks. First, our hybrid framework \textit{hermes-tbats} achieves the first position in term of global accuracy on both datasets. Due to the strengh of its per-time-series predictor TBATS, our hybrid model succeds at correcting some of its weaknesses and logically reach a striking final accuracy. Secondly, we can note that the accuracy of the full neural network \textit{lstm} decreases when the dataset size is smaller. With a small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} can largely outperform its accuracy level. Learn how to compute a full prediction from scratch is a complex task and high-dimensional recurrent neural networks require  large amount of data. Nevertheless, with our hybrid framework, the RNN task is largely simplified. Our achitectures logicaly needs less data to be trained and to perform well.
 
 
 \begin{table*}
