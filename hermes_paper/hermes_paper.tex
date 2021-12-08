@@ -8,6 +8,7 @@
 \usepackage{url}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \iclrfinalcopy
 %\setlength{\tabcolsep}{10pt}
 %\renewcommand{\arraystretch}{1.5}
@@ -135,9 +136,27 @@ $$
 
 During the M4 competition, the hybrid model of \cite{smyl2020hybrid} was based on a multiplicative exponential smoothing model as the time-series-specific predictor. However, on sporadic time series, this choice leads to poor result and instability. In this paper, we provide a general framework able to deal with any kind of per-time-series models. In Section~\ref{sec:exp}, we present two versions of our framework. The first one use an  exponential smoothing as reference similar to the baseline \cite{smyl2020hybrid} and the second one use a TBATS model \cite{doi:10.1198/jasa.2011.tm09771} which provides better results as this parametric model includes  Fourier representations with time varying coefficients, and ARMA error correction. %The main complexity is in the next stage: training a global RNN corrector to improve the per-time-series statistical models when the parametric models start showing weaknesses.
 
-In the specific application of fashion trends prediction, we detected and defined two main forms of standard weaknesses for a univariate parametric forecast as defined above. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provide good predictions on time series with additive seasonality but show difficulties with multiplicative one. The second form, harder to detect and correct, is the weakness of information. For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In somes cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that we mainly unknow the exact influence of external variables on the main signal. It is on this point that our new hybrid framework shows its true potential: introduce a global RNN trained on all the time series and able to consider and leverage external signals.
+In the specific application of fashion trends prediction, we detected and defined two main forms of standard weaknesses for a univariate parametric forecast as defined above. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provide good predictions on time series with additive seasonality but show difficulties with multiplicative one. The second form, harder to detect and correct, is the weakness of information. For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In somes cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that we mainly unknow the exact influence of external variables on the main signal. It is on this point that our new hybrid framework shows its true potential: introduce a global RNN trained on all the time series and able to consider and leverage external signals. First forecast examples of our new hybrid model are given in Figure~\ref{fig:introexamples}
 
 \medskip
+
+\begin{figure}
+\centering
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/us_female_shoes}
+  \caption{Time series representing a shoes fashion trend for female in The United States}
+  \label{fig:introexamples:sub1}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/br_female_texture_verticalstripe}
+  \caption{Time series representing the vertical stipes texture fashion trend for female in Brazil}
+  \label{fig:introexamples:sub2}
+\end{subfigure}
+\caption{Hermes forecast examples. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model.}
+\label{fig:introexamples}
+\end{figure}
 
 \textcolor{red}{Ajouter ici une figure avec une ou deux series temporelles mal predites par le modele statistique et bien corrigees par le RNN pour illustrer le potentiel.}
 % Indeed, depending on time series, some family of parametric models can achieve really heterogeneous level of accuracy. 
@@ -238,7 +257,7 @@ Our hybrid model forecast is finally given, for all $1\leqslant n \leqslant N$ a
 
 \subsection{Weak signal}
 
-Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset, \textcolor{red}{see Table~XXX}. Then, to correct the second form of weakness, in addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
+Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset, see Table~\ref{tab:metricresults}. Then, to correct the second form of weakness, in addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
 $$
 \fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}= \{\rnninput^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 $$
@@ -297,7 +316,31 @@ An illustration of our proposed architecture is displayed in Figure~\ref{fig:arc
 
 \subsection{Fashion dataset}
 
-We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with a high throughput computer vision system analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousands of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table 1.
+We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc... Then a second team of fashion experts aggregates these previous attributes and created thousands of fashion trends.
+Analysing every day images shared on social networks, we are finally able for the first time to create time series representing these thousands of fashion trends life on social media.
+
+Our raw sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number per week of analysed images where our vision system detected a specific fashion trend. However, in this paper, we present a normalized version of our signals in order to remove strong social media biases. Due to the increasing use of social media and user's change of behaviours, each trend is normalized by its top hierarchical parents and consequently lie between 0 and 1. We deseasonized the top hierarchical parent before normalized to not remove the season of the original sequence. An example of normalization can be found in Figure~\ref{fig:normalization} for a  trend.
+At the end, the proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}.
+
+
+\begin{figure}
+\centering
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/cn_female_top_raw}
+  \caption{Time series representing the raw signal of a top fashion trend for female in China}
+  \label{fig:normalization:sub1}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/cn_female_top_norm}
+  \caption{Time series representing the normalized signal of a top fashion trend for female in China.}
+  \label{fig:normalization:sub2}
+\end{subfigure}
+\caption{Example of difference between the raw sequence and the normalized one. In this example, we normalize by the deseasonalized global top fashion trend for female in China.}
+\label{fig:normalization}
+\end{figure}
+%We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with a high throughput computer vision system analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousands of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table 1.
 
 With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
 
@@ -342,10 +385,27 @@ With in-house fashion experts, we selected especially a collection of $\numberts
   \end{tabular}
   }
 \end{table*}
-
+\label{tab:fashiondataset}
 \subsection{Weak signal}
 
-In addition to this large dataset we design for each sequence several weak signals.  Firstly, we create a specific fashion-oriented panel of micro-influencers. In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. With this specific panel, we aim at detecting the first waves announcing emerging trends or the collapse of other ones. By analyzing images shared by this specific panel on social media, we create a first weak signal named \textit{fashion-forwards} for each of the previous trends. We also analyzed only a specific part of social media users depending on the number of followers. With three thresholds we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high}. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal.These extra signals are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution.
+In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, we add to our large dataset several weak signals for each sequence.
+Firstly, we created a specific fashion-oriented panel of micro-influencers. With the same methodology than our main signals, we can represent our fashion trends life on social media on this specific population. we named \textit{fashion-forwards} this first weak signal. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak singal is represented in Figure~\ref{fig:oneemergingtrend}. 
+let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
+As we want to detect shifts between our main signal and our fashion forward signal and also normalize our weak signal, we compute the following input for our hybrid model :
+for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+$$
+\ws^{f,n}_{t} = \frac{\ts_t^{f,n}}{\ts_t^{f,n}+\ts_t^{n}}
+$$
+
+
+Secondly, we analyzed only specific parts of social media users depending on the number of followers. With three thresholds, 0-1350,1350-7000 and 7000+, we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high}. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal. let $\ts_t^{l,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{l,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Based on them, we compute 2 inputs for our hybrid model : for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+
+\begin{align*}
+\ws^{l,n}_{t} = \frac{\ts_t^{l,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}
+\end{align*}
+
+
+At the end, we created 3 weak signals $\ws^{l}$,$\ws^{l}$ and $\ws^{h}$. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution.
 
 
 %\subsection{Emerging/Declining fashion trend}
@@ -371,12 +431,12 @@ In addition to this large dataset we design for each sequence several weak signa
 
 %\subsection{Example}
 
-As an example, an impressive emerging fashion trend is represented in Figure~\ref{fig:oneemergingtrend}, see other examples in Appendix~\ref{}. It shows the evolution of one shoe trend on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and the panel of mode-influencers share the same behaviour. The trend started to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change their behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users. Finally, after a peak reached at the end of 2018 for the fashion-influencers, a regular decrease appeared. %They leave gradually the old trend to focus more on the latest or propose new ones.
+%As an example, an impressive emerging fashion trend is represented in Figure~\ref{fig:oneemergingtrend}, see other examples in Appendix~\ref{}. It shows the evolution of one shoe trend on social media and its linked \textit{fashion-forward} weak signal. During the first 3 years, common users and the panel of mode-influencers share the same behaviour. The trend started to boom in the mainstream people during the first month of 2018. However, we can detect early signals in the fashion-forward panel at the end of 2017. Early adopters started to change their behaviour and show more frequently the trend on social media. With fashion influence dynamics, the new tendency spreads to every part of social media users. Finally, after a peak reached at the end of 2018 for the fashion-influencers, a regular decrease appeared. %They leave gradually the old trend to focus more on the latest or propose new ones.
 
 \begin{figure}
   \centering
-    \includegraphics[width=1.\linewidth]{figure/emerging_trend}
-  \caption{A shoes trend of our dataset. In black the main signal and in red its associated \textit{fashion-forward} weak signal. The Gap between our two signals in the end of 2017/beginning of 2018 announces the future explosion of the fashion trend.}
+    \includegraphics[width=1.\linewidth]{figure/ff_example}
+  \caption{A shoes trend of our dataset. In black the main signal and in red its associated \textit{fashion-forward} weak signal. The shift between our two signals in the end of 2017/beginning of 2018 announces the future explosion of the fashion trend.}
 \label{fig:oneemergingtrend}
 \end{figure}
 
@@ -399,7 +459,7 @@ At the end, we repeat the same process for the fifth year and compute our final 
 
 For the first parametric per-time-series models, we used existing Python or R libraries to estimate the different parameters $\statparam^n$. %During the M4 competition, parameters of the exponential smoothing of the porposed hybrid model could move during the training. In our framework,
 %$\{\statparam^n\}_{1\leqslant n \leqslant N}$ are fixed during the training of the recurrent models. 
-In this section we propose two versions of HERMES depending of the choice of local parametric models. The first one use as predictors an additive exponential smoothing model as a reference close to \cite{smyl2020hybrid}. The second one use as predictors the TBATS model of \cite{doi:10.1198/jasa.2011.tm09771} and  achieves striking accuracy results on our fashion dataset. For the neural network part, we built an architecture summarized in Figure~\ref{fig:rnn_architecture}. It is composed of 3 LSTM layer of shape 50 and a final Dense layer to provide the correct output dimension \textcolor{red}{Peut-on discuter/justifier ce choix ?}. We use a classical Adam optimizer with a learning rate equal to 0.005 and a batch size equal to 64 and the following loss function:
+In this section we propose two versions of HERMES depending of the choice of local parametric models. The first one use as predictors an additive exponential smoothing model as a reference close to \cite{smyl2020hybrid}. The second one use as predictors the TBATS model of \cite{doi:10.1198/jasa.2011.tm09771} and  achieves striking accuracy results on our fashion dataset. For the neural network part, we built an architecture summarized in Figure~\ref{fig:rnn_architecture}. It is composed of 3 LSTM layer of shape 50 and a final Dense layer to provide the correct output dimension \textcolor{red}{Peut-on discuter/justifier ce choix ?}. We use a classical Adam optimizer with a learning rate set at 0.005  and a batch size equal to 64 and the following loss function:
 
 $$
 \ell(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
@@ -407,7 +467,7 @@ $$
 %
 
 
-All our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
+Previous parameters was set with a grid search and our code is developed in Python using the Tensorflow library. It allows the use of a GPU to speed up the trainig process.
 
 
 
@@ -517,11 +577,31 @@ Considering our new HERMES approach, we see a large domination of our \textit{he
 \end{table*}
 
 \begin{figure}
+\centering
+\begin{subfigure}{1.\textwidth}
   \centering
-    \includegraphics[width=1.\linewidth]{figure/hybrid_model_examples}
-  \caption{\textit{hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our hermes hybrid model \textit{hermes-tbats}.\textcolor{red}{Utiliser plutot des "marker" (tirets, croix, etc.) car cela differencie mieux}}
-\label{fig:hybrid-examples}
+  \includegraphics[width=1.\linewidth]{figure/us_female_top}
+  \caption{Time series representing a top fashion trend for female in The United States}
+  \label{fig:sub1}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/cn_female_texture_horizontalstipe}
+  \caption{Time series representing the horizontal stipes texture fashion trend for female in China}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{\textit{hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our HERMES hybrid model \textit{hermes-tbats}.}
+\label{fig:test}
 \end{figure}
+
+
+%
+%\begin{figure}
+%  \centering
+%    \includegraphics[width=1.\linewidth]{figure/hybrid_model_examples}
+%  \caption{\textit{hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our hermes hybrid model \textit{hermes-tbats}.\textcolor{red}{Utiliser plutot des "marker" (tirets, croix, etc.) car cela differencie mieux}}
+%\label{fig:hybrid-examples}
+%\end{figure}
 
 
 \textbf{10000 Heuritech Fashion time series classification task}
@@ -531,14 +611,16 @@ Considering our new HERMES approach, we see a large domination of our \textit{he
 When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Table~\ref{tab:lstmclass}, we can also note a rise of the number of correct predictions but with an important increase of the number of classification errors.
 
 
+
+
 \begin{table}
-  \caption{\textit{tbats}, \textit{hermes-tbats} and \textit{hermes-tbats-ws} models confusion matrix}
-  \vspace{0.2cm}
-  \centering
-  \vspace{0.2cm}
-  \par \textit{tbats} model confusion matrix\\
-  \vspace{0.2cm}
+  \caption{\textit{tbats}, \textit{hermes-tbats} and \textit{hermes-tbats-ws} models confusion matrix }
+  %\vspace{0.2cm}
+  %\textit{tbats} model confusion matrix \\
+  %\par \textit{tbats} model confusion matrix
+  %\vspace{0.2cm}
   \begin{tabular}{l||llll}
+  	&& \multicolumn{3}{c}{\textbf{\textit{tbats}}}\\
     && pred-dec  & pred-flat & pred-inc  \\
     \hline
     \hline
@@ -547,24 +629,20 @@ When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Ta
     true-flat && 195 & 5586 & 232 \\
     true-inc && 68 & 1585 & 318 \\
   \end{tabular}
-  \vspace{0.2cm}
-  \par \textit{hermes-tbats} model confusion matrix\\
-  \vspace{0.2cm}
-  \centering
+  \vspace{1cm}
   \begin{tabular}{l||llll}
+  	&& \multicolumn{3}{c}{\textbf{\textit{hermes-tbats}}}\\
     && pred-dec  & pred-flat & pred-inc  \\
     \hline
     \hline
     \rule{0pt}{2ex} \\
 	true-dec && 250 & 1747 & 19 \\
     true-flat && 131 & 5802 & 80 \\
-    true-inc && 33 & 1639 & 299 \\\
+    true-inc && 33 & 1639 & 299 \\
   \end{tabular}
   \centering
-  \vspace{0.2cm}
-  \par \textit{hermes-tbats-ws} model confusion matrix\\
-  \vspace{0.2cm}
   \begin{tabular}{l||llll}
+    && \multicolumn{3}{c}{\textbf{\textit{hermes-tbats-ws}}}\\
     && pred-dec  & pred-flat & pred-inc  \\
     \hline
     \hline
@@ -580,12 +658,8 @@ When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Ta
 
 \begin{table*}
   \caption{\textit{lstm} and \textit{lstm-ws} model confusion matrix}
-  \vspace{0.2cm}
-  \centering
-  \vspace{0.2cm}
-  \par \textit{lstm} model confusion matrix\\
-  \vspace{0.2cm}
   \begin{tabular}{l||llll}
+    && \multicolumn{3}{c}{\textbf{\textit{lstm}}}\\
     && pred-dec  & pred-flat & pred-inc  \\
     \hline
     \hline
@@ -594,11 +668,8 @@ When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Ta
     true-flat && 444 & 5324 & 245 \\
     true-inc && 66 & 1410 & 495 \\
   \end{tabular}
-  \centering
-  \vspace{0.2cm}
-  \par \textit{lstm-ws} model confusion matrix\\
-  \vspace{0.2cm}
   \begin{tabular}{l||llll}
+    && \multicolumn{3}{c}{\textbf{\textit{lstm-ws}}}\\
    	&& pred-dec  & pred-flat & pred-inc  \\
     \hline
     \hline
@@ -692,8 +763,8 @@ With these investigations, we can make two important remarks. First, our hybrid 
      \textit{thetam}  && 0.823 & - && 25.11 & - && 0.944 & -\\
      \textit{arima} && 0.814 & - && 24.61 & - && 0.940 & -\\
      \textit{lstm-nows} && 0.767 & 0.045 && 22.22 & 0.848 && 0.877 & 0.051\\
-     \textit{stlm} && 0.742 & - && 23.03 & - & 0.863 & -\\
-     \textit{tbats} && 0.745 & - && 22.16 & - & 0.856 & -\\
+     \textit{stlm} && 0.742 & - && 23.03 & - && 0.863 & -\\
+     \textit{tbats} && 0.745 & - && 22.16 & - && 0.856 & -\\
      \textbf{\textit{hybrid-nows}} && \textbf{0.739} & 0.003 && \textbf{22.31} & 0.083 && \textbf{0.845} & 0.003\\
   \end{tabular}
   }
