@@ -144,21 +144,20 @@ In the specific application of fashion trends prediction, we detected and define
 \centering
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=1.\linewidth]{figure/us_female_shoes}
+  \includegraphics[width=.8\linewidth]{figure/us_female_shoes}
   \caption{Time series representing a shoes fashion trend for female in The United States}
   \label{fig:introexamples:sub1}
 \end{subfigure}
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=1.\linewidth]{figure/br_female_texture_verticalstripe}
+  \includegraphics[width=.8\linewidth]{figure/br_female_texture_verticalstripe}
   \caption{Time series representing the vertical stipes texture fashion trend for female in Brazil}
   \label{fig:introexamples:sub2}
 \end{subfigure}
-\caption{Hermes forecast examples. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model.}
+\caption{Hermes forecast examples. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model. \textcolor{red}{Ajouter une legende (courbes et axes) et augmenter la police des ticks en abscisses et ordonnées}}
 \label{fig:introexamples}
 \end{figure}
 
-\textcolor{red}{Ajouter ici une figure avec une ou deux series temporelles mal predites par le modele statistique et bien corrigees par le RNN pour illustrer le potentiel.}
 % Indeed, depending on time series, some family of parametric models can achieve really heterogeneous level of accuracy. 
 %For all $1\leqslant n \leqslant N$, let $\Theta^n = \{\alpha^n, \gamma^n, \lvl^n_0, \{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}\}$ be the parameters of the $n$-th sequence with $\lsmooth^n$ and $\ssmooth^n$ the positive smoothing parameters, $\lvl^n_0$ the first level term and $\{\seas_t^n\}_{-m+1\leqslant t \leqslant 0}$ the $m$ first seasonality terms. Given the sequence $\fullts^n$ and the parameters $\Theta^n$ , the two components  $\fulllvl^n$ and $\fullseas^n$ are computed as follow :
 %We initialize the first level with $\lvl^n_{0} = \sum_{t = 1}^m \ts^n_{t}/m$ \textcolor{red}{issue with the time index ?} and, for all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$,
@@ -210,7 +209,7 @@ $$
 $$
 
 
-We note $\rnn(.;\rnnparam)$ the recurrent neural network model where $\rnnparam$ are  unknown parameters. Given the RNN input sequences $\{\rnnwindow^n_T\}_{1\leqslant n \leqslant N}$ and the global RNN estimated parameters $\rnnparam$, the error-corrector predictions $\{\tspred^{corr,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+Let $\rnn(.;\rnnparam)$ be the recurrent neural network model where $\rnnparam$ are  unknown parameters. Given the RNN input sequences $\{\rnnwindow^n_T\}_{1\leqslant n \leqslant N}$ and the global RNN estimated parameters $\rnnparam$, the error-corrector predictions $\{\tspred^{corr,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 $$
 \tspred^{corr,n}_{T+i|T} = \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\ \,.
 $$
@@ -219,7 +218,7 @@ Our hybrid model forecast is finally given, for all $1\leqslant n \leqslant N$ a
 
 \begin{equation}
 \label{eq:nows:full:model}
-\tspred^n_{T+i|T}  = \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T} = \stat^n(\ts^n_{1:T};\statparam^n)_i +  \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\
+\tspred^n_{T+i|T}  = \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T} = \stat^n(\ts^n_{1:T};\statparam^n)_i +  \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\,.
 \end{equation}
 
 
@@ -257,11 +256,11 @@ Our hybrid model forecast is finally given, for all $1\leqslant n \leqslant N$ a
 
 \subsection{Weak signal}
 
-Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset, see Table~\ref{tab:metricresults}. Then, to correct the second form of weakness, in addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. We note $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ all the values of the family of weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the family. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for our RNN,   
+Using well-fitted time-series-specific parametric models, our hybrid network corrects the first form of weakness and achieves striking accuracy on our dataset, see Table~\ref{tab:metricresults}. Then, to correct the second form of weakness, in addition to the $N$ target time series, we consider $K \times N$ external sequences indexed from $0$ to $T$. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ linked to the sequence $\fullts^n$. Let  $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ be all the values of the weak signals linked to the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the sequence. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, we define a new input for the RNN,   
 $$
 \fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}= \{\rnninput^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 $$
-Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ our final model becomes:
+Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ the final prediction becomes:
 %$$
 %\tspred^n_{T+i|T} 
 %= \etspred^{ets,n}_{T+i|T} +  \rnnmodel(\fullconcatinput^n_T)_{T+i} \times \meants^n_T
@@ -316,11 +315,12 @@ An illustration of our proposed architecture is displayed in Figure~\ref{fig:arc
 
 \subsection{Fashion dataset}
 
-We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc... Then a second team of fashion experts aggregates these previous attributes and created thousands of fashion trends.
+We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc. Then a second team of fashion experts aggregated these previous attributes and created thousands of fashion trends.
 Analysing every day images shared on social networks, we are finally able for the first time to create time series representing these thousands of fashion trends life on social media.
 
-Our raw sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number per week of analysed images where our vision system detected a specific fashion trend. However, in this paper, we present a normalized version of our signals in order to remove strong social media biases. Due to the increasing use of social media and user's change of behaviours, each trend is normalized by its top hierarchical parents and consequently lie between 0 and 1. We deseasonized the top hierarchical parent before normalized to not remove the season of the original sequence. An example of normalization can be found in Figure~\ref{fig:normalization} for a  trend.
-At the end, the proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}.
+Our raw sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the (normalized) number of analysed images per week where our vision system detected a specific fashion trend. %However, in this paper, we present a normalized version of our signals in order to remove strong social media biases. 
+Due to the increasing use of social media and users changes of behaviour, each trend is normalized by its top hierarchical parents and consequently lies between 0 and 1. We deseasonized the top hierarchical parent before the normalizing step to keep the season of the original sequence. An example of normalization can be found in Figure~\ref{fig:normalization} for a  trend.
+The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}.
 
 
 \begin{figure}
@@ -342,10 +342,10 @@ At the end, the proposed fashion dataset contains $\numberts$ anonymized fashion
 \end{figure}
 %We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with a high throughput computer vision system analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousands of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table 1.
 
-With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues that face the fashion industry. A large part of our time series are quite stable, their seasons and evolutions are regular. However, some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
+With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
 
 \medskip
-\textcolor{red}{Est-ce pertinent de decrire les outils de computer vision utilises pour construire le jeu de donnees ? Ou de decrire plus precisement la nature des $y$ consideres ? De }
+%\textcolor{red}{Est-ce pertinent de decrire les outils de computer vision utilises pour construire le jeu de donnees ? Ou de decrire plus precisement la nature des $y$ consideres ? De }
 
 %With only the historical data, predict this breaking point is challenging and some time impossible. 
 
