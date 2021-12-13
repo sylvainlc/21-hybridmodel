@@ -313,14 +313,22 @@ An illustration of our proposed architecture is displayed in Figure~\ref{fig:arc
 
 %With this paper, we provide the first dataset dedicated to fashion. Our fashion dataset is built with a high throughput computer vision systems analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousand of time series representing fashion trends life on social media. Moreover, our sequences show desirable properties. They have all the same length, weekly time step, shared behaviours, no sporadic sequence and no missing values. We provide publicly a selection of $\numberts$ anonymized fashion trends for men and women, on 9 differents categories and 5 geozones. An overview of it can be found in table 1.
 
+\subsection{Translate fashion to data}
+
+A collection of vision neural networks have been designed and trained  at detecting clothes details on pictures: cloth type (pants, shoes, top etc...), form, size,color,texture etc... Then, with the knowledge of a team of fashion experts, these clothes details was aggregated in order to define a fashion trend: a meaningfully combination of items that represents an existing trend in the fashion sphere. Analysing every day images shared on social networks with the previous computer vision system, we are finally able to translate the history of thousand of fashion trends in thousands of time series. All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of posts in a week where vision algorithms detected the fashion trend on picture. As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
+
 \subsection{Fashion dataset}
 
-We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc. Then a second team of fashion experts aggregated these previous attributes and created thousands of fashion trends.
-Analysing every day images shared on social networks, we are finally able for the first time to create time series representing these thousands of fashion trends life on social media.
+Due to the increasing use of social media and users change of behaviour, a throughput normalization is applied to the raw sequences. Each fashion trend is divided by its hierarchical parent category trend. Moreover, in order to not remove the season of all sequences, we deseasonalized the hierarchical parent category trend before dividing. For instance, as displayed in Figure~\ref{fig:normalization}, the raw Jersey Top trend for female in China is divided by the deseasonalized global Top trend for female in China. the final normalized sequence is expressed in share of category.
 
-Our raw sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the (normalized) number of analysed images per week where our vision system detected a specific fashion trend. %However, in this paper, we present a normalized version of our signals in order to remove strong social media biases. 
-Due to the increasing use of social media and users changes of behaviour, each trend is normalized by its top hierarchical parents and consequently lies between 0 and 1. We deseasonized the top hierarchical parent before the normalizing step to keep the season of the original sequence. An example of normalization can be found in Figure~\ref{fig:normalization} for a  trend.
-The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}.
+In addition to this paper, a fashion dataset is proposed. It contains an sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. A collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of this work is to accurately detect and forecast these trends.
+
+%We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc. Then a second team of fashion experts aggregated these previous attributes and created thousands of fashion trends.
+%Analysing every day images shared on social networks, we are finally able for the first time to create time series representing these thousands of fashion trends life on social media.
+%
+%Our raw sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the (normalized) number of analysed images per week where our vision system detected a specific fashion trend. %However, in this paper, we present a normalized version of our signals in order to remove strong social media biases. 
+%Due to the increasing use of social media and users changes of behaviour, each trend is normalized by its top hierarchical parents and consequently lies between 0 and 1. We deseasonized the top hierarchical parent before the normalizing step to keep the season of the original sequence. An example of normalization can be found in Figure~\ref{fig:normalization} for a  trend.
+%The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}.
 
 
 \begin{figure}
@@ -342,7 +350,11 @@ The proposed fashion dataset contains $\numberts$ anonymized fashion trends for 
 \end{figure}
 %We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with a high throughput computer vision system analysing every day images shared on social networks. Aggregating detected clothes by trends, we create for the first time thousands of time series representing fashion trends life on social media. Our sequences have all 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each time series is normalized in order to remove social networks biases and their values lie between 0 and 1. The proposed fashion dataset contains $\numberts$ anonymized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table 1.
 
-With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
+%With in-house fashion experts, we selected especially a collection of $\numberts$ fashion trends in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. We call them emerging or declining trends depending on the change in direction. A central point of our work is to accurately detect and forecast these trends.
+
+
+
+
 
 \medskip
 %\textcolor{red}{Est-ce pertinent de decrire les outils de computer vision utilises pour construire le jeu de donnees ? Ou de decrire plus precisement la nature des $y$ consideres ? De }
