@@ -144,13 +144,13 @@ In the specific application of fashion trends prediction, we detected and define
 \centering
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{figure/us_female_shoes}
+  \includegraphics[width=1.\linewidth]{figure/us_female_shoes}
   \caption{Time series representing a shoes fashion trend for female in The United States}
   \label{fig:introexamples:sub1}
 \end{subfigure}
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{figure/br_female_texture_verticalstripe}
+  \includegraphics[width=1.\linewidth]{figure/br_female_texture_verticalstripe}
   \caption{Time series representing the vertical stipes texture fashion trend for female in Brazil}
   \label{fig:introexamples:sub2}
 \end{subfigure}
@@ -405,7 +405,7 @@ Secondly, we analyzed only specific parts of social media users depending on the
 \end{align*}
 
 
-Therefore, we created three weak signals $\ws^{l}$,$\ws^{l}$ and $\ws^{h}$. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution, \textcolor{red}{as illustrated in Section~\ref{}}.
+Therefore, we created three weak signals $\ws^{l}$,$\ws^{l}$ and $\ws^{h}$. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution, as illustrated in Section~\ref{sec:exp}. \textcolor{red}{as illustrated in Section~\ref{}}.
 
 
 %\subsection{Emerging/Declining fashion trend}
@@ -592,7 +592,7 @@ Models using our weak signals perform similarly as without-weak-signals models f
 \begin{table*}
   \caption{Results summary on our 10000ts Fashion dataset. For each metric, we compute the average on all our time series. For our approaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
   \centering
-  \resizebox{\textwidth}{!}{%
+  \resizebox{0.85\textwidth}{!}{%
   \begin{tabular}{l||lllll|lllll}
    &&\multicolumn{3}{c}{\textbf{MASE}} &&& \multicolumn{3}{c}{\textbf{ACCURACY}}&\\
     &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
@@ -627,7 +627,7 @@ Models using our weak signals perform similarly as without-weak-signals models f
 \end{subfigure}
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=1.\linewidth]{figure/cn_female_texture_horizontalstipe}
+  \includegraphics[width=1.\linewidth]{figure/cn_female_texture_horizontalstripe}
   \caption{Time series representing the horizontal stipes texture fashion trend for female in China}
   \label{fig:examples:sub2}
 \end{subfigure}
@@ -738,9 +738,9 @@ When we look at the result of \textit{lstm-ws} and \textit{lstm} displayed in Ta
 
 \textbf{Importance of the size of the dataset}
 
-In addition to our results on our fashion dataset gathering 10000 time series, we also investigate the behaviours of our HERMES model when it is trained on smaller datasets. We did 2 experiments, we train our models on a dataset of 1000 time series and on a dataset of 100 time series. Results are given in Table~\ref{tab:1000metricresults} and Table~\ref{tab:100metricresults}.
+In addition to our results on our fashion dataset gathering 10000 time series, we also investigate the behaviours of our HERMES model when it is trained on smaller datasets. We did 2 experiments, we train our models on a dataset of 1000 time series and on a dataset of 100 time series. Results are given in Table~\ref{tab:1000metricresults}.
 
-With these investigations, we can make two important remarks. First, our hybrid framework \textit{hermes-tbats} achieves the first position in term of global accuracy on both datasets. Due to the strengh of its per-time-series predictor TBATS, our hybrid model succeds at correcting some of its weaknesses and logically reach a striking final accuracy. Secondly, we can note that the accuracy of the full neural network \textit{lstm} decreases when the dataset size is smaller. With a small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} can largely outperform its accuracy level. Learn how to compute a full prediction from scratch is a complex task and high-dimensional recurrent neural networks require  large amount of data. Nevertheless, with our hybrid framework, the RNN task is largely simplified. Our achitectures logicaly needs less data to be trained and to perform well.
+With these investigations, we can make two important remarks. First, our hybrid framework \textit{hermes-tbats} achieves the first position in term of global accuracy on both datasets. Due to the strengh of its per-time-series predictor TBATS, our hybrid model succeds at correcting some of its weaknesses and logically reach a striking final accuracy. Secondly, we can note that the accuracy of the full neural network \textit{lstm} decreases when the dataset size decrease. On the small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} largely outperform its accuracy level. Learn how to compute a full prediction from scratch is a complex task and high-dimensional recurrent neural networks require  large amount of data. Nevertheless, with our hybrid framework, the RNN task is largely simplified. Our achitectures logicaly needs less data to be trained and to perform well.
 
 
 %\begin{table*}
@@ -769,8 +769,8 @@ With these investigations, we can make two important remarks. First, our hybrid 
 
 \begin{table*}
   \caption{Results summary on our 1000ts Fashion dataset and 100ts Fashion Dataset.For each metric, we compute the average on all our time series. For our two apporaches using neural network, we trained 10 models with different seeds and we display the mean and the standard deviation of our 10 results.}
-%  \centering
- \resizebox{\textwidth}{!}{
+  \centering
+ \resizebox{0.85\textwidth}{!}{
   
   \begin{tabular}{l||llll}
     \multicolumn{4}{c}{1000 ts Fashion dataset}\vspace{0.5cm} \\
@@ -786,7 +786,7 @@ With these investigations, we can make two important remarks. First, our hybrid 
      \textit{stlm} && 0.765 & - \\
      \textit{lstm-nows} && 0.740 & 0.007 \\
      \textit{tbats} && 0.734 & - \\
-     \textbf{\textit{hybrid-nows}} && \textbf{0.719} & 0.002 \\
+     \textbf{\textit{hermes-tbats}} && \textbf{0.719} & 0.002 \\
   \end{tabular}
   \quad
   \begin{tabular}{l||llll}
@@ -803,7 +803,7 @@ With these investigations, we can make two important remarks. First, our hybrid 
      \textit{lstm-nows} && 0.767 & 0.045 \\
      \textit{stlm} && 0.742 & - \\
      \textit{tbats} && 0.745 & - \\
-     \textbf{\textit{hybrid-nows}} && \textbf{0.739} & 0.003 \\
+     \textbf{\textit{hermes-tbats}} && \textbf{0.739} & 0.003 \\
   \end{tabular}
   }
 \label{tab:1000metricresults}
