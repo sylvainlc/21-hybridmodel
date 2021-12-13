@@ -315,7 +315,7 @@ An illustration of our proposed architecture is displayed in Figure~\ref{fig:arc
 
 \subsection{Translate fashion to data}
 
-A collection of vision neural networks have been designed and trained  at detecting clothes details on pictures: cloth type (pants, shoes, top etc...), form, size,color,texture etc... Then, with the knowledge of a team of fashion experts, these clothes details was aggregated in order to define a fashion trend: a meaningfully combination of items that represents an existing trend in the fashion sphere. Analysing every day images shared on social networks with the previous computer vision system, we are finally able to translate the history of thousand of fashion trends in thousands of time series. All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of posts in a week where vision algorithms detected the fashion trend on picture. As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
+A collection of vision neural networks have been designed and trained  at detecting clothes details on pictures: cloth type (pants, shoes, top etc...), form, size,color,texture etc... Then, with the knowledge of a team of fashion experts, these clothes details was aggregated in order to define a fashion trend: a meaningfully combination of items that represents an existing trend in the fashion sphere. To represent finely the society behaviours based on social media, a group of thousands of random users, called a panel, have been created on several geolocalisations. Analysing every day images shared on social networks by these panels with the previous computer vision system, we are finally able to translate the history of thousand of fashion trends in thousands of time series.  All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of users posts in a week where vision algorithms detected the fashion trend on picture.  As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
 
 \subsection{Fashion dataset}
 
@@ -401,23 +401,32 @@ In addition to this paper, a fashion dataset is proposed. It contains an sample 
 \subsection{Weak signal}
 
 In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, we add to our large dataset several weak signals for each sequence.
-Firstly, we created a specific fashion-oriented panel of micro-influencers. With the same methodology than for target signals, we can represent  fashion trends life on social media on this specific population. we named \textit{fashion-forwards} this first weak signal. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
+
+Firstly, fashion experts found numerous social media influencers and created a specific ``fashion-oriented`` panel. With the same methodology than for the main panel, a normalized time series representing each fashion trend on this specific population is created. we named \textit{fashion-forwards} this first weak signal. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
 let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
-As we want to detect shifts between target signals and and fashion forward signal and also normalize the weak signal, we compute the following input for our hybrid model:
+As we want to detect shifts between the main signal and the fashion forward signal, we compute the following input for our hybrid model: 
 for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 $$
 \ws^{f,n}_{t} = \frac{\ts_t^{f,n}}{\ts_t^{f,n}+\ts_t^{n}}\,.
 $$
+values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel.
 
 
-Secondly, we analyzed only specific parts of social media users depending on the number of followers. With three thresholds, 0-1350,1350-7000 and 7000+, we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high} \textcolor{red}{Pas clair}. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal. let $\ts_t^{l,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{l,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Based on them, we compute two inputs for our hybrid model : for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+Secondly, depending of the number of followers, the general panel of users is divided in three: users with less than 1350 followers, users with a number of followers between 1350 and 7000 and users with more than 7000 followers. Repeating our methodology on each sub-panel, three normalized time series for each time series is created.  Again, the motivation here is to detect behaviour gaps between different part of the society that could announce bigger changes in the main signal. let $\ts_t^{l,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{l,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Based on them, we compute two inputs for our hybrid model : for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
 
 \begin{align*}
 \ws^{l,n}_{t} = \frac{\ts_t^{l,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}
-\end{align*}
+\end{align*}  
+values close to 0.3 indicate a similar behaviour between the three sub-panels and the general panel.
+
+%Secondly, we analyzed only specific parts of social media users depending on the number of followers. With three thresholds, 0-1350,1350-7000 and 7000+, we created the following external signals : \textit{followers-low}, \textit{followers-mid} and \textit{followers-high} \textcolor{red}{Pas clair}. Again, the motivation here is to detect behaviour gaps between these three segments that could announce bigger changes in the main signal. let $\ts_t^{l,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{l,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Based on them, we compute two inputs for our hybrid model : for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+%
+%\begin{align*}
+%\ws^{l,n}_{t} = \frac{\ts_t^{l,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}
+%\end{align*}
 
 
-Therefore, we created three weak signals $\ws^{l}$,$\ws^{l}$ and $\ws^{h}$. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution, as illustrated in Section~\ref{sec:exp}. \textcolor{red}{as illustrated in Section~\ref{}}.
+In addition the fashion dataset, for each time series, the three weak signals $\ws^{f}$,$\ws^{l}$ and $\ws^{h}$ are added. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolution, as illustrated in Section~\ref{sec:exp}. \textcolor{red}{as illustrated in Section~\ref{}}.
 
 
 %\subsection{Emerging/Declining fashion trend}
