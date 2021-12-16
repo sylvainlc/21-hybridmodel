@@ -315,12 +315,12 @@ An illustration of the proposed architecture is displayed in Figure~\ref{fig:arc
 
 \subsection{Translate fashion to data}
 \label{sec:dataset:a}
-A collection of vision neural networks have been designed and trained  at detecting clothes details on pictures: cloth type (pants, shoes, top etc...), form, size,color,texture etc... Then, with the knowledge of a team of fashion experts, these clothes details was aggregated in order to define a fashion trend: a meaningfully combination of items that represents an existing trend in the fashion sphere. To represent finely the society behaviours based on social media, a group of thousands of random users, called a panel, have been created on several geolocalisations. Analysing every day images shared on social networks by these panels with the previous computer vision system, we are finally able to translate the history of thousand of fashion trends in thousands of time series.  All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of users posts in a week where vision algorithms detected the fashion trend on picture.  As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
+A collection of vision neural networks were designed and trained  at detecting clothes details on pictures: type of clothing (pants, shoes, tops, etc.), form, size, color, texture, etc. Then, fashion experts designed fashion trends by aggregating these clothes details: a meaningful combination of items that represent an existing trend in the fashion sphere. To represent finely human behaviors based on social media, a group of thousands of random users, called a panel, was created on several geolocalisations. Analysing every day images shared on social networks by these panels with our computer vision algorithms, we can translate the history of thousand of fashion trends in thousands of time series.  All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of users posts in a week where vision algorithms detected the fashion trend on picture.  As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
 
 \subsection{Fashion dataset}
 \label{sec:dataset:b}
 
-Due to the increasing use of social media and users change of behaviour, a throughput normalization is applied to the raw sequences. Each fashion trend is divided by its hierarchical parent category trend. Moreover, in order to not remove the season of all sequences, we deseasonalized the hierarchical parent category trend before dividing. For instance, as displayed in Figure~\ref{fig:normalization}, the raw Jersey Top trend for female in China is divided by the deseasonalized global Top trend for female in China. the final normalized sequence is expressed in share of category.
+Due to the increasing use of social media and users change of behaviour, a normalization step is applied to the raw sequences. Each fashion trend is divided by its hierarchical parent category trend. Moreover, in order not to remove the seasonality of all sequences, we deseasonalized the hierarchical parent category trend before the normalization. For instance, as displayed in Figure~\ref{fig:normalization}, the raw Jersey Top trend for female in China is divided by the deseasonalized global Top trend for female in China. The final normalized sequence is expressed in share of category.
 
 In addition to this paper, a fashion dataset is proposed. It contains an sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. this collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. They are called them emerging or declining trends depending on the change in direction. A central point of this work is to accurately detect and forecast these trends.
 
@@ -374,9 +374,10 @@ In addition to this paper, a fashion dataset is proposed. It contains an sample 
 
 
 
-\begin{table*}
-  \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male)}
-  \label{sample-table}
+\begin{table}
+
+  \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male).}
+\label{tab:fashiondataset}
   \centering
   \resizebox{0.85\width}{!}{
   \begin{tabular}{l||lllllllll}
@@ -397,8 +398,8 @@ In addition to this paper, a fashion dataset is proposed. It contains an sample 
     %\hline
   \end{tabular}
   }
-\end{table*}
-\label{tab:fashiondataset}
+\end{table}
+
 \subsection{Weak signal}
 
 In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, several weak signals for each sequence are added to the proposed large dataset.
