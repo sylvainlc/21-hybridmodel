@@ -136,25 +136,24 @@ $$
 
 During the M4 competition, the hybrid model of \cite{smyl2020hybrid} was based on a multiplicative exponential smoothing model as the time-series-specific predictor. However, on sporadic time series, this choice leads to poor result and instability. In this paper, a more general framework able to deal with any kind of per-time-series models is provided. In Section~\ref{sec:exp}, two versions of our framework are proposed. The first one use an  exponential smoothing as reference similar to the baseline \cite{smyl2020hybrid} and the second one use a TBATS model \cite{doi:10.1198/jasa.2011.tm09771} which provides better results as this parametric model includes  Fourier representations with time varying coefficients, and ARMA error correction. %The main complexity is in the next stage: training a global RNN corrector to improve the per-time-series statistical models when the parametric models start showing weaknesses.
 
-In the specific application of fashion trends prediction, two main forms of standard weaknesses was detected and defined for an univariate parametric forecast as defined above. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provide good predictions on time series with additive seasonality but show difficulties with multiplicative one. The second form, harder to detect and correct, is the weakness of information. For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In somes cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that the exact influence of external variables on the main signal is not mainly know. It is on this point that  the new HERMES framework shows its true potential: introduce a global RNN trained on all the time series and able to consider and leverage external signals. First forecast examples of this new hybrid model are given in Figure~\ref{fig:introexamples}
+In the specific application of fashion trends prediction, two main forms of standard weaknesses was detected and defined for an univariate parametric forecast as defined above. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provide good predictions on time series with additive seasonality but show difficulties with multiplicative one. The second form, harder to detect and correct, is the weakness of information. For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In somes cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that the exact influence of external variables on the main signal is not mainly know. It is on this point that  the new HERMES framework shows its true potential: introduce a global RNN trained on all the time series and able to consider and leverage external signals. First forecast examples of this new hybrid model are given in Figure~\ref{fig:introexamples}.
 
-\medskip
 
 \begin{figure}
 \centering
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=1.\linewidth]{figure/us_female_shoes}
-  \caption{Time series representing a shoes fashion trend for female in The United States}
+  \includegraphics[width=.9\linewidth]{figure/us_female_shoes}
+  \caption{Time series representing a shoes fashion trend for female in The United States.}
   \label{fig:introexamples:sub1}
 \end{subfigure}
 \begin{subfigure}{1.\textwidth}
   \centering
-  \includegraphics[width=1.\linewidth]{figure/br_female_texture_verticalstripe}
-  \caption{Time series representing the vertical stipes texture fashion trend for female in Brazil}
+  \includegraphics[width=.9\linewidth]{figure/br_female_texture_verticalstripe}
+  \caption{Time series representing the vertical stipes texture fashion trend for female in Brazil.}
   \label{fig:introexamples:sub2}
 \end{subfigure}
-\caption{Hermes forecast examples. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model. \textcolor{red}{Ajouter une legende (courbes et axes) et augmenter la police des ticks en abscisses et ordonnées}}
+\caption{Hermes forecast examples. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model.}
 \label{fig:introexamples}
 \end{figure}
 
@@ -315,14 +314,14 @@ An illustration of the proposed architecture is displayed in Figure~\ref{fig:arc
 
 \subsection{Translate fashion to data}
 \label{sec:dataset:a}
-A collection of vision neural networks were designed and trained  at detecting clothes details on pictures: type of clothing (pants, shoes, tops, etc.), form, size, color, texture, etc. Then, fashion experts designed fashion trends by aggregating these clothes details: a meaningful combination of items that represent an existing trend in the fashion sphere. To represent finely human behaviors based on social media, a group of thousands of random users, called a panel, was created on several geolocalisations. Analysing every day images shared on social networks by these panels with our computer vision algorithms, we can translate the history of thousand of fashion trends in thousands of time series.  All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of users posts in a week where vision algorithms detected the fashion trend on picture.  As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
+A collection of vision neural networks were designed and trained  at detecting clothes details on pictures: type of clothing (pants, shoes, tops, etc.), form, size, color, texture, etc. Then, fashion experts designed fashion trends by aggregating these clothes details: a meaningful combination of items that represent an existing trend in the fashion sphere. To represent finely human behaviors based on social media, a group of thousands of random users, called a panel, was created on several geolocalisations. Analysing every day images shared on social networks by these panels with our computer vision algorithms, we can translate the history of thousands of fashion trends in thousands of time series.  All sequences have 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. Each value represents the number of users posts in a week where vision algorithms detected the fashion trend on picture.  As an illustration, an example of fashion time series is given in Figure~\ref{fig:normalization:sub1}.
 
 \subsection{Fashion dataset}
 \label{sec:dataset:b}
 
 Due to the increasing use of social media and users change of behaviour, a normalization step is applied to the raw sequences. Each fashion trend is divided by its hierarchical parent category trend. Moreover, in order not to remove the seasonality of all sequences, we deseasonalized the hierarchical parent category trend before the normalization. For instance, as displayed in Figure~\ref{fig:normalization}, the raw Jersey Top trend for female in China is divided by the deseasonalized global Top trend for female in China. The final normalized sequence is expressed in share of category.
 
-In addition to this paper, a fashion dataset is proposed. It contains an sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. this collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. Some sequences show interesting behaviours with sudden changes. They are called them emerging or declining trends depending on the change in direction. A central point of this work is to accurately detect and forecast these trends.
+We therefore introduce a new dataset for fashion time series forecasting.  It contains a sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. this collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes. They are called emerging or declining trends depending on the change in direction. A central point of this work is to accurately detect and forecast such trends.
 
 %We provide the first dataset dedicated to fashion trends forecasting. Our fashion dataset is built with the suprising alliance of a high throughput computer vision system and experts of the fashion sphere. A team of deep learning engineers designed and trained a collection of vision neural networks at detecting clothes details: color, cloth type (pants, shoes, top etc...), form, size, texture etc. Then a second team of fashion experts aggregated these previous attributes and created thousands of fashion trends.
 %Analysing every day images shared on social networks, we are finally able for the first time to create time series representing these thousands of fashion trends life on social media.
@@ -404,20 +403,17 @@ In addition to this paper, a fashion dataset is proposed. It contains an sample 
 
 In theoretical fashion dynamics \citep{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, several weak signals for each sequence are added to the proposed large dataset.
 
-Firstly, numerous social media influencers was selectioned by hand by fashion experts. By aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology than for the main panel descibed in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. we named \textit{fashion-forwards} this first weak signal. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
-let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
-As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for our hybrid model: 
-for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+Firstly, numerous social media influencers were selectioned by hand by fashion experts. By aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology than for the main panel descibed in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this first weak signal.  For all trend $\{y_t\}_{1\leqslant t\leqslant T}$, let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
+As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for our hybrid model:  for all $n \in \{1,\ldots,N\}$, for all $t \in \{1,\ldots,T\}$,
 $$
 \ws^{f,n}_{t} = \frac{\ts_t^{f,n}}{\ts_t^{f,n}+\ts_t^{n}}\,.
 $$
-values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel.
+Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
 
 
-Secondly, depending of the number of followers, the general panel of users is divided in three sub-groups: users with less than 1350 followers, users with a number of followers between 1350 and 7000 and users with more than 7000 followers. Repeating the previous methodology on each sub-panel, three normalized time series for each time series are created.  Again, the motivation here is to detect behaviour gaps between different part of the society that could announce bigger changes in the main signal. let $\ts_t^{l,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{l,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Based on them, two inputs for our hybrid model are computed  : for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
-
+Secondly, depending of the number of followers, the general panel of users is divided in three sub-groups: users with less than 1350 followers, users with a number of followers between 1350 and 7000 and users with more than 7000 followers. Repeating the previous methodology on each sub-panel, three normalized time series for each time series are created.  Again, the motivation here is to detect behaviour gaps between different part of the society that could announce bigger changes in the main signal. Let $\ts_t^{\ell,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{\ell,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Two inputs for our hybrid model are computed: for all $n \in \{1,\ldots,N\}$, for all $t \in \{1,\ldots,T\}$,
 \begin{align*}
-\ws^{l,n}_{t} = \frac{\ts_t^{l,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{l,n}+\ts_t^{m,n}+\ts_t^{h,n}}
+\ws^{\ell,n}_{t} = \frac{\ts_t^{\ell,n}}{\ts_t^{\ell,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{\ell,n}+\ts_t^{m,n}+\ts_t^{h,n}}
 \end{align*}  
 values close to 0.3 indicate a similar behaviour between the three sub-panels and the general panel.
 
@@ -428,7 +424,7 @@ values close to 0.3 indicate a similar behaviour between the three sub-panels an
 %\end{align*}
 
 
-In addition to the fashion dataset, for each time series, the three weak signals $\ws^{f}$,$\ws^{l}$ and $\ws^{h}$ are added. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolutions, as illustrated in Section~\ref{sec:exp}. \textcolor{red}{as illustrated in Section~\ref{}}.
+In addition to the fashion dataset, for each time series, the three weak signals $\ws^{f}$,$\ws^{\ell}$ and $\ws^{h}$ are added. They are frequently sparse for micro trends and they often lack interest in common fashion trends. However, in several examples, they are fundamental to detect the future fashion evolutions, as illustrated in Section~\ref{sec:exp}. 
 
 
 %\subsection{Emerging/Declining fashion trend}
