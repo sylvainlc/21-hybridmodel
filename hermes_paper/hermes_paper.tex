@@ -917,18 +917,26 @@ In addition to the previous results, a HERMES application is also done on the M4
 
 \textbf{Training}
 
-The sequence are firstly resized in order to egalize their lenghts. For the shorter ones: the eval and the test set is removed (the last 26 steps). Then the remaining number of entire year is duplicated in order to egalize all the sequence at the longest one : 2610 time steps. As per time series parametric model training time depends on the sequence lenght, all time series are then croped. At the end, with the addition of the previously removed eval and test set, 300 time steps are kept for each sequence as dataset used to train the HERMES approach.
+\textcolor{blue}{reformuler}
+The sequence are firstly resized in order to egalize their lenghts. For the shorter ones: the eval and the test set is removed (the last 26 steps). Then the remaining number of entire year is duplicated in order to egalize all the sequence at the longest one : 2610 time steps. As per time series parametric model training time depends on the sequence lenght, all time series are then croped. At the end, with the addition of the previously removed eval and test set, 300 time steps are kept for each sequence. 
 
-For this training, The horizon $h$ is set to 13 due to the M4 weekly test set size and the window size $w$ is fixed at 104. For the RNN part, the same architecture than describe in Figure~ \ref{fig:rnn_architecture} is used. The Adam optimizer is used with a learning rate fixed at 0.005 and a batch size set at 8. As the loss function, the same loss than the fashion application is used. As the M4 weekly dataset is small, a rolling window is used on the train set in order to increase the train number of example and improve the training. 5 windows are computed for each sequence for the RNN train set. An overview of our train, eval, test set spit and the rolling window is givien in Figure~\ref{}.
+For this training, The horizon $h$ is set to 13 due to the M4 weekly test set size and the window size $w$ is fixed at 104. For the RNN part, the same architecture than describe in Figure~ \ref{fig:rnn_architecture} is used. The Adam optimizer is used with a learning rate fixed at 0.005 and a batch size set at 8. As the loss function, the same loss than the fashion application is used. As the M4 weekly dataset is small, a rolling window is used on the train set in order to increase the train number of example and improve the training. 5 windows are computed for each sequence for the RNN train set. An overview of our train, eval, test set split and the resizing of the shorter sequences is given in Figure~\ref{}.
 The previous parameters: window size, learning rate, batch size and the number of train window per time series are set using a grid search.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.\linewidth]{figure/M4_dataset}
+  \caption{One of the shortest sequences of the M4 weekly dataset (93 time steps). In order to fit its predictor, the last complete year is duplicated in order to reach a total lenght of 300 time steps.}
+\label{fig:m4dataset}
+\end{figure}
 
 \textbf{Benchmarks}
 
-The M4 competion provides a rich collection of benchmarks gatering statistical models and neural network approaches. The same candidates are used in this part as baseline. In addition, the hybrid model named \textit{Uber} of S.Smyl is added to provide a interesting comparison against the HERMES approach. For a complete description and references of the benchmarck models, see \cite{makridakis2020m4}. As a HERMES candidate, a version using TBATS is proposed and called \textit{hermes-tbats}. Following the M4 competition methodology, models are evaluated according to the MASE, the SMAPE and the OWA measure. A complete definition of these metrics is also proposed in \cite{makridakis2020m4}.
+The M4 competion provides a rich collection of benchmarks gatering statistical models and neural network approaches. The same candidates are used in this part as baseline. In addition, the hybrid model named \textit{Uber} of S.Smyl is added to provide an interesting comparison against the HERMES approach. For a complete description and references of the benchmarck models, see \cite{makridakis2020m4}. As a HERMES candidate, a version using TBATS is proposed and called \textit{hermes-tbats}. Following the M4 competition methodology, models are evaluated according to the MASE, the SMAPE and the OWA measure. A complete definition of these metrics is also proposed in \cite{makridakis2020m4}.
 
 \textbf{Results and discussion}
 
-The final results for the M4 weekly dataset are displayed in Table~\ref{tab:m4metricresults}. Considering the HERMES approach, \textit{hermes-tbats} outperforms all the benchmarcks. This results is partially induced by the use of TBATS per-time-series predictors which achieves striking results on the test set. Regarding the hybrid model proposed by S.Smyl, its accuracy remains low in comparison to \textit{tbats} and  \textit{hermes-tbats}. With this second application, two importants conclusion can be done. Firstly, the striking results of \textit{hermes-tbats} confirm that the HERMES framework is a general framework, well suited for a large collection of forecasting tasks. Secondly, the accuracy gap between the 2 hybrid candidates validate the HERMES approach and illustrates the importance of a global framework able to leverage any kind of per-time-series predictors.
+The final results for the M4 weekly dataset are displayed in Table~\ref{tab:m4metricresults}. Considering the HERMES approach, \textit{hermes-tbats} outperforms all the benchmarcks. This results is partially induced by the use of TBATS per-time-series predictors which achieves striking results on the test set. Regarding the hybrid model proposed by S.Smyl, its accuracy remains low in comparison to \textit{tbats} and  \textit{hermes-tbats}. With this second application, two important conclusions can be done. Firstly, the striking results of \textit{hermes-tbats} confirm that the HERMES framework is a general framework, well suited for a large collection of forecasting tasks. Secondly, the accuracy gap between the 2 hybrid candidates validate the HERMES approach and illustrates the importance of a global framework able to leverage any kind of per-time-series predictors.
 
 \begin{table*}
   \caption{Results summary on the m4 weekly dataset. For each metric, the average on all our time series is computed. For approaches using neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
@@ -982,7 +990,64 @@ As a possible future work, a different inclusion of the weak signals can be desi
 
 \appendix
 
-%\section{Fashion Dataset overview}
+\section{M4 weekly dataset and results}
+
+
+\section{Training parameters and loss}
+
+
+\subsection{Loss grid search on the Fashion Dataset}
+
+Using deep learning models in time series forecasting is a appealing way to achieve higher levels of accuracy. However, it induces two main issues. First, have a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, find a correct loss to train the model. For the second point, the main difficulty is that a dataset can gather contrasting time series in terms of scale. These differences can impact the loss behaviour and finally the training. For the HERMES architecture, some loss candidates were defined for the training : the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE).
+The loss functions are defined as follows :
+
+
+$$
+MAE = \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\quad  MSE = \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|
+$$
+$$
+SMAE = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\quad  SMSE = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|
+$$
+
+For each loss, 10 \textit{hermese-tbats-ws} models have been trained with different seeds and the final mean and standard deviation are given in Figure~\ref{}. The final Scaled Mean Absolute Error reach the lower MASE and was selected to train all the HERMES model in this paper.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.\linewidth]{figure/loss_function}
+  \caption{MASE accuray for the \textit{hermes-tbats-ws} model depending of the loss used during the RNN training. For each loss, 10 models with different seed have been trained. The mean and the standard deviation are represented with a point and a vertical line.}
+\label{fig:loss_function}
+\end{figure}
+
+
+
+\subsection{Parameters grid search on the M4 weekly Dataset}
+
+The HERMES framework get several parameters to set correctly in order to reach acceptable level of accuracy. For instance, a overview of the learning rate, batch size and number of window per time series grid search for the M4 weekly dataset is shown in this part. For each parameters, a collection of 10 \textit{hermes-tbats} models have been trained with a range of values and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each groups of 10 trainings is displayed in Figure~\ref{}. For the final \textit{hermes-tbats} model of the M4 weekly dataset, the grid search fixed the following setup : 3 windows per time series, the batch size set to 8 and the optimizer's learning rate equal to 0.005.
+
+ 
+\begin{figure}
+\centering
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/m4_nb_of_window}
+  \caption{result of the HERMES model on the M4 dataset model depending of the number of windows provided per time series to the RNN corrector}
+  \label{fig:m4parameter:sub1}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/m4_batch_size}
+  \caption{result of the HERMES model on the M4 dataset model depending of the size of the batch size}
+  \label{fig:m4parameter:sub2}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/m4_learning_rate}
+  \caption{result of the HERMES model on the M4 dataset model depending of learning rate of the optimizer}
+  \label{fig:m4parameter:sub3}
+\end{subfigure}
+\caption{Example of difference between the raw sequence and the normalized one. In this example, we normalize by the deseasonalized global top fashion trend for female in China.}
+\label{fig:m4parameter}
+\end{figure}
 
 
 
