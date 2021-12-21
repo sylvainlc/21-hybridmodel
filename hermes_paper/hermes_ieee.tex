@@ -887,7 +887,7 @@ With these investigations, two important remarks can be done. First, the hybrid 
 
 \subsection{Result for M4 weekly dataset}
 
-In addition to the previous results, a HERMES application is also done on the M4 weekly dataset. The M4 dataset gathers 359 weekly time series and shows 3 main differences compare to the fashion dataset. Firstly, sequences have not the same lenght with sequence lenghts lying between 93 and 2610 time steps. Secondly, as some of the sequences represent financial signals or some others are demographic sequences, the  359 time series show huge contrasting behaviours. Thirldy, compare to the fashion application, the horizon for the M4 competition is set to 13 for the weekly dataset. 
+We also assessed the performance of HERMES using the M4 weekly dataset \cite{makridakis2020m4}. The M4 dataset gathers 359 weekly time series and shows 3 main differences compare to our proposed fashion dataset. Firstly, sequences do not have the same length with sequence lengths lying between 93 and 2610 time steps. Secondly, as some of the sequences represent financial signals or some others are demographic sequences, the  359 time series show very distinct behaviours. Thirldy, compare to the fashion application, the time horizon of the prediction is set to 13 for the weekly dataset. 
 
 \textbf{Training}
 
@@ -963,16 +963,13 @@ As a possible future work, a different inclusion of the weak signals can be desi
 \subsection{Loss grid search on the Fashion Dataset}
 
 Using deep learning models in time series forecasting is a appealing way to achieve higher levels of accuracy. However, it induces two main issues. First, have a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, find a correct loss to train the model. For the second point, the main difficulty is that a dataset can gather contrasting time series in terms of scale. These differences can impact the loss behaviour and finally the training. For the HERMES architecture, some loss candidates were defined for the training : the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE).
-The loss functions are defined as follows :
-
-
-$$
-MAE = \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\quad  MSE = \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|
-$$
-$$
-SMAE = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\quad  SMSE = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|
-$$
-
+The loss functions are defined as follows:
+\begin{align*}
+MAE &= \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
+MSE &= \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\\
+SMAE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
+SMSE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
+\end{align*}
 For each loss, 10 \textit{hermese-tbats-ws} models have been trained with different seeds and the final mean and standard deviation are given in Figure~\ref{}. The final Scaled Mean Absolute Error reach the lower MASE and was selected to train all the HERMES model in this paper.
 
 \begin{figure}
