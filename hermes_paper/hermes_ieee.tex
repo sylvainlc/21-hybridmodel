@@ -605,7 +605,7 @@ A collection of vision neural networks were designed and trained  at detecting c
 
 Due to the increasing use of social media and users change of behaviour, a normalization step is applied to the raw sequences. Each fashion trend is divided by its hierarchical parent category trend. Moreover, in order not to remove the seasonality of all sequences, we deseasonalized the hierarchical parent category trend before the normalization. For instance, as displayed in Figure~\ref{fig:normalization}, the raw Jersey Top trend for female in China is divided by the deseasonalized global Top trend for female in China. The final normalized sequence is expressed in share of category.
 
-We therefore introduce a new dataset for fashion time series forecasting.  It contains a sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. this collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes. They are called emerging or declining trends depending on the change in direction. A central point of this work is to accurately detect and forecast such trends.
+We therefore introduce a new dataset for fashion time series forecasting.  It contains a sample of $\numberts$ anonymized and  normalized fashion trends for men and women, on 9 different categories and 5 geozones. An overview of it can be found in Table~\ref{tab:fashiondataset}. this collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes (emerging or declining trends). A central point of this work is to accurately detect and forecast such trends.
 
 \begin{figure*}
 \centering
@@ -626,7 +626,7 @@ We therefore introduce a new dataset for fashion time series forecasting.  It co
 \end{figure*}
 
 \begin{table*}
-  \caption{Fashion time series overview. For each couple geozone/category, we give the number of female and male trends (Female/Male).}
+  \caption{Fashion time series overview. For each couple geozone/category, the table gives the number of trends (Female/Male).}
 \label{tab:fashiondataset}
   \centering
   \resizebox{0.85\width}{!}{
@@ -652,17 +652,17 @@ We therefore introduce a new dataset for fashion time series forecasting.  It co
 
 \subsection{Weak signal}
 
-In theoretical fashion dynamics \cite{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, several weak signals for each sequence are added to the proposed large dataset.
+In theoretical fashion dynamics \cite{rogersdiffusion}, different categories of adopters follow a trend in succession, resulting in several adoption waves. In this way, several weak signals for each sequence are added to the proposed dataset.
 
-Firstly, numerous social media influencers were selectioned by hand by fashion experts. By aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology than for the main panel descibed in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this first weak signal.  For all trend $\{y_t\}_{1\leqslant t\leqslant T}$, let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
+Firstly, numerous social media influencers were selectioned by hand by fashion experts. By aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology than for the main panel descibed in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this first weak signal.  For all trends $\{y_t\}_{1\leqslant t\leqslant T}$, let $\ts_t^{f,n}$ be the value of the $n$-th \textit{fashion-forwards} sequence at time $t$ and  $\fullts^{f,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of this sequence.
 As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for our hybrid model:  for all $n \in \{1,\ldots,N\}$, for all $t \in \{1,\ldots,T\}$,
 $$
 \ws^{f,n}_{t} = \frac{\ts_t^{f,n}}{\ts_t^{f,n}+\ts_t^{n}}\,.
 $$
-Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an impressive emerging fashion shoes trend with its linked \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
+Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an impressive emerging fashion shoes trend with its \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
 
 
-Secondly, depending of the number of followers, the general panel of users is divided in three sub-groups: users with less than 1350 followers, users with a number of followers between 1350 and 7000 and users with more than 7000 followers. Repeating the previous methodology on each sub-panel, three normalized time series for each time series are created.  Again, the motivation here is to detect behaviour gaps between different part of the society that could announce bigger changes in the main signal. Let $\ts_t^{\ell,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{\ell,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Two inputs for our hybrid model are computed: for all $n \in \{1,\ldots,N\}$, for all $t \in \{1,\ldots,T\}$,
+Secondly, depending of the number of followers, the general panel of users is divided in three sub-groups: users with less than 1350 followers, users with a number of followers between 1350 and 7000 and users with more than 7000 followers. Repeating the previous methodology on each sub-panel, three normalized time series for each time series are created.  Again, the motivation here is to detect behaviour gaps between different parts of the society that could lead to changes in the main signal. Let $\ts_t^{\ell,n}$,$\ts_t^{m,n}$ and $\ts_t^{h,n}$ be the value of the $n$-th \textit{followers-low},\textit{followers-mid} and \textit{followers-high} sequence at time $t$ and  $\fullts^{\ell,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{m,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$, $\fullts^{h,n} = \{\ts_t^{f,n}\}_{1\leqslant t \leqslant T}$ be all the values of these sequences. Two inputs for our hybrid model are computed: for all $n \in \{1,\ldots,N\}$, for all $t \in \{1,\ldots,T\}$,
 \begin{align*}
 \ws^{\ell,n}_{t} = \frac{\ts_t^{\ell,n}}{\ts_t^{\ell,n}+\ts_t^{m,n}+\ts_t^{h,n}}\,,\quad \ws^{h,n}_{t} = \frac{\ts_t^{h,n}}{\ts_t^{\ell,n}+\ts_t^{m,n}+\ts_t^{h,n}}
 \end{align*}  
