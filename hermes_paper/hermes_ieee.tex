@@ -948,20 +948,19 @@ As a possible future work, designing new models for the weak signals would impro
 
 \subsection{Loss grid search on the Fashion Dataset}
 
-Using deep learning models in time series forecasting is a appealing way to achieve higher levels of accuracy. However, it induces two main issues. First, have a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, find a correct loss to train the model. For the second point, the main difficulty is that a dataset can gather contrasting time series in terms of scale. These differences can impact the loss behaviour and finally the training. For the HERMES architecture, some loss candidates were defined for the training : the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE).
-The loss functions are defined as follows:
+Using deep learning models in time series forecasting is an appealing way to achieve higher accuracy performance. However, it induces two main issues. First, it requires a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, the main difficulty is that a dataset can gather contrasting time series in terms of scale. These differences can impact the loss behaviour and finally the training. For the HERMES architecture, some loss candidates were defined for the training: the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE). The loss functions are defined as follows:
 \begin{align*}
 MAE &= \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
 MSE &= \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\\
 SMAE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
 SMSE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
 \end{align*}
-For each loss, 10 \textit{hermese-tbats-ws} models have been trained with different seeds and the final mean and standard deviation are given in Figure~\ref{}. The final Scaled Mean Absolute Error reach the lower MASE and was selected to train all the HERMES model in this paper.
+For each loss, 10 \textit{hermese-tbats-ws} models have been trained with different seeds and the final mean and standard deviation are given in Figure~\ref{}. The final Scaled Mean Absolute Error reaches the lowest MASE and was selected to train all the HERMES model in this paper.
 
 \begin{figure}
   \centering
     \includegraphics[width=1.\linewidth]{figure/loss_function}
-  \caption{MASE accuray for the \textit{hermes-tbats-ws} model depending of the loss used during the RNN training. For each loss, 10 models with different seed have been trained. The mean and the standard deviation are represented with a point and a vertical line.}
+  \caption{MASE accuray for the \textit{hermes-tbats-ws} model depending of the loss used during the RNN training. For each loss, 10 models with different seeds have been trained. The mean and the standard deviation are represented with a point and a vertical line.}
 \label{fig:loss_function}
 \end{figure}
 
@@ -969,7 +968,7 @@ For each loss, 10 \textit{hermese-tbats-ws} models have been trained with differ
 
 \subsection{Parameters grid search on the M4 weekly Dataset}
 
-The HERMES framework get several parameters to set correctly in order to reach acceptable level of accuracy. For instance, a overview of the learning rate, batch size and number of window per time series grid search for the M4 weekly dataset is shown in this part. For each parameters, a collection of 10 \textit{hermes-tbats} models have been trained with a range of values and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each groups of 10 trainings is displayed in Figure~\ref{}. For the final \textit{hermes-tbats} model of the M4 weekly dataset, the grid search fixed the following setup : 3 windows per time series, the batch size set to 8 and the optimizer's learning rate equal to 0.005.
+The HERMES model depends on several hyperparameters to set correctly in order to reach satisfactory performance. For instance, an overview of the learning rate, batch size and number of windows per time series grid search for the M4 weekly dataset is shown in Figure~\ref{}. For each parameter, a collection of 10 \textit{hermes-tbats} models have been trained with a range of values and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each group of 10 trainings is displayed in Figure~\ref{}. For the final \textit{hermes-tbats} model of the M4 weekly dataset, the grid search fixed the following setup : 3 windows per time series, the batch size set to 8 and the learning rate equal to 0.005.
 
  
 \begin{figure}
