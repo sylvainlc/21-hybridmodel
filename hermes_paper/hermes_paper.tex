@@ -992,6 +992,81 @@ As a possible future work, a different inclusion of the weak signals can be desi
 
 \section{M4 weekly dataset and results}
 
+The M4 weekly dataset is a collection of 359 time series with  contrasting behaviours and sizes. An overview of the dataset is given in Table~\ref{tab:m4dataset} and some example of sequences are given in Figure~\ref{fig:m4examples}. As sequences have not the same domain origin, the HERMES approach doesn't seem to be the best suited model for this forecasting task. However, on some examples as in Figure~\ref{fig:m4pred}, interesting corrections of the Tbats forecasts can be noted.
+
+\begin{table}
+
+  \caption{M4 weekly dataset overview. For each category, we give the number of sequences and the average length.}
+\label{tab:m4dataset}
+  \centering
+  \resizebox{1.\width}{!}{
+  \begin{tabular}{l||llllll}
+    %hline
+    \\
+    &  \textbf{Demographic}  & \textbf{Finance} & \textbf{Industry} & \textbf{Macro} & \textbf{Micro} & \textbf{Other} \\
+    \hline
+    \hline
+    \\
+	\textbf{Number of sequences} & 24 & 164 & 6 & 41 & 112 & 12 \\
+	\\
+    \textbf{average length} & 1659 & 1237 & 834 & 1264 & 473 & 1598 \\
+    \textbf{minimal length} & 1615 & 260 & 356 & 522 & \textbf{93} & 470 \\
+  \end{tabular}
+  }
+\end{table}
+
+
+\begin{figure}
+\centering
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W10}
+  \caption{A time series from the ``Other`` category called \textit{W10}.}
+  \label{fig:m4examples:sub1}
+\end{subfigure} \quad
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W20}
+  \caption{A time series from the ``Macro`` category called \textit{W20}.}
+  \label{fig:m4examples:sub1}
+\end{subfigure}
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W220}
+  \caption{A time series from the \textit{Finance} category called \textit{W220}.}
+  \label{fig:m4examples:sub2}
+\end{subfigure}\quad
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W354}
+  \caption{A time series from the \textit{Micro} category called \textit{W354}.}
+  \label{fig:m4examples:sub3}
+\end{subfigure}
+\caption{Examples of time series from the M4 weekly dataset.}
+\label{fig:m4examples}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W133_pred}
+  \caption{\textit{tbats} and \textit{hermes-tbats} forecast of the \textit{W133} time series}
+  \label{fig:m4pred:sub1}
+\end{subfigure}
+\begin{subfigure}{1.\textwidth}
+  \centering
+  \includegraphics[width=1.\linewidth]{figure/W314_pred}
+  \caption{\textit{tbats} and \textit{hermes-tbats} forecast of the \textit{W314} time series}
+  \label{fig:m4pred:sub2}
+\end{subfigure}
+\caption{\textit{hermes-tbats} forecast examples on the M4 weekly dataset. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our HERMES hybrid model \textit{hermes-tbats}.}
+\label{fig:m4pred}
+\end{figure}
+
+However, on the M4 weekly dataset final accuracy, some models reach a higher accuracy than the HERMES framework. Except one approach, all of them are a combination of different models. It is commom in time series forecasting to aggregated various approachs to increase the robusness of the final forecast and in the same time achieve a better global accuracy. The best model on the M4 weekly dataset is not an ensembling and with a OWA equal to 0.739, outperforms the \textit{hermer-tbats} and all the M4 proposed models on the M4 weekly sub-dataset. This framework called \textit{Forecast Pro} is a model selection approach depending where a collection of parametric model are trained and selected depending of time series properties. A description and interesting remarks are discussed is \citep{DARIN2020135} 
+An interessant reseach perspective can be to replace the tbats per-time-series predictor by this individual models which seems more suited for the M4 weekly forecasting task.
+
 
 \section{Training parameters and loss}
 
@@ -1022,7 +1097,7 @@ For each loss, 10 \textit{hermese-tbats-ws} models have been trained with differ
 
 \subsection{Parameters grid search on the M4 weekly Dataset}
 
-The HERMES framework get several parameters to set correctly in order to reach acceptable level of accuracy. For instance, a overview of the learning rate, batch size and number of window per time series grid search for the M4 weekly dataset is shown in this part. For each parameters, a collection of 10 \textit{hermes-tbats} models have been trained with a range of values and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each groups of 10 trainings is displayed in Figure~\ref{}. For the final \textit{hermes-tbats} model of the M4 weekly dataset, the grid search fixed the following setup : 3 windows per time series, the batch size set to 8 and the optimizer's learning rate equal to 0.005.
+The HERMES framework get several parameters to set correctly in order to reach acceptable level of accuracy. For instance, a overview of the learning rate, batch size and number of window per time series grid search for the M4 weekly dataset is shown in this part. For each parameters, a collection of 10 \textit{hermes-tbats} models have been trained with a range of values and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each groups of 10 trainings is displayed in Figure~\ref{fig:m4parameter}. For the final \textit{hermes-tbats} model of the M4 weekly dataset, the grid search fixed the following setup : 3 windows per time series, the batch size set to 8 and the optimizer's learning rate equal to 0.005.
 
  
 \begin{figure}
