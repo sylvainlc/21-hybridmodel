@@ -391,7 +391,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{HERMES : Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
 %
 %
 % author names and IEEE memberships
@@ -403,7 +403,7 @@
 % was not built to handle multiple paragraphs
 %
 
-\author{Etienne David\thanks{Etienne David: Heuritech, France.}, Sylvain Le Corff\thanks{Sylvain Le Corff:  Samovar, T\'el\'ecom SudParis, d\'epartement CITI, TIPIC, Institut Polytechnique de Paris, France.} and~ Jean Bellot\thanks{Jean Bellot: Heuritech, France.}}
+\author{Etienne David\thanks{Etienne David: Heuritech, France.}, Sylvain Le Corff\thanks{Sylvain Le Corff:  Samovar, T\'el\'ecom SudParis, d\'epartement CITI, TIPIC, Institut Polytechnique de Paris, France.} and Jean Bellot\thanks{Jean Bellot: Heuritech, France.}}
 %        and~Jane~Doe,~\IEEEmembership{Life~Fellow,~IEEE}% <-this % stops a space
 %\thanks{M. Shell was with the Department
 %of Electrical and Computer Engineering, Georgia Institute of Technology, Atlanta,
@@ -466,7 +466,7 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviors of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \cite{makridakis2018m4}, and illustrates the benefit of the contribution of external weak signals.
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{lienversledataset} the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviors of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \cite{makridakis2018m4}, and illustrates the benefit of the contribution of external weak signals.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -492,6 +492,7 @@ Hybrid models, Recurrent neural networks, Time series.
 
 \section{Introduction}
 \label{sec:introduction}
+
 
 Multivariate time series forecasting is a widespread statistical problem with  many applications, see for instance \cite{sarkka2013bayesian, douc2014nonlinear, zucchini2017hidden} and the numerous references therein.
  %Due to the diversity of applications and use cases, a multitude of models have been proposed. 
@@ -715,9 +716,9 @@ This choice of $\mathrm{L}_1$  loss function is motivated by its robustness to o
 As benchmarks, several widespread statistical methods and deep learning approaches were selected. Using the R package \texttt{forecast} and the Python packages \texttt{statsmodels},  \texttt{tbats}, for each time series, predictions are computed with the following methods: \textit{snaive}, \textit{ets}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. The forecast of the \textit{snaive} method is only the repetition of the last past period. The \textit{ets} model is an additive exponential smoothing with a level component and a seasonal component. The \textit{stlm} approach uses a multiplicative decomposition and models the seasonally adjusted time series with an exponential smoothing model. The \textit{Thetam} model decomposes the original signal in $\theta$-lines, predicts each one separately and recomposes them to produce the final forecast and \textit{tbats} uses a trigonometrical seasonality. Finally, \textit{auto.arima} is the R implementation of the ARIMA model with an automatic selection of the best parameters. A complete description and references for these models can be found in \cite{hyndman2020package}. As a deep learning approach, a full LSTM (\textit{lstm}) neural network composed of 3 LSTM layers of shape 50 and a final Dense layer of shape 52 is considered.
 Two versions of HERMES are proposed. They are called respectively \textit{hermes-ets} and \textit{hermes-tbats} according to the per-time-series model choice. Moreover, two versions with the inclusion of the weak signals (ws) are proposed. They are referred to as \textit{hermes-ets-ws} and \textit{hermes-tbats-ws}. In order to provide a fair comparison, a \textit{lstm} with the weak signals named \textit{lstm-ws} is trained.
 
-To compare the different methods, we use the Mean Absolute Scaled Error (MASE). As our time series have completely different scales, from $10^{-5}$ to $10^{-1}$, this metric was chosen to compute a fair error measure, independent of the scale of the sequence. The MASE metric is defined as follows, with $m$ the seasonal periods:
+To compare the different methods, we use the Mean Absolute Scaled Error (MASE) for seasonal time series. As our sequences have completely different scales, from $10^{-5}$ to $10^{-1}$, this metric was chosen to compute a fair error measure, independent of the scale of the sequence and suited for our seasonal fashion time series. The MASE metric is defined as follows, with $m$ the seasonal period:
 \begin{align*}
-\mathrm{MASE} &= \frac{T-m}{h}\frac{\sum_{i=1}^h |Y_i - \hat{Y}_i| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,.
+\mathrm{MASE} &= \frac{T-m}{h}\frac{\sum_{j=1}^h |Y_{T+j} - \hat{Y}_{T+j}| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,.
 \end{align*}
 Detecting emerging and declining trends is a crucial issue for the fashion industry. A correct or incorrect prediction could lead to good returns or massive waste due to overstock or unsold clothes. In addition to the MASE accuracy metric, the different methods are also evaluated on a classification task and especially differences between methods using weak signals or not. In a given year, an increasing trend is defined as a trend that does more than 5\% of growth on average with respect to the previous year. In the same way, a decreasing trend is defined as a trend that declines by 5\% on average or more. Other trends are classified as flat trends. With this threshold, the proposed fashion dataset is almost balanced on the {\em test} set: There are 3087 increasing trends, 3342 decreasing trends and 3571 flat trends. On the {\em test} set, for each method, the accuracy is defined as follows:
 \begin{align*}
@@ -928,7 +929,7 @@ The previous parameters: window size, learning rate, batch size and the number o
 
 \section{Conclusion}
 \label{sec:conclusion}
-The motivation of this paper was to present HERMES, a new hybird model for non stationary time series forecasting. By mixing the performance of local parametric models and a global neural network, \textit{hermes-tbats} clearly outperforms traditional statistical methods and full neural network models on two forecasting tasks. Furthermore, this new model is totally suited to deal with external signals. With a fine pre-processing and a well-designed architecture, our hybrid framework succeeds at leveraging our complex extra data and reaches very promising accuracy levels in terms of classification. In addition to this article, a fashion dataset gathering a sample of $\numberts$ time series and a collection of weak signals is provided. We believe that this dataset contains really fine dynamics and interactions where complex models would express their potential. By making it publicly available, we hope that it will enhance the diversity of datasets for time series forecasting and pave the way for further explorations.
+The motivation of this paper was to present HERMES, a new hybird model for non stationary time series forecasting. By mixing the performance of local parametric models and a global neural network, \textit{hermes-tbats} clearly outperforms traditional statistical methods and full neural network models on two forecasting tasks. Furthermore, this new model is totally suited to deal with external signals. With a fine pre-processing and a well-designed architecture, our hybrid framework succeeds at leveraging our complex extra data and reaches very promising accuracy levels in terms of classification. In addition to this article, a fashion dataset gathering a sample of $\numberts$ time series and a collection of weak signals is provided. We believe that this dataset contains really fine dynamics and interactions where complex models would express their potential. By making it publicly available\footnotemark[1], we hope that it will enhance the diversity of datasets for time series forecasting and pave the way for further explorations.
 As a possible future work, designing new models for the weak signals would improve their inclusion  in the HERMES architecture. Focusing on the examples with huge changes of behaviours, a fine analysis of the impact of the collection of weak signals is the topic of ongoing works. In the same way, an interesting improvement of the hybrid framework can be to introduce not a single but several neural networks trained at correcting different kinds of weaknesses. An interesting perspective is to add a latent discrete label to select dynamically the regime shifts. 
 
 
