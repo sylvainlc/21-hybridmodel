@@ -749,7 +749,7 @@ Models using our weak signals perform similarly as without-weak-signals models f
      \textit{snaive} && 0.881 && - &&& 0.357 && - &\\
      \textit{thetam}  && 0.844 && -&&& 0.482 && - &\\
      \textit{arima} && 0.826 && -&&& 0.464 && - & \\
-     \textit{ets} && 0.805 && -&&& 0.449 && - & \\
+     \textit{ets} && 0.807 && -&&& 0.449 && - & \\
      \textit{stlm} && 0.770 && -&&& 0.482 && - & \\
      \textit{hermes-ets-ws} && 0.769 && 0.005 &&& 0.501 && 0.007 &\\
      \textit{hermes-ets} && 0.758 && 0.001 &&& 0.490 && 0.006 &\\
@@ -1021,7 +1021,8 @@ The M4 weekly dataset is a collection of 359 time series with  contrasting behav
 \end{figure*}
 
 
-Looking at the final result of the M4 competition, some models reach a higher accuracy than the HERMES framework on the weekly dataset. Except one approach, all of them are a combination of different models in order to increase the robustness of the final forecast and at the same time achieve a better global accuracy. The remaining one is not an ensembling but a statistical framework called \textit{Forecast Pro}. It is not a single statistical model but a framework that chooses, depending on the sequence properties, the best statistical approach. With a OWA equal to 0.739, it outperforms the \textit{hermer-tbats} and all the M4 proposed models on the M4 weekly sub-dataset. A description and interesting remarks about the \textit{Forecast Pro} model are discussed in \cite{DARIN2020135}. This model offers an interesting research perspective specifically for the M4 weekly forecasting task.
+%Looking at the final result of the M4 competition, some models reach a higher accuracy than the HERMES framework on the weekly dataset. Except one approach, all of them are a combination of different models in order to increase the robustness of the final forecast and at the same time achieve a better global accuracy. The remaining one is not an ensembling but a statistical framework called \textit{Forecast Pro}. It is not a single statistical model but a framework that chooses, depending on the sequence properties, the best statistical approach. With a OWA equal to 0.739, it outperforms the \textit{hermer-tbats} and all the M4 proposed models on the M4 weekly sub-dataset. A description and interesting remarks about the \textit{Forecast Pro} model are discussed in \cite{DARIN2020135}. This model offers an interesting research perspective specifically for the M4 weekly forecasting task.
+Looking at the final result of the M4 competition, some models reach a higher accuracy than the HERMES framework on the weekly dataset. All of them are ensemble framework : a combination of different models in order to increase the robustness of the final forecast and the global accuracy. If this paper, only individual models were compared on the fashion dataset and on the M4 dataset. However, the HERMES framework, as any individual method, is perfectly suited to be include in an ensembling model like the FFORMA approach proposed in \cite{MONTEROMANSO202086}.
 
 \section{Training parameters and loss}
 
