@@ -97,7 +97,7 @@
 \address[mysecondaryaddress]{Heuritech, 71 Rue Réaumur, 75002 Paris, France.}
 
 \begin{abstract}
-TDeveloping models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{http://files.heuritech.com/raw_files/f1_fashion_dataset.tar.xz}} the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviors of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \cite{makridakis2018m4}, and illustrates the benefit of the contribution of external weak signals.
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{http://files.heuritech.com/raw_files/f1_fashion_dataset.tar.xz}} the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviors of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \cite{makridakis2018m4}, and illustrates the benefit of the contribution of external weak signals.
 \end{abstract}
 
 \begin{keyword}
@@ -455,8 +455,8 @@ First, the hybrid framework \textit{hermes-tbats} achieves the best performance 
 
 \begin{table}
   \caption{Results summary on the 1000 time series and 100 time series Fashion dataset. The MASE average on all our time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.}
-  \centering
-% \resizebox{0.85\textwidth}{!}{ 
+ \centering
+ \resizebox{1.\textwidth}{!}{ 
   \begin{tabular}{l||llll}
     \multicolumn{4}{c}{1000 time series Fashion dataset}\vspace{0.5cm} \\
     &&\multicolumn{2}{c}{\textbf{MASE}} \\
@@ -472,8 +472,7 @@ First, the hybrid framework \textit{hermes-tbats} achieves the best performance 
      \textit{lstm} && 0.740 & 0.007 \\
      \textit{tbats} && 0.734 & - \\
      \textbf{\textit{hermes-tbats}} && \textbf{0.719} & 0.002 \\
-  \end{tabular}
-
+  \end{tabular}\hspace{1cm}
 \vspace{.2cm}
 
   \begin{tabular}{l||llll}
@@ -492,7 +491,7 @@ First, the hybrid framework \textit{hermes-tbats} achieves the best performance 
      \textit{tbats} && 0.745 & - \\
      \textbf{\textit{hermes-tbats}} && \textbf{0.739} & 0.003 \\
   \end{tabular}
-%  }
+ }
 \label{tab:1000metricresults}
 \end{table}
 
