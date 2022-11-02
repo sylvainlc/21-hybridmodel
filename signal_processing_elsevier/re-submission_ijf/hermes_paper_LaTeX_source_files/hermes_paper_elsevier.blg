@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: hermes_paper_elsevier.aux
+The style file: model5-names.bst
+Database file #1: hermes_paper_elsevier.bib
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+You've used 33 entries,
+            3390 wiz_defined-function locations,
+            854 strings with 11105 characters,
+and the built_in function-call counts, 25283 in all, are:
+= -- 1838
+> -- 1309
+< -- 15
++ -- 1216
+- -- 366
+* -- 2655
+:= -- 3278
+add.period$ -- 98
+call.type$ -- 33
+change.case$ -- 289
+chr.to.int$ -- 33
+cite$ -- 33
+duplicate$ -- 1724
+empty$ -- 1657
+format.name$ -- 461
+if$ -- 4708
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 332
+newline$ -- 179
+num.names$ -- 132
+pop$ -- 957
+preamble$ -- 1
+purify$ -- 254
+quote$ -- 0
+skip$ -- 760
+stack$ -- 0
+substring$ -- 816
+swap$ -- 1262
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 282
+warning$ -- 0
+while$ -- 130
+width$ -- 0
+write$ -- 460

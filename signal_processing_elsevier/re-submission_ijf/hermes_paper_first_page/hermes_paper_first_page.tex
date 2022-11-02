@@ -1,0 +1,111 @@
+\documentclass[review]{elsarticle}
+
+\usepackage{lineno,hyperref}
+%\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+%\usepackage{authblk}
+\usepackage{amssymb,amsmath,amsthm}
+%\usepackage[pdftex]{graphicx}
+%\usepackage{footnote}
+%\usepackage{url}
+%\usepackage{times,dsfont}
+%\usepackage{fancyhdr}
+%\usepackage{geometry}
+%\pagestyle{fancy}
+\modulolinenumbers[5]
+
+\journal{Journal of \LaTeX\ Templates}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Elsevier bibliography styles
+%%%%%%%%%%%%%%%%%%%%%%%
+%% To change the style, put a % in front of the second line of the current style and
+%% remove the % from the second line of the style you would like to use.
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Numbered
+%\bibliographystyle{model1-num-names}
+
+%% Numbered without titles
+%\bibliographystyle{model1a-num-names}
+
+%% Harvard
+%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
+
+%% Vancouver numbered
+%\usepackage{numcompress}\bibliographystyle{model3-num-names}
+
+%% Vancouver name/year
+%\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
+
+%% APA style
+\bibliographystyle{model5-names}\biboptions{authoryear}
+
+%% AMA style
+%\usepackage{numcompress}\bibliographystyle{model6-num-names}
+
+%% `Elsevier LaTeX' style
+%\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ts}{y}
+\newcommand{\fullts}{{\bf \ts}}
+\newcommand{\tspred}{\widehat{\ts}}
+\newcommand{\stat}{f}
+\newcommand{\statparam}{\theta_{predictor}}
+\newcommand{\fullstat}{{\bf \stat}}
+\newcommand{\lag}{h}
+\newcommand{\window}{w}
+\newcommand{\tswindow}{{\bf \ts}}
+\newcommand{\meants}{\Bar{\ts}}
+\newcommand{\rnnwindow}{{\bf \rnninput}}
+\newcommand{\rnninput}{z}
+\newcommand{\rnn}{\textsc{rnn}}
+\newcommand{\rnnparam}{\theta_{corrector}}
+\newcommand{\err}{err}
+\newcommand{\errwindow}{{\bf \err}}
+\newcommand{\rnnmodel}{\textsc{rnn}}
+\newcommand{\ws}{w}
+\newcommand{\fullws}{{\bf \ws}}
+\newcommand{\wswindow}{{\bf \ws}}
+\newcommand{\concatinput}{x}
+\newcommand{\fullconcatinput}{{ \bf \concatinput}}
+\newcommand{\numberts}{10000}
+\newcommand{\threshold}{\eta}
+\newcommand{\predictor}{\mathrm{RNN}_p}
+\newcommand{\classifier}{\mathrm{RNN}_c}
+\newcommand{\remainder}{r}
+\newcommand{\hiddenregime}{U}
+
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+%% Group authors per affiliation:
+\author[mymainaddress,mysecondaryaddress]{\'Etienne DAVID \corref{mycorrespondingauthor}}
+\cortext[mycorrespondingauthor]{Corresponding author}
+\ead{etienne.david@heuritech.com}
+
+%% or include affiliations in footnotes:
+\author[mysecondaryaddress]{Jean BELLOT}
+
+\author[mymainaddress]{Sylvain LE CORFF} 
+
+\address[mymainaddress]{\small  Samovar, T\'el\'ecom SudParis,  D\'epartement CITI, Institut Polytechnique de Paris, 9 rue Charles Fourier, 91011 EVRY, France.}
+\address[mysecondaryaddress]{Heuritech, 71 Rue Réaumur, 75002 PARIS, France.}
+
+\begin{abstract}
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{http://files.heuritech.com/raw_files/f1_fashion_dataset.tar.xz}} the first fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviors of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition, and illustrates the benefit of the contribution of external weak signals.
+\end{abstract}
+
+\begin{keyword}
+Hybrid models, Recurrent neural networks, Time series.
+\end{keyword}
+
+\end{frontmatter}
+
+\end{document}
