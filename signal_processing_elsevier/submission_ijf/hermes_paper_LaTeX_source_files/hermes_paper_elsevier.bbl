@@ -1,0 +1,204 @@
+\begin{thebibliography}{23}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Article
+\bibitem[{Bandara et~al.(2020)Bandara, Bergmeir \&
+  Hewamalage}]{bandara2020lstm}
+\bibinfo{author}{Bandara, K.}, \bibinfo{author}{Bergmeir, C.}, \&
+  \bibinfo{author}{Hewamalage, H.} (\bibinfo{year}{2020}).
+\newblock \bibinfo{title}{{LSTM-MSNet}: Leveraging forecasts on sets of related
+  time series with multiple seasonal patterns}.
+\newblock {\it \bibinfo{journal}{IEEE transactions on neural networks and
+  learning systems}\/}, .
+%Type = Book
+\bibitem[{Box et~al.(2015)Box, Jenkins, Reinsel \& Ljung}]{box2015time}
+\bibinfo{author}{Box, G.~E.}, \bibinfo{author}{Jenkins, G.~M.},
+  \bibinfo{author}{Reinsel, G.~C.}, \& \bibinfo{author}{Ljung, G.~M.}
+  (\bibinfo{year}{2015}).
+\newblock {\it \bibinfo{title}{Time series analysis: forecasting and
+  control}\/}.
+\newblock \bibinfo{publisher}{John Wiley \& Sons}.
+%Type = Article
+\bibitem[{Brown \& Meyer(1961)}]{RePEc:inm:oropre:v:9:y:1961:i:5:p:673-685}
+\bibinfo{author}{Brown, R.~G.}, \& \bibinfo{author}{Meyer, R.~F.}
+  (\bibinfo{year}{1961}).
+\newblock \bibinfo{title}{The fundamental theorem of exponential smoothing}.
+\newblock {\it \bibinfo{journal}{Operations Research}\/},  {\it
+  \bibinfo{volume}{9}\/}, \bibinfo{pages}{673--685}.
+%Type = Book
+\bibitem[{Douc et~al.(2014)Douc, Moulines \& Stoffer}]{douc2014nonlinear}
+\bibinfo{author}{Douc, R.}, \bibinfo{author}{Moulines, E.}, \&
+  \bibinfo{author}{Stoffer, D.} (\bibinfo{year}{2014}).
+\newblock {\it \bibinfo{title}{Nonlinear time series: Theory, methods and
+  applications with R examples}\/}.
+\newblock \bibinfo{publisher}{CRC press}.
+%Type = Article
+\bibitem[{Hochreiter \& Schmidhuber(1997)}]{hochreiter1997long}
+\bibinfo{author}{Hochreiter, S.}, \& \bibinfo{author}{Schmidhuber, J.}
+  (\bibinfo{year}{1997}).
+\newblock \bibinfo{title}{Long short-term memory}.
+\newblock {\it \bibinfo{journal}{Neural computation}\/},  {\it
+  \bibinfo{volume}{9}\/}, \bibinfo{pages}{1735--1780}.
+%Type = Article
+\bibitem[{Hyndman et~al.(2020)Hyndman, Athanasopoulos, Bergmeir, Caceres,
+  Chhay, O'Hara-Wild, Petropoulos, Razbash \& Wang}]{hyndman2020package}
+\bibinfo{author}{Hyndman, R.~J.}, \bibinfo{author}{Athanasopoulos, G.},
+  \bibinfo{author}{Bergmeir, C.}, \bibinfo{author}{Caceres, G.},
+  \bibinfo{author}{Chhay, L.}, \bibinfo{author}{O'Hara-Wild, M.},
+  \bibinfo{author}{Petropoulos, F.}, \bibinfo{author}{Razbash, S.}, \&
+  \bibinfo{author}{Wang, E.} (\bibinfo{year}{2020}).
+\newblock \bibinfo{title}{Package ‘forecast’}.
+\newblock {\it \bibinfo{journal}{Online] https://cran. r-project.
+  org/web/packages/forecast/forecast. pdf}\/}, .
+%Type = Article
+\bibitem[{Jianwei et~al.(2019)Jianwei, Ye \& Jin}]{jianwei2019novel}
+\bibinfo{author}{Jianwei, E.}, \bibinfo{author}{Ye, J.}, \&
+  \bibinfo{author}{Jin, H.} (\bibinfo{year}{2019}).
+\newblock \bibinfo{title}{A novel hybrid model on the prediction of time series
+  and its application for the gold price analysis and forecasting}.
+\newblock {\it \bibinfo{journal}{Physica A: Statistical Mechanics and its
+  Applications}\/},  {\it \bibinfo{volume}{527}\/}, \bibinfo{pages}{121454}.
+%Type = Article
+\bibitem[{Li et~al.(2019)Li, Jin, Xuan, Zhou, Chen, Wang \&
+  Yan}]{li2019enhancing}
+\bibinfo{author}{Li, S.}, \bibinfo{author}{Jin, X.}, \bibinfo{author}{Xuan,
+  Y.}, \bibinfo{author}{Zhou, X.}, \bibinfo{author}{Chen, W.},
+  \bibinfo{author}{Wang, Y.-X.}, \& \bibinfo{author}{Yan, X.}
+  (\bibinfo{year}{2019}).
+\newblock \bibinfo{title}{Enhancing the locality and breaking the memory
+  bottleneck of transformer on time series forecasting}.
+\newblock {\it \bibinfo{journal}{arXiv preprint arXiv:1907.00235}\/}, .
+%Type = Article
+\bibitem[{Lim et~al.(2019)Lim, Arik, Loeff \& Pfister}]{lim2019temporal}
+\bibinfo{author}{Lim, B.}, \bibinfo{author}{Arik, S.~O.},
+  \bibinfo{author}{Loeff, N.}, \& \bibinfo{author}{Pfister, T.}
+  (\bibinfo{year}{2019}).
+\newblock \bibinfo{title}{Temporal fusion transformers for interpretable
+  multi-horizon time series forecasting}.
+\newblock {\it \bibinfo{journal}{arXiv preprint arXiv:1912.09363}\/}, .
+%Type = Article
+\bibitem[{Livera et~al.(2011)Livera, Hyndman \&
+  Snyder}]{doi:10.1198/jasa.2011.tm09771}
+\bibinfo{author}{Livera, A. M.~D.}, \bibinfo{author}{Hyndman, R.~J.}, \&
+  \bibinfo{author}{Snyder, R.~D.} (\bibinfo{year}{2011}).
+\newblock \bibinfo{title}{Forecasting time series with complex seasonal
+  patterns using exponential smoothing}.
+\newblock {\it \bibinfo{journal}{Journal of the American Statistical
+  Association}\/},  {\it \bibinfo{volume}{106}\/}, \bibinfo{pages}{1513--1527}.
+%Type = Article
+\bibitem[{Makridakis et~al.(2018)Makridakis, Spiliotis \&
+  Assimakopoulos}]{makridakis2018m4}
+\bibinfo{author}{Makridakis, S.}, \bibinfo{author}{Spiliotis, E.}, \&
+  \bibinfo{author}{Assimakopoulos, V.} (\bibinfo{year}{2018}).
+\newblock \bibinfo{title}{The {M}4 competition: Results, findings, conclusion
+  and way forward}.
+\newblock {\it \bibinfo{journal}{International Journal of Forecasting}\/},
+  {\it \bibinfo{volume}{34}\/}, \bibinfo{pages}{802--808}.
+%Type = Article
+\bibitem[{Makridakis et~al.(2020)Makridakis, Spiliotis \&
+  Assimakopoulos}]{makridakis2020m4}
+\bibinfo{author}{Makridakis, S.}, \bibinfo{author}{Spiliotis, E.}, \&
+  \bibinfo{author}{Assimakopoulos, V.} (\bibinfo{year}{2020}).
+\newblock \bibinfo{title}{The {M}4 competition: 100,000 time series and 61
+  forecasting methods}.
+\newblock {\it \bibinfo{journal}{International Journal of Forecasting}\/},
+  {\it \bibinfo{volume}{36}\/}, \bibinfo{pages}{54--74}.
+%Type = Article
+\bibitem[{Martin et~al.(2021)Martin, Ollion, Strub, Le~Corff \&
+  Pietquin}]{martin2020monte}
+\bibinfo{author}{Martin, A.}, \bibinfo{author}{Ollion, C.},
+  \bibinfo{author}{Strub, F.}, \bibinfo{author}{Le~Corff, S.}, \&
+  \bibinfo{author}{Pietquin, O.} (\bibinfo{year}{2021}).
+\newblock \bibinfo{title}{The {M}onte {C}arlo {T}ransformer: a stochastic
+  self-attention model for sequence prediction}.
+\newblock {\it \bibinfo{journal}{arXiv preprint arXiv:2007.08620}\/}, .
+%Type = Book
+\bibitem[{Rogers(1962)}]{rogersdiffusion}
+\bibinfo{author}{Rogers, E.~M.} (\bibinfo{year}{1962}).
+\newblock {\it \bibinfo{title}{Diffusion of innovations}\/}.
+\newblock \bibinfo{publisher}{Simon and Schuster}.
+%Type = Article
+\bibitem[{Salinas et~al.(2020)Salinas, Flunkert, Gasthaus \&
+  Januschowski}]{salinas2020deepar}
+\bibinfo{author}{Salinas, D.}, \bibinfo{author}{Flunkert, V.},
+  \bibinfo{author}{Gasthaus, J.}, \& \bibinfo{author}{Januschowski, T.}
+  (\bibinfo{year}{2020}).
+\newblock \bibinfo{title}{Deepar: Probabilistic forecasting with autoregressive
+  recurrent networks}.
+\newblock {\it \bibinfo{journal}{International Journal of Forecasting}\/},
+  {\it \bibinfo{volume}{36}\/}, \bibinfo{pages}{1181--1191}.
+%Type = Book
+\bibitem[{S\"arkk\"a(2013)}]{sarkka2013bayesian}
+\bibinfo{author}{S\"arkk\"a, S.} (\bibinfo{year}{2013}).
+\newblock {\it \bibinfo{title}{Bayesian Filtering and Smoothing}\/}.
+\newblock \bibinfo{address}{New York, NY, USA}: \bibinfo{publisher}{Cambridge
+  University Press}.
+%Type = Inproceedings
+\bibitem[{Siami-Namini et~al.(2018)Siami-Namini, Tavakoli \&
+  Siami~Namin}]{8614252}
+\bibinfo{author}{Siami-Namini, S.}, \bibinfo{author}{Tavakoli, N.}, \&
+  \bibinfo{author}{Siami~Namin, A.} (\bibinfo{year}{2018}).
+\newblock \bibinfo{title}{A comparison of {ARIMA} and {LSTM} in forecasting
+  time series}.
+\newblock In {\it \bibinfo{booktitle}{2018 17th IEEE International Conference
+  on Machine Learning and Applications (ICMLA)}\/} (pp.
+  \bibinfo{pages}{1394--1401}).
+\newblock \DOIprefix\doi{10.1109/ICMLA.2018.00227}.
+%Type = Article
+\bibitem[{Smyl(2020)}]{smyl2020hybrid}
+\bibinfo{author}{Smyl, S.} (\bibinfo{year}{2020}).
+\newblock \bibinfo{title}{A hybrid method of exponential smoothing and
+  recurrent neural networks for time series forecasting}.
+\newblock {\it \bibinfo{journal}{International Journal of Forecasting}\/},
+  {\it \bibinfo{volume}{36}\/}, \bibinfo{pages}{75--85}.
+%Type = Misc
+\bibitem[{Touron(2017)}]{touron2017modeling}
+\bibinfo{author}{Touron, A.} (\bibinfo{year}{2017}).
+\newblock \bibinfo{title}{Modeling rainfalls using a seasonal hidden markov
+  model}.
+\newblock \href{http://arxiv.org/abs/1710.08112}{\tt arXiv:1710.08112}.
+%Type = Article
+\bibitem[{Touron(2019)}]{touron2019consistency}
+\bibinfo{author}{Touron, A.} (\bibinfo{year}{2019}).
+\newblock \bibinfo{title}{Consistency of the maximum likelihood estimator in
+  seasonal hidden markov models}.
+\newblock {\it \bibinfo{journal}{Statistics and Computing}\/},  {\it
+  \bibinfo{volume}{29}\/}, \bibinfo{pages}{1055--1075}.
+%Type = Article
+\bibitem[{Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones,
+  Gomez, Kaiser \& Polosukhin}]{vaswani2017attention}
+\bibinfo{author}{Vaswani, A.}, \bibinfo{author}{Shazeer, N.},
+  \bibinfo{author}{Parmar, N.}, \bibinfo{author}{Uszkoreit, J.},
+  \bibinfo{author}{Jones, L.}, \bibinfo{author}{Gomez, A.~N.},
+  \bibinfo{author}{Kaiser, L.}, \& \bibinfo{author}{Polosukhin, I.}
+  (\bibinfo{year}{2017}).
+\newblock \bibinfo{title}{Attention is all you need}.
+\newblock {\it \bibinfo{journal}{31st Conference on Neural Information
+  Processing Systems (NeurIPS 2017)}\/}, .
+%Type = Article
+\bibitem[{Zhang(2003)}]{zhang2003time}
+\bibinfo{author}{Zhang, G.~P.} (\bibinfo{year}{2003}).
+\newblock \bibinfo{title}{Time series forecasting using a hybrid {ARIMA} and
+  neural network model}.
+\newblock {\it \bibinfo{journal}{Neurocomputing}\/},  {\it
+  \bibinfo{volume}{50}\/}, \bibinfo{pages}{159--175}.
+%Type = Book
+\bibitem[{Zucchini et~al.(2017)Zucchini, MacDonald \&
+  Langrock}]{zucchini2017hidden}
+\bibinfo{author}{Zucchini, W.}, \bibinfo{author}{MacDonald, I.~L.}, \&
+  \bibinfo{author}{Langrock, R.} (\bibinfo{year}{2017}).
+\newblock {\it \bibinfo{title}{Hidden Markov models for time series: an
+  introduction using R}\/}.
+\newblock \bibinfo{publisher}{CRC press}.
+
+\end{thebibliography}

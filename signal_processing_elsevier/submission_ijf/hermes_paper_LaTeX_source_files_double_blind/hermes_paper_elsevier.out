@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Hybrid model with external signals}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Per-time-series predictors}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Error-corrector recurrent model}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Weak signal}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Fashion dataset with external weak signals}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Translate fashion to data}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Fashion dataset}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Weak signal}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Experimental results}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Training}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Benchmarks, hybrid models and Metrics}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.3}{Result for Heuritech Fashion dataset}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.4}{Result for M4 weekly dataset}{section.4}% 14
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Loss grid search on the Fashion Dataset}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Parameters grid search on the M4 weekly Dataset}{section.5}% 17
