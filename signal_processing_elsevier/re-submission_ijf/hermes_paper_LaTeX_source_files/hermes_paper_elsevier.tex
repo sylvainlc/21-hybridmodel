@@ -280,7 +280,7 @@ For the first parametric per-time-series models, existing Python  libraries name
 $$
 \ell(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
 $$
-This choice of $\mathrm{L}_1$ loss function is motivated by its robustness to outliers which accounts for some time series in the fashion industry with very specific behaviors. The loss and previous parameters are all set with a complete grid search. See Appendix~\ref{sec:heuritechgridsearch} for additional results concerning the loss function choice and Appendix~\ref{sec:m4gridsearch} for a complete grid search example. The code is developed in Python using the Tensorflow library. It allows the use of GPU to speed up the training process.
+This choice of $\mathrm{L}_1$ loss function is motivated by its robustness to outliers which accounts for some time series in the fashion industry with very specific behaviors. The loss and previous parameters are all set with a complete grid search. See \ref{sec:fashiongridsearch} for additional results concerning the loss function choice and \ref{sec:m4gridsearch} for a complete grid search example. The code is developed in Python using the Tensorflow library. It allows the use of GPU to speed up the training process.
 
 
 
@@ -454,7 +454,7 @@ This simple modification increases significantly the accuracy of the per-time-se
 
 \begin{figure*}
   \centering
-    \includegraphics[width=1.\linewidth]{M4_dataset}
+    \includegraphics[width=1.\linewidth]{m4_dataset}
   \caption{One of the shortest sequences of the M4 weekly dataset (93 time steps). In order to fit its predictor, the last complete year of the train set is duplicated in order to reach a total length of 300 time steps.}
 \label{fig:m4dataset}
 \end{figure*}
@@ -536,10 +536,10 @@ The M4 weekly dataset is a collection of 359 time series with  contrasting behav
 
 
 \begin{figure}
-  \includegraphics[width=1.\linewidth]{W10}
+  \includegraphics[width=1.\linewidth]{w10}
   \label{fig:m4examples:sub1}
-  \includegraphics[width=1.\linewidth]{W20}
-  \includegraphics[width=1.\linewidth]{W220}
+  \includegraphics[width=1.\linewidth]{w20}
+  \includegraphics[width=1.\linewidth]{w220}
 \caption{Examples of time series from the M4 weekly dataset. From Top to Bottom : time series called \textit{W10} from the \textit{Other} category, \textit{W20} from the \textit{Macro} category and \textit{W220} from the \textit{Finance} category.}
 \label{fig:m4examples}
 \end{figure}
@@ -598,7 +598,7 @@ In addition of the results provided is Section~\ref{sec:m4result}, Table~\ref{ta
 \section{Training parameters and loss}
 
 \subsection{Loss grid search on the Fashion Dataset}
-\label{sec:heuritechgridsearch}
+\label{sec:fashiongridsearch}
 
 Using deep learning models in time series forecasting is an appealing way to achieve higher accuracy performance. However, it induces two main issues. First, it requires a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, a dataset can hide contrasting time series in terms of scale, noise and behaviour. These differences can impact training performance. For the HERMES architecture, some candidate losses were defined for the training: the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE). The loss functions are defined as follows:
 \begin{align*}
