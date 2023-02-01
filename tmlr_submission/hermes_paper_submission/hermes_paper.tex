@@ -107,7 +107,7 @@ The paper is organized as follows. Section~\ref{sec:dataset} presents the new fa
 \begin{figure*}
   \centering
     \includegraphics[width=1.\linewidth]{pipeline_archi}
-  \caption{From social media to fashion time series. a) A complete image dataset of 150 millions of pictures is collected from social media users localized on 5 strategic markets. b) A visual recognition pipeline is applying on images. Global fashion items are detected with a collection of fine-grain attributes. c) Result are aggregated by fashion trend definition over the time and normalized in order to remove social media bias. The fashion time series are created.}
+  \caption{From social media to fashion time series. a) A complete image dataset of 150 millions of pictures is collected from social media users localized on 5 strategic markets. b) A visual recognition pipeline is applied on images. Global fashion items are detected with a collection of fine-grain attributes. c) Results are aggregated by fashion trend over time and normalized in order to remove social media bias. }
 \label{fig:pipeline}
 \end{figure*}
 
@@ -117,13 +117,13 @@ The paper is organized as follows. Section~\ref{sec:dataset} presents the new fa
 Social media have appeared as an impressive data source to follow the evolution of fashion over the time. Looking at a specific trend, social media can provide where and when this trend had been worn at first and how it spread all over the world. To do it automatically for thousands of trends, the following methodology was introduced. In the first place, a complete image dataset of 150 millions pictures is collected from different social media such as Instagram or Weibo. We targeted 5 strategic markets for the retail industry using posts localisation: the United States, Europe, Japan, Brazil and China. 
 The second step consists in creating a powerful visual recognition framework to be able to detect clothes details on pictures like the type of clothing, the form, the size, the color, the texture, etc. To do so, the following framework is designed.
 \begin{enumerate}
-    \item First, an object detection model is trained to detect the position, the size and the general type of possible multiple fashion items on a picture. This localization model is based on the Faster-RCNN architecture introduced in \citet{ren2015}. Starting from weights trained on MS-COCO \citep{lin2014}, a fine-tune of the model is done on our data with a standard setup following the original paper.
+    \item First, an object detection model is trained to detect the position, the size and the general type of possible multiple fashion items on a picture. This localization model is based on the Faster-RCNN architecture introduced in \citet{ren2015}. Starting from weights trained on MS-COCO \citep{lin2014}, the model is fine-tuned with our data with a standard setup following the original paper.
     \item  Additionally, several visual recognition models are trained at classifying a rich collection of 350 fashion details. We train one classifier for each category of fashion item: one for pants, another for tops, a third for shoes, etc. These models are all based on the Xception architecture introduced in \citet{chollet2017}. So as to trained them, large amount of social media pictures (between 200k and 800k training images depending on the category) have been manually tagged to constitute meaningful training datasets depending on the classification task. Architectures are first initialized with public weights trained on ImageNet \citep{russakovsky2014} and then fine tuned on the manually labeled dataset corresponding to their task.
 \end{enumerate}
 
 At inference time, we first apply the localisation model which predicts boxes of generic fashion items (tops, pants, shoes, dresses, etc.) for each image. Then, each fashion item is cropped from its full image, resized to the classifiers' input size ($299\times299\,$px) and fed into the related classifier: a top will be fed into the model trained on tops, etc. We obtain for each image a set of boxes, associated with a general category and a set of fine-grain attributes describing this object. As a final step, fashion experts aggregate those attributes to define relevant trends for the fashion and retails industry.
 
-The 150 million of social media pictures are analyzed with the visual recognition pipeline described below. Out of those images, we detected clothes in 96 millions posts making the final dataset used in this paper. We aggregate results by fashion trend definition over the time and  thousands of trends are finally translated from social media to time series. We note $y^{c,g,m,i}$ the final raw sequence representing the fashion trend $i$ of the cloth type $c$ for the gender $g$ on market $m$. At each time t, $y^{c,g,m,i}_t$ represents the number of posted pictures in the market $m$ during the week $t$ where computer vision algorithms detected the fashion trend $i$ of the cloth type $c$ for the gender $g$. As an illustration, an example of fashion time series is given in Figure~\ref{fig:oneemergingtrend}.
+The 150 million of social media pictures are analyzed with this visual recognition pipeline. Out of those images, we detected clothes in 96 millions posts making the final dataset used in this paper. We aggregate results by fashion trend definition over the time and  thousands of trends are finally translated from social media to time series. We note $y^{c,g,m,i}$ the final raw sequence representing the fashion trend $i$ of the cloth type $c$ for the gender $g$ on market $m$. At each time t, $y^{c,g,m,i}_t$ represents the number of posted pictures in the market $m$ during the week $t$ where computer vision algorithms detected the fashion trend $i$ of the cloth type $c$ for the gender $g$. As an illustration, an example of fashion time series is given in Figure~\ref{fig:oneemergingtrend}.
 
 \begin{figure*}
   \centering
@@ -139,7 +139,7 @@ Due to the increasing use of social media and continuous changes of users' behav
 \begin{equation}
     y^{i}_t = \frac{y^{c,g,m,i}_{t}}{\bar{y}^{c,g,m}_t}\,,
 \end{equation}
-where T denotes the number of available time steps. The time series $y^{c,g,m,i}$ is divided by the deseasonalized signal $\bar{y}^{c,g,m}$ and not $\Tilde{y}^{c,g,m}$ in order to avoid removing the seasonality of all the fashion trend sequences. With this normalizing step, a majority of the social media bias are removed and the final normalized sequences are expressed in share of category. As an illustration, an example of the normalization process is displayed in Figure~\ref{fig:normalization}. The raw Jersey Top trend for females in China is divided by the deseasonalized global Top trend for females in China. 
+where T denotes the number of available time steps. The time series $y^{c,g,m,i}$ is divided by the deseasonalized signal $\bar{y}^{c,g,m}$ and not $\Tilde{y}^{c,g,m}$ in order to avoid removing the seasonality of all the fashion trend sequences. With this normalizing step, most of the social media bias is removed and the final normalized sequences are expressed in share of category. As an illustration, an example of the normalization process is displayed in Figure~\ref{fig:normalization}. The raw Jersey Top trend for females in China is divided by the deseasonalized global Top trend for females in China. 
 
 \begin{figure*}
 \centering
@@ -156,7 +156,7 @@ So as too catch the early signal of the emergence of a trend, 6000 social media 
 $$
 \ws^{f,i}_{t} = \frac{\ts_t^{f,i}}{\ts_t^{f,i}+\ts_t^{i}}\,.
 $$
-where T denotes the number of available time steps. Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an impressive emerging fashion shoes trend with its \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
+where T denotes the number of available time steps. Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an  emerging fashion shoes trend with its \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
 
 \subsection{Fashion dataset}
 
