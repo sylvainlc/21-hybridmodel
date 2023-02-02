@@ -152,7 +152,7 @@ where T denotes the number of available time steps. The time series $y^{c,g,m,i}
 \subsection{Weak signal}
 
 In theoretical fashion dynamics \citep{rogers1962}, different categories of adopters follow a trend in succession, resulting in several adoption waves.
-So as too catch the early signal of the emergence of a trend, 6000 social media influencers were selectioned by hand by fashion experts. Aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology as for the main panel described in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this weak signal.  For all fashion sequence $\{y^i_t\}_{1 \leq t \leq T}$, let $\{\ts^{f,i}_t\}_{1 \leq t \leq T}$ be the normalized sequence representing the behaviours of influencers regarding the fashion trend $i$. As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for the hybrid model: for all $t \in \{1,\ldots,T\}$ and any fashion trend $i$,
+So as to catch the early signal of the emergence of a trend, 6000 social media influencers were selectioned by hand by fashion experts. Aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology as for the main panel described in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this weak signal.  For all fashion sequence $\{y^i_t\}_{1 \leq t \leq T}$, let $\{\ts^{f,i}_t\}_{1 \leq t \leq T}$ be the normalized sequence representing the behaviours of influencers regarding the fashion trend $i$. As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for the hybrid model: for all $t \in \{1,\ldots,T\}$ and any fashion trend $i$,
 $$
 \ws^{f,i}_{t} = \frac{\ts_t^{f,i}}{\ts_t^{f,i}+\ts_t^{i}}\,.
 $$
@@ -202,7 +202,7 @@ For all $1\leqslant n \leqslant N$, we note $\stat^n(.;\statparam^n)$ the $n$-th
 During the M4 competition, the hybrid model of \citet{smyl2020} was based on a multiplicative exponential smoothing model as the time-series-specific predictor. However, on sporadic time series, this choice leads to poor results and instability. In this paper, a more general framework able to deal with any kind of per-time-series models is provided. In Section~\ref{sec:exp}, two versions of our framework are proposed. The first one is based on an  exponential smoothing as a reference similar to the baseline \citet{smyl2020} and the second one uses a TBATS model \citep{alysha2011} which provides better results as this parametric model includes  Fourier representations with time varying coefficients, and ARMA error correction. 
 
 %In the specific application of fashion trends prediction, two main forms of standard weaknesses were detected and defined for univariate parametric forecasts. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provides good predictions on time series with additive seasonality but fails at handling multiplicative seasonalities. The second form, harder to detect and correct, is the weakness of information. 
-For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In some cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that the exact influence of external variables on the main signal is mostly unknown. This motivates the introduction of a global RNN trained on all time series and able to consider and leverage external signals. First forecast example of our new hybrid model is given in Figure~\ref{fig:introexamples}.
+For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In some cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that the exact influence of external variables on the main signal is mostly unknown. This motivates the introduction of a global RNN trained on all time series and able to consider and leverage external signals.
 
 
 \begin{figure*}
@@ -214,7 +214,7 @@ For non stationary time series, huge changes of behaviours are not always predic
 
 \subsection{Error-corrector recurrent model}
 
-The second part of the model is a global RNN, trained on all the $N$ sequences to correct the weaknesses of the first per-time-series parametric models. This task requires a thorough data pre-processing as recurrent neural networks training is highly sensitive to the scale of the data and requires well-designed inputs. Since no assumption about the scale of our time series was made, inputs require a careful normalization before being fed to the RNN.
+The second part of the model is a global RNN, trained on all the $N$ sequences to correct the weaknesses of the first per-time-series parametric models. This task requires a thorough data pre-processing as recurrent neural networks training is highly sensitive to the scale of the data and requires well-designed inputs.
 
 
 Let $\window \in \mathbb{N}$ be the window size, usually this window is proportional to the forecast horizon $\window \propto \lag$. The RNN input is defined as the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnninput^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$: for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$,
@@ -225,7 +225,7 @@ where $k = i - h\lfloor i/h \rfloor$ with $\lfloor. \rfloor$ the floor function.
 $$
 \tspred^{corr,n}_{T+i|T} = \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\ \,.
 $$
-Our hybrid model forecast is, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$,
+Thus, if no external signals are available, the final hermes  forecast is, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$,
 \begin{align}
 \label{eq:nows:full:model}
 \tspred^n_{T+i|T}  &= \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T} \\
@@ -237,7 +237,7 @@ Our hybrid model forecast is, for all $1\leqslant n \leqslant N$ and all $i \in 
 
 %Using well-fitted time-series-specific parametric models, the new hybrid network corrects the first form of weakness and provides appealing performance on the fashion dataset, see Table~\ref{tab:metricresults}. 
 %Then, to correct the second form of weakness, 
-In addition to the $N$ target time series, $K \times N$ external sequences indexed from $0$ to $T$ are considered. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ associated with the sequence $\fullts^n$. Let  $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ be all the values of the weak signals associated with the $n$-th sequence. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the sequence. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, a new input for the RNN is defined:   
+In addition to the $N$ target time series, $K \times N$ external sequences indexed from $0$ to $T$ are now considered. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ associated with the sequence $\fullts^n$. Let  $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ be all the values of the external signals. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the external sequences. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, a new input for the RNN is defined:   
 $$
 \fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}= \{\rnninput^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
 $$
@@ -248,7 +248,7 @@ Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}
 \tspred^n_{T+i|T}  &= \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T}\\
 & = \stat^n(\ts^n_{1:T};\statparam^n)_i +  \rnn(\fullconcatinput^n_T;\rnnparam)_i \cdot \meants^n_T\,.\nonumber
 \end{align}
-An illustration of the proposed  model is displayed in Figure~\ref{fig:architecture}.
+An illustration of the proposed  model is displayed in Figure~\ref{fig:architecture} and a first forecast example is given in Figure~\ref{fig:introexamples}..
 
 \begin{figure}
   \centering
