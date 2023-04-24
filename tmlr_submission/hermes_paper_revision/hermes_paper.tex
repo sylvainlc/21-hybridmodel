@@ -1,0 +1,623 @@
+
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\newcommand{\ts}{y}
+\newcommand{\fullts}{{\bf \ts}}
+\newcommand{\tspred}{\widehat{\ts}}
+\newcommand{\stat}{f}
+\newcommand{\statparam}{\theta_{predictor}}
+\newcommand{\fullstat}{{\bf \stat}}
+\newcommand{\lag}{h}
+\newcommand{\window}{w}
+\newcommand{\tswindow}{{\bf \ts}}
+\newcommand{\meants}{\Bar{\ts}}
+\newcommand{\rnnwindow}{{\bf \rnninput}}
+\newcommand{\rnninput}{z}
+\newcommand{\rnn}{\textsc{rnn}}
+\newcommand{\rnnparam}{\theta_{corrector}}
+\newcommand{\err}{err}
+\newcommand{\errwindow}{{\bf \err}}
+\newcommand{\rnnmodel}{\textsc{rnn}}
+\newcommand{\ws}{w}
+\newcommand{\fullws}{{\bf \ws}}
+\newcommand{\wswindow}{{\bf \ws}}
+\newcommand{\concatinput}{x}
+\newcommand{\fullconcatinput}{{ \bf \concatinput}}
+\newcommand{\numberts}{10000}
+\newcommand{\threshold}{\eta}
+\newcommand{\predictor}{\mathrm{RNN}_p}
+\newcommand{\classifier}{\mathrm{RNN}_c}
+\newcommand{\remainder}{r}
+\newcommand{\hiddenregime}{U}
+
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+Developing models and algorithms to draw causal inference for time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}} an appealing fashion dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviours of influencers. Secondly, to leverage such a complex and rich dataset, we propose a new hybrid forecasting model\footnotemark. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \citep{makridakis2018}, and illustrates the benefit of the contribution of external weak signals.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+Multivariate time series forecasting is a widespread statistical problem with  many applications, see for instance \citet{sarkka2013, douc2014, zucchini2017} and the numerous references therein.
+Parametric generative models provide explainable predictions with statistical guarantees based on a precise modeling of the predictive distributions of new data based on a record of past observations.
+Calibrating these models, for instance using maximum likelihood inference, often requires a fair amount of tuning to design a time series-specific model to provide  accurate forecasts and sharp confidence intervals.  Depending on the use case, statistical properties of the signal and the available data, many families of models have been proposed for time series.  The exponential smoothing model \citep{Brown1961}, the Trigonometric Box-Cox transform, ARMA errors, Trend, and Seasonal components model (TBATS) \citep{alysha2011}, or the ARIMA with the Box-Jenkins approach \citep{box2015} are for instance very popular parametric generative models.  Hidden Markov models (HMM) are also widespread and presuppose that available observations are defined using missing data describing the dynamical system. This hidden state is assumed to be a Markov chain such that at each time step the received observation is a random function of the corresponding latent data.  Although hidden states are modeled as a Markov chain, the observations arising therefrom have a complex statistical structure.
+In various applications where signals exhibit non-stationarities such as trends and seasonality, classical HMM are not adapted. However, \citet{touron2017}  recently proposed seasonal HMM, assuming that transition probabilities between the states, as well as the emission distributions, are not constant in time but evolve in a periodic manner. Strong consistency results were established in \citet{touron2019} and Expectation Maximization based numerical experiments were proposed.
+Although these works provide promising results, HMM are computationally expensive to train and are not yet well studied for seasonal  sequences with thousands of components.
+ 
+In many fields, single or few time series have become thousands of sequences with various statistical properties. In this new context, classical time series specific statistical models show limitations when dealing with numerous heterogeneous data. Recurrent neural networks and recent sequence to sequence deep learning architectures offer very appealing numerical alternatives thanks to their capability of leveraging any kind of heterogeneous multivariate data, see for instance \citet{ hochreiter1997,vaswani2017, siami2018, li2019, lim2019,salinas2020}. The DeepAR model proposed in \citet{salinas2020} provides a global model from many time series based on a multi-layer recurrent neural network with LSTM cells. More recently, applications using the Transformer model have been proposed  \citep{li2019}. The Temporal Fusion Transformers (TFT) approach is a direct alternative to the DeepAR model \citep{lim2019}.  Unfortunately, all these solutions suffer from two main weaknesses. Firstly, many of them are black-boxes  as the final forecast usually does not come with a statistical guarantee  although a few recent works focused on measuring uncertainty in recurrent neural networks, see  \citet{martin2020}. Secondly, without a fine preprocessing and well chosen hyperparameters, these methods may lead to poor results and be outperformed by traditional statistical models, see \citet{makridakis2018}.
+
+In this paper, we consider an emerging time series forecasting application referred to as {\em fashion trends prediction}. In fashion and retails industries, accurately anticipating consumers' needs is vital and wrong decisions can lead to massive wastes. With the explosion of social network and the recent advances in image recognition, it is possible to translate the visibility of fashion items on social media over time into time series. Consequently, models and algorithms can be trained to accurately anticipate and predict consumer behaviour. In \citet{ma2020}, a  dataset is provided using social media pictures and an image recognition framework to detect several clothes: 2000 fashion time series are proposed with a weekly seasonality. However, only 3 years of historical data is available (144 data points) that may not be sufficient for some statistical approaches. In \citet{ma2020}, another dataset is presented gathering 8000 fashion sequences with an historical available data  increased to 5 years. Nevertheless, only 120 values are available for each fashion time series and the overall volume remains low for a large part of the sequences resulting in a lot of noise and no clear patterns. In this paper, we propose a new fashion dataset overcoming the weaknesses of the two previous ones. Based on cutting-edge image recognition algorithms \citep{ren2015,chollet2017}, we built a large fashion dataset containing \numberts\ weekly sequences of fashion trends on social media with 5 years of historical data from 01-01-2015 to 30-12-2019. This dataset has very appealing properties:  all time series have the same length (261 data points), there is no missing value and there is no sparse time series even for niche trends. Concerning fashion dynamics, some of them appear to be really volatile with nonlinear changes of dynamics resulting from the emergence of new tendencies. In this context, understanding early signals of the apparition of a trend is one of the key to accurately forecast the future of the fashion. Consequently, the originality of our dataset comes from the fact that additional external weak signals are introduced. With our fashion expertise, we detected several groups of highly influential fashion users. Analyzing their specific behaviours on social media, we associate with each time series an external weak signal representing the same fashion trends on a sub-category of users. They are called weak signals because they are often alerts or events that are too sparse, or too incomplete to allow on their own an accurate estimation of their impact on the prediction of the target signal. Exploring this new way of representing fashion, we aim at designing a model able to deal with such a large dataset, leveraging  complex external weak signals and finally providing the most accurate forecasts.
+ 
+Recurrent neural networks are appealing to tackle our forecasting problem due to their capability of leveraging external data.  Recently, hybrid models combining deep neural network (DNN) architectures with widespread statistical models to deal with seasonality and trends have been proposed, see for instance  \citet{zhang2003,jianwei2019,bandara2020}. The approach providing the most striking results was proposed in  \citet{smyl2020} in the context of the M4 forecasting competition \citep{makridakis2020}.  Given a large dataset, a per-time-series multiplicative exponential smoothing model was introduced to estimate simple but fundamental components for each time series and compute a first prediction. Then a global recurrent neural network was trained on the entire dataset to correct errors of the previous exponential smoothing models. 
+
+Following this work, we present in this paper HERMES, a new hybrid recurrent model for time series forecasting with inclusion of external signals. This new architecture is decomposed  into two parts: local predictors and a global corrector.  First, a per-time-series parametric statistical model is trained on each sequence. Then, a global recurrent neural network is trained to evaluate and correct the forecast weaknesses of the first collection of models. The external weak signals reveal the real potential of the hybrid approach: a global neural network, able to leverage large amounts of heterogeneous data, deal with any kind of external weak signals, learn context and finally correct weaknesses and errors of parametric models.
+
+The paper is organized as follows. Section~\ref{sec:dataset} presents the new fashion dataset provided with this article. Then, the proposed forecasting approach HERMES is presented in Section~\ref{sec:hybrid}. Section~\ref{sec:exp} describes the model results and comparisons with several benchmarks on the 2 different use cases: the fashion dataset and the M4 competition weekly dataset. Finally, a general conclusion and some research perspectives are given in  Section~\ref{sec:conclusion}.
+
+\section{From social media to fashion time series}
+\label{sec:dataset}
+
+\begin{figure*}
+  \centering
+    \includegraphics[width=1.\linewidth]{pipeline_archi}
+  \caption{From social media to fashion time series. a) A complete image dataset of 150 millions of pictures is collected from social media users localized on 5 strategic markets. b) A visual recognition pipeline is applied on images. Global fashion items are detected with a collection of fine-grain attributes. c) Results are aggregated by fashion trend over time and normalized in order to remove social media bias. }
+\label{fig:pipeline}
+\end{figure*}
+
+\subsection{Translate fashion to data}
+\label{sec:dataset:a}
+
+Social media have appeared as an impressive data source to follow the evolution of fashion over the time. Looking at a specific trend, social media can provide where and when this trend had been worn at first and how it spread all over the world. To do it automatically for thousands of trends, the following methodology was introduced. In the first place, a complete image dataset of 150 millions pictures is collected from different social media such as Instagram or Weibo. We targeted 5 strategic markets for the retail industry using posts localisation: the United States, Europe, Japan, Brazil and China. 
+The second step consists in creating a powerful visual recognition framework to be able to detect clothes details on pictures like the type of clothing, the form, the size, the color, the texture, etc. To do so, the following framework is designed.
+\begin{enumerate}
+    \item First, an object detection model is trained to detect the position, the size and the general type of possible multiple fashion items on a picture. This localization model is based on the Faster-RCNN architecture introduced in \citet{ren2015}. Starting from weights trained on MS-COCO \citep{lin2014}, the model is fine-tuned with our data with a standard setup following the original paper.
+    \item  Additionally, several visual recognition models are trained at classifying a rich collection of 350 fashion details. We train one classifier for each category of fashion item: one for pants, another for tops, a third for shoes, etc. These models are all based on the Xception architecture introduced in \citet{chollet2017}. So as to trained them, large amount of social media pictures (between 200k and 800k training images depending on the category) have been manually tagged to constitute meaningful training datasets depending on the classification task. Architectures are first initialized with public weights trained on ImageNet \citep{russakovsky2014} and then fine tuned on the manually labeled dataset corresponding to their task.
+\end{enumerate}
+
+At inference time, we first apply the localisation model which predicts boxes of generic fashion items (tops, pants, shoes, dresses, etc.) for each image. Then, each fashion item is cropped from its full image, resized to the classifiers' input size ($299\times299\,$px) and fed into the related classifier: a top will be fed into the model trained on tops, etc. We obtain for each image a set of boxes, associated with a general category and a set of fine-grain attributes describing this object. As a final step, fashion experts aggregate those attributes to define relevant trends for the fashion and retails industry.
+
+The 150 million of social media pictures are analyzed with this visual recognition pipeline. Out of those images, we detected clothes in 96 millions posts making the final dataset used in this paper. We aggregate results by fashion trend definition over the time and  thousands of trends are finally translated from social media to time series. We note $y^{c,g,m,i}$ the final raw sequence representing the fashion trend $i$ of the cloth type $c$ for the gender $g$ on market $m$. At each time t, $y^{c,g,m,i}_t$ represents the number of posted pictures in the market $m$ during the week $t$ where computer vision algorithms detected the fashion trend $i$ of the cloth type $c$ for the gender $g$. As an illustration, an example of fashion time series is given in Figure~\ref{fig:oneemergingtrend}.
+
+\begin{figure*}
+  \centering
+    \includegraphics[width=1.\linewidth]{br_female_shoes_262}
+  \caption{A shoes trend of the fashion dataset. In black the main signal and in orange its associated \textit{fashion-forward} weak signal. The sudden explosion of the influencers signal at the end of 2018 announces the future burst of the trend in the mass market.}
+\label{fig:oneemergingtrend}
+\end{figure*}
+
+\subsection{Removing social media bias}
+\label{sec:dataset:b}
+
+Due to the increasing use of social media and continuous changes of users' behaviours, a normalization step is applied to the raw sequences $y^{c,g,m,i}$ in order to remove bias. Thus, we define the following normalizing signal $\Tilde{y}^{c,g,m}$. This signal represents the global sequence of the cloth type $c$ for the gender $g$ on market $m$ (e.g the evolution of the skirts in general for female in Europe). With the R package \texttt{stats}, the Seasonal-Trend decomposition using LOESS  \citep{cleveland1990} is used to remove the seasonal component of $\Tilde{y}^{c,g,m}$. The resulting deseasonalized signal is called  $\bar{y}^{c,g,m}$. Finally, for any fashion trend $i$, the following normalized sequence is defined for all $ 0 \leq t \leq T$:
+\begin{equation}
+    y^{i}_t = \frac{y^{c,g,m,i}_{t}}{\bar{y}^{c,g,m}_t}\,,
+\end{equation}
+where T denotes the number of available time steps. The time series $y^{c,g,m,i}$ is divided by the deseasonalized signal $\bar{y}^{c,g,m}$ and not $\Tilde{y}^{c,g,m}$ in order to avoid removing the seasonality of all the fashion trend sequences. With this normalizing step, most of the social media bias is removed and the final normalized sequences are expressed in share of category. As an illustration, an example of the normalization process is displayed in Figure~\ref{fig:normalization}. The raw Jersey Top trend for females in China is divided by the deseasonalized global Top trend for females in China. 
+
+\begin{figure*}
+\centering
+  \includegraphics[width=1.\linewidth]{cn_female_top_raw}
+  \includegraphics[width=1.\linewidth]{cn_female_top_norm}
+\caption{Example of difference between the raw sequence and the normalized one for the Jersey top fashion trend for females in China. In this example, we normalize by the deseasonalized global top fashion trend for females in China. (Top) Time series representing the raw signal of the Jersey top fashion trend for females in China. (Bottom) Time series representing the normalized signal of the Jersey top fashion trend for females in China.}
+\label{fig:normalization}
+\end{figure*}
+
+\subsection{Weak signal}
+
+In theoretical fashion dynamics \citep{rogers1962}, different categories of adopters follow a trend in succession, resulting in several adoption waves.
+So as to catch the early signal of the emergence of a trend, 6000 social media influencers were selectioned by hand by fashion experts. Aggregating them, a specific ``fashion-oriented`` panel is created. With the same methodology as for the main panel described in Section~\ref{sec:dataset:a} and Section~\ref{sec:dataset:b}, a normalized time series representing each fashion trend on this specific population is created. We named \textit{fashion-forwards} this weak signal.  For all fashion sequence $\{y^i_t\}_{1 \leq t \leq T}$, let $\{\ts^{f,i}_t\}_{1 \leq t \leq T}$ be the normalized sequence representing the behaviours of influencers regarding the fashion trend $i$. As we want to detect shifts between the main signal and the fashion forward signal, the following input is computed for the hybrid model: for all $t \in \{1,\ldots,T\}$ and any fashion trend $i$,
+$$
+\ws^{f,i}_{t} = \frac{\ts_t^{f,i}}{\ts_t^{f,i}+\ts_t^{i}}\,.
+$$
+where T denotes the number of available time steps. Values close to 0.5 indicate a similar behaviour between the influencers panel and the general panel. For instance, an  emerging fashion shoes trend with its \textit{fashion-forwards} weak signal is represented in Figure~\ref{fig:oneemergingtrend}. 
+
+\subsection{Fashion dataset}
+
+With this paper, we provide publicly\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}} a sample of $\numberts$ normalized fashion trends for men and women, over 9 different categories and 5 different markets. Each sequence has 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. This collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes, referred to as emerging or declining trends. A central point of this work is to accurately detect and forecast such trends. In addition, each fashion time series is linked with its associated normalized fashion forward signal as presented in the section above. An overview of the dataset can be found in Table~\ref{tab:fashiondataset}. 
+
+\begin{table*}
+  \caption{Fashion time series overview. For each couple geozone/category, the table gives the number of trends (Female/Male).}
+\label{tab:fashiondataset}
+  \centering
+  \resizebox{0.65\width}{!}{
+  \begin{tabular}{l||lllllllll}
+    \\
+    &  \textbf{Top}  & \textbf{Pants} & \textbf{Short} & \textbf{Skirt} & \textbf{Dress} & \textbf{Coat} & \textbf{Shoes} & \textbf{Color} & \textbf{Texture}  \\
+    \hline
+    \hline
+    \\
+\textbf{United States} & 411/208 & 149/112 & 47/22 & 29/- & 20/- & 208/151 & 293/86 & 38/44 & 85/81\\
+     \textbf{Europe} & 409/228 &  134/114 & 48/21 & 28/- & 20/- & 211/159 & 303/78 & 41/42 & 87/74\\
+     \textbf{Japan} &  403/218 & 136/107 & 49/31 & 28/- &  23/- & 185/149 &  311/78 & 46/42 &  92/65\\
+     \textbf{China} &  424/202 & 147/114 & 46/29 & 27/- &  27/- & 178/161 &  310/78 & 41/47 &  88/77\\
+     \textbf{Brazil} &  431/222 & 134/117 & 49/27 & 30/- &  28/- & 203/152 & 311/76 & 48/41 & 107/84\\
+     \\
+     \textbf{Total} & 2078/1078 & 700/564 & 239/130 & 142/- & 118/- & 985/772 & 1528/396 & 214/216 & 459/381\\
+  \end{tabular}
+  }
+\end{table*}
+
+
+\section{HERMES: a new hybrid model for time series forecasting}
+\label{sec:hybrid}
+We introduce a new hybrid approach for time series forecasting  composed of two parts: a collection of per-time-series parametric models, and a global error-corrector neural network train on all time series. Per-time-series parametric models are used in particular to learn local behaviours and to normalize sequences by removing trends and seasonality. Then,  a recurrent neural network driven by the weak signals is trained to correct these per-time-series models.
+
+Consider $N\geqslant 1$ time series. For all $1\leqslant n \leqslant N$ and $1\leqslant t \leqslant T$, let $\ts_t^n$ be the value of the $n$-th sequence at time $t$ and  $\fullts^n = \{\ts_t^n\}_{1\leqslant t \leqslant T}$ be all the values of this sequence. The objective of this paper is to propose a model to  forecast all time series in a given time frame  $\lag \in \mathbb{N}$, i.e. we aim at sampling $\{\ts^n_{T+1:T+\lag}\}_{1\leqslant n \leqslant N}$ based on $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$.
+
+
+\subsection{Per-time-series predictors}
+%The time-series-specific predictors compute, for each sequence, a first $\lag$-ahead prediction based on the past. 
+For all $1\leqslant n \leqslant N$, we note $\stat^n(.;\statparam^n)$ the $n$-th parametric model of the $n$-th sequence where $\statparam^n$ are  unknown parameters. Given the sequences $\{\ts^n_{1:T}\}_{1\leqslant n \leqslant N}$ and the estimated  parameters $\{\statparam^n\}_{1\leqslant n \leqslant N}$, the time-series-specific forecasts $\{\tspred^{pred,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+\begin{equation}
+    \label{eq:predictors}
+    \tspred^{pred,n}_{T+i|T} = \stat^n(\ts^n_{1:T};\statparam^n)_i\,.
+\end{equation}
+During the M4 competition, the hybrid model of \citet{smyl2020} was based on a multiplicative exponential smoothing model as the time-series-specific predictor. However, on sporadic time series, this choice leads to poor results and instability. In this paper, a more general framework able to deal with any kind of per-time-series models is provided. In Section~\ref{sec:exp}, two versions of our framework are proposed. The first one is based on an  exponential smoothing as a reference similar to the baseline \citet{smyl2020} and the second one uses a TBATS model \citep{alysha2011} which provides better results as this parametric model includes  Fourier representations with time varying coefficients, and ARMA error correction. 
+
+%In the specific application of fashion trends prediction, two main forms of standard weaknesses were detected and defined for univariate parametric forecasts. The first one is a weakness of definition, when the model is not well defined for its forecasting task. For instance, an additive model provides good predictions on time series with additive seasonality but fails at handling multiplicative seasonalities. The second form, harder to detect and correct, is the weakness of information. 
+For non stationary time series, huge changes of behaviours are not always predictable using the past of the sequence. In some cases, these changes depend on external variables not considered by univariate parametric models. The difficulty is that the exact influence of external variables on the main signal is mostly unknown. This motivates the introduction of a global RNN trained on all time series and able to consider and leverage external signals.
+
+
+\begin{figure*}
+\centering
+  \includegraphics[width=\linewidth]{br_female_texture_verticalstripe}
+\caption{Hermes forecast example on a time series representing the vertical stipes texture fashion trend for females in Brazil. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model.}
+\label{fig:introexamples}
+\end{figure*}
+
+\subsection{Error-corrector recurrent model}
+
+The second part of the model is a global RNN, trained on all the $N$ sequences to correct the weaknesses of the first per-time-series parametric models. This task requires a thorough data pre-processing as recurrent neural networks training is highly sensitive to the scale of the data and requires well-designed inputs.
+
+
+Let $\window \in \mathbb{N}$ be the window size, usually this window is proportional to the forecast horizon $\window \propto \lag$. The RNN input is defined as the following  normalized, deseasonalized and rescaled sequence $\rnnwindow^n_T = \{\rnninput^{n}_{T-\window+i|T}\}_{1\leqslant i \leqslant w}$: for all $1\leqslant n \leqslant N$ and $1\leqslant i \leqslant w$,
+$$
+\rnninput^{n,T}_{T-w+i|T} := \frac{\ts^n_{T-w+i} -\tspred^{pred,n}_{T+k|T}}{\meants^n_T}\,,\quad \meants^n_T = \frac{1}{w}\sum_{i = 1}^{w}\ts^n_{T-w+i}\,.
+$$
+where $k = i - h\lfloor i/h \rfloor$ with $\lfloor. \rfloor$ the floor function. With the numerator part $\ts^n_{T-w+i} -\tspred^{pred,n}_{T+k|T}$, the per-time-series prediction is included in the RNN input and all the fundamental patterns already learned by this first predictor are removed from the time series. Then the denominator $\meants^n_T$ is use to rescaled all input at the same level as the time series can have different scales. Another option could have been to divide directly  $\ts^n_{T-w+i}$ by $\tspred^{pred,n}_{T+k|T}$ but with time series hitting 0, this option is not valid. Let $\rnn(.;\rnnparam)$ be the recurrent neural network model where $\rnnparam$ are  unknown parameters. Given the RNN input sequences $\{\rnnwindow^n_T\}_{1\leqslant n \leqslant N}$ and the global RNN estimated parameters $\rnnparam$, the error-corrector predictions $\{\tspred^{corr,n}_{T+1:T+\lag|T}\}_{1\leqslant n \leqslant N}$ are, for all $n \in \{1,\ldots,N\}$, for all $i \in \{1,\ldots,\lag\}$,
+$$
+\tspred^{corr,n}_{T+i|T} = \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\ \,.
+$$
+Thus, if no external signals are available, the final hermes  forecast is, for all $1\leqslant n \leqslant N$ and all $i \in \{1,\ldots,\lag\}$,
+\begin{align}
+\label{eq:nows:full:model}
+\tspred^n_{T+i|T}  &= \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T} \\
+&= \stat^n(\ts^n_{1:T};\statparam^n)_i +  \rnn(\rnnwindow^n_T;\rnnparam)_i \cdot \meants^n_T\,.\nonumber
+\end{align}
+
+
+\subsection{Weak signal}
+
+%Using well-fitted time-series-specific parametric models, the new hybrid network corrects the first form of weakness and provides appealing performance on the fashion dataset, see Table~\ref{tab:metricresults}. 
+%Then, to correct the second form of weakness, 
+In addition to the $N$ target time series, $K \times N$ external sequences indexed from $0$ to $T$ are now considered. For all $1\leqslant n \leqslant N$, $1\leqslant k \leqslant K$ and  $1\leqslant t \leqslant T$, let $\ws^{n,k}_t$ be the value of the $k$-th external sequence at time $t$ associated with the sequence $\fullts^n$. Let  $\fullws^n = \{\{\ws_t^{n,k}\}_{1\leqslant t \leqslant T}\}_{1\leqslant k \leqslant K}$ be all the values of the external signals. In addition, let $\fullws^n_T = \{\{\ws_{T-w+i}^{n,k}\}_{1\leqslant i \leqslant \window}\}_{1\leqslant k \leqslant K}$ be only the last $\window$ terms of the external sequences. Concatenating $ \rnnwindow^n_T$ and $\fullws^n_T$, a new input for the RNN is defined:   
+$$
+\fullconcatinput^n_T = \{\concatinput^n_{T-w+i|T}\}_{1\leqslant i \leqslant w}= \{\rnninput^n_{T-w+i|T}, \ws^{n,1}_{T-w+i},...,\ws^{n,K}_{T-w+i}\}_{1\leqslant i \leqslant w}\,.
+$$
+Finally, for all $1\leqslant n \leqslant N$ and for all $i \in \{1,\ldots,\lag\}$ the final prediction becomes:
+
+\begin{align}
+\label{eq:withws:full:model}
+\tspred^n_{T+i|T}  &= \tspred^{pred,n}_{T+i|T} +  \tspred^{corr,n}_{T+i|T}\\
+& = \stat^n(\ts^n_{1:T};\statparam^n)_i +  \rnn(\fullconcatinput^n_T;\rnnparam)_i \cdot \meants^n_T\,.\nonumber
+\end{align}
+An illustration of the proposed  model is displayed in Figure~\ref{fig:architecture} and a first forecast example is given in Figure~\ref{fig:introexamples}..
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1\linewidth]{paper_final_framework.png}
+  \caption{Architecture of the hybrid model with weak signals. The proposed framework can be decomposed in 5 steps: i) provide a time series. ii) (a) fit a first statistical model with the provided time series, (b) compute a first prediction and (c) preprocess the time series for the Global RNN. iii) If available, external signals can be added as part of the RNN input. iv) With a pre-trained RNN, compute a correction of the first statistical prediction. v) Compute the final forecast by adding the first time series prediction and the RNN correction.} 
+\label{fig:architecture}
+\end{figure}
+
+
+\section{Experimental results}
+\label{sec:exp}
+
+\subsection{Training}
+The dataset is split into three blocks, {\em train}, {\em eval} and {\em test} sets. The 3 first years are used as the {\em train} set, the 4th year is kept for the {\em eval} set and the {\em test} set is made of the last year. The hybrid model is trained to compute a one-year ahead prediction, $\lag$ equal to 52, and the window size $\window$ is fixed at 104.
+Using the two first years of the {\em train} set, a first per-time-series parametric model for each time series is fitted. With the resulting collection of local models, a forecast of the third year is computed for each sequence. Corrector inputs are finally computed and the RNN is trained at correcting this first collection of third-year forecasts. For the {\em eval} set, per-time-series predictors are fitted a second time using the three first years and forecasts of the fourth year are computed. The {\em eval} set is used during  training to control the learning of the RNN model and prevent overfitting. The per-time-series predictors are fitted a last time for the {\em test} set using the four first years. The final accuracy measures of all our models are computed on this {\em test} set. As an illustration, an example of our split is shown in Figure~\ref{fig:train_eval_test_set}.
+
+For the first parametric per-time-series models, existing Python  libraries named \texttt{statsmodels} and  \texttt{tbats} are used to estimate the different parameters $\statparam^n$.  Depending of the choice of local parametric models, two versions of HERMES are proposed. The first one uses as predictors an additive exponential smoothing model as a reference close to \citet{smyl2020}. The second one uses the TBATS model of \citet{alysha2011} and  achieves the highest accuracy results on the fashion dataset. The neural network architecture is composed of 3 LSTM layers of shape 50 and a final Dense layer to provide the correct output dimension. A classical Adam optimizer is used with a learning rate and a batch size set using a grid search. The loss function is defined as follows:
+$$
+\ell(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
+$$
+This choice of $\mathrm{L}_1$ loss function is motivated by its robustness to outliers which accounts for some time series in the fashion industry with very specific behaviours. The loss and previous parameters are all set with a complete grid search. See \ref{sec:fashiongridsearch} for additional results concerning the loss function choice and \ref{sec:m4gridsearch} for a complete grid search example. The code is developed in Python using the Tensorflow library and publicly available\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}}. It allows the use of GPU to speed up the training process.
+
+
+
+\begin{figure*}
+  \centering
+    \includegraphics[width=1.\linewidth]{train_eval_test_set}
+  \caption{Temporal split for our training process. The three first years define our training set. The fourth year is used as our eval set and the final year is reserved for the test set.}
+\label{fig:train_eval_test_set}
+\end{figure*}
+
+\subsection{Benchmarks, hybrid models and Metrics}
+\label{sec:fashiontraining}
+
+As benchmarks, several widespread statistical methods and deep learning approaches were selected. Using the R package \texttt{forecast} and the Python packages \texttt{statsmodels},  \texttt{tbats}, for each time series, predictions are computed with the following methods: \textit{snaive}, \textit{ets}, \textit{stlm}, \textit{thetam}, \textit{tbats} and \textit{auto.arima}. The forecast of the \textit{snaive} method is only the repetition of the last past period. The \textit{ets} model is an additive exponential smoothing with a level component and a seasonal component. The \textit{stlm} approach uses a multiplicative decomposition and models the seasonally adjusted time series with an exponential smoothing model. The \textit{Thetam} model decomposes the original signal in $\theta$-lines, predicts each one separately and recomposes them to produce the final forecast and \textit{tbats} uses a trigonometrical seasonality. Finally, \textit{auto.arima} is the R implementation of the ARIMA model with an automatic selection of the best parameters. A complete description and references for these models can be found in \citet{hyndman2020}. As a deep learning approach, a full LSTM (\textit{lstm}) neural network composed of 3 LSTM layers of shape 50 and a final Dense layer of shape 52 is considered.
+Two versions of HERMES are proposed. They are called respectively \textit{hermes-ets} and \textit{hermes-tbats} according to the per-time-series model choice. Moreover, two versions with the inclusion of the weak signals (ws) are proposed. They are referred to as \textit{hermes-ets-ws} and \textit{hermes-tbats-ws}. In order to provide a fair comparison, a \textit{lstm} with the weak signals named \textit{lstm-ws} is trained.
+
+To compare the different methods, we use the Mean Absolute Scaled Error (MASE) for seasonal time series. As our sequences have completely different scales, from $10^{-5}$ to $10^{-1}$, this metric was chosen to compute a fair error measure, independent of the scale of the sequence and suited for our seasonal fashion time series. The MASE metric is defined as follows, with $T$ the length of the time series, $m$ the seasonal period and $h$ the horizon:
+\begin{align*}
+\mathrm{MASE} &= \frac{T-m}{h}\frac{\sum_{j=1}^h |Y_{T+j} - \hat{Y}_{T+j}| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,.
+\end{align*}
+Detecting emerging and declining trends is a crucial issue for the fashion industry. A correct or incorrect prediction could lead to good returns or massive waste due to overstock or unsold clothes. In addition to the MASE accuracy metric, the different methods are also evaluated on a classification task and especially differences between methods using weak signals or not. In a given year, an increasing trend is defined as a trend that does more than 5\% of growth on average with respect to the previous year. In the same way, a decreasing trend is defined as a trend that declines by 5\% on average or more. Other trends are classified as flat trends. With this threshold, the proposed fashion dataset is almost balanced on the {\em test} set: There are 3087 increasing trends, 3342 decreasing trends and 3571 flat trends. To compare the different methods on this classification task, the accuracy metric, defined as the percentage of correct classification, is used.
+
+
+\subsection{Result for the Fashion dataset}
+
+\textbf{10000 Fashion time series global accuracy. }For the two metrics and for each model, we compute the average on all sequences in the final year. Results are displayed in Table~\ref{tab:metricresults}. For methods using neural networks, 10 models are trained  with different seeds. The average and the standard deviation of their results are computed and displayed. For the statistical models, TBATS largely dominates the alternatives in terms of MASE. It is one of the main motivations why this model is used on the best HERMES candidate as the predictor model. 
+
+Considering the new HERMES approach, \textit{hermes-tbats} and \textit{hermes-tbats-ws} slightly outperform the alternatives in terms of MASE and are stable across the different trainings. Regarding \textit{hermes-ets},   although it is very similar to the baseline \citet{smyl2020}, its accuracy remains low in comparison to the \textit{lstm} benchmark or HERMES using TBATS. 
+
+Models using our weak signals perform similarly as without-weak-signals models for the MASE.  Interestingly, weak signals significantly improve the accuracy in detecting emerging and declining trends. Figure~\ref{fig:examples} displays some examples of \textit{hermes-tbats} models and some weaknesses that can be corrected.
+
+\begin{table}
+  \caption{Results summary on the 10000ts Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
+  \centering
+  \begin{tabular}{l||lllll|lllll}
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+    &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.881 && - &&& 0.357 && - &\\
+     \textit{thetam}  && 0.844 && -&&& 0.482 && - &\\
+     \textit{arima} && 0.826 && -&&& 0.464 && - & \\
+     \textit{ets} && 0.807 && -&&& 0.449 && - & \\
+     \textit{stlm} && 0.770 && -&&& 0.482 && - & \\
+     \textit{hermes-ets-ws} && 0.769 && 0.005 &&& 0.501 && 0.007 &\\
+     \textit{hermes-ets} && 0.758 && 0.001 &&& 0.490 && 0.006 &\\
+     \textit{tbats} && 0.745 && -&&& 0.453 && - & \\
+     \textit{lstm-ws} && 0.728 && 0.004 &&& 0.500 && 0.008 &\\
+     \textit{lstm} && 0.724 && 0.003 &&& 0.498 && 0.007 &\\
+     \textit{hermes-tbats} && 0.715 && 0.002 &&& 0.488 && 0.008 &\\
+     \textbf{\textit{hermes-tbats-ws}} && \textbf{0.712} && 0.004 &&& \textbf{0.510} && 0.005 &\\
+  \end{tabular}
+\label{tab:metricresults}
+\end{table}
+
+\begin{figure*}
+\centering
+  \includegraphics[width=1.\linewidth]{us_female_top}
+  \includegraphics[width=1.\linewidth]{cn_female_texture_horizontalstripe}
+\caption{\textit{hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit{tbats}. In red the final forecast of our HERMES hybrid model \textit{hermes-tbats}. (Top) Time series representing a top fashion trend for females in The United States. (Bottom) Time series representing the horizontal stipes texture fashion trend for females in China.}
+\label{fig:examples}
+\end{figure*}
+
+\textbf{10000 Fashion time series classification task. } Classification results between the \textit{tbats} model and the hybrid method \textit{hermes-tbats} are given in Table~\ref{tab:tbatsclass}, we note an impressive decrease of impactful errors: i.e. forecasting an increase instead of a decrease and vice versa. The \textit{hermes-tbats} model divides by 3 the error rate in comparison to \textit{tbats} with only a slight decrease of the number of correct increase/decrease predictions. However, with our weak signals, we see that \textit{hermes-tbats-ws} is able to catch twice as much as its relative model without weak signals while keeping a relatively low number of impactful errors.
+
+\begin{table}
+  \caption{\textit{tbats}, \textit{hermes-tbats} and \textit{hermes-tbats-ws} models confusion matrix}
+\centering
+\vspace{0.2cm}
+\resizebox{6cm}{!}{
+  \begin{tabular}{l||llll}
+  	&& \multicolumn{3}{c}{\textbf{\textit{tbats}}}\\
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 902 & 2113 & 327 \\
+    true-flat && 351 & 2920 & 300 \\
+    true-inc && 300 & 2078 & 709 
+  \end{tabular}
+}
+\vspace{.2cm}
+\resizebox{6cm}{!}{
+  \begin{tabular}{l||llll}
+  	&& \multicolumn{3}{c}{\textbf{\textit{hermes-tbats}}}\\
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 1261 & 1960 & 121 \\
+    true-flat && 549 & 2823 & 199 \\
+    true-inc && 214 & 2004 & 869 
+  \end{tabular}
+}
+\vspace{.2cm}
+\resizebox{6cm}{!}{
+  \begin{tabular}{l||llll}
+    && \multicolumn{3}{c}{\textbf{\textit{hermes-tbats-ws}}}\\
+    && pred-dec  & pred-flat & pred-inc  \\
+    \hline
+    \hline
+    \rule{0pt}{2ex} \\
+	true-dec && 1956 & 1245 & 141 \\
+    true-flat && 1257 & 2087 & 227 \\
+    true-inc && 358 & 1620 & 1109 
+  \end{tabular}
+}
+\label{tab:tbatsclass}
+\end{table}
+
+\textbf{Size of the dataset. } In addition to the results on the whole fashion dataset, the robustness of the HERMES model is analyzed when it is trained on smaller datasets. Two experiments are performed on a sub sample of respectively 1000 and 100 randomly selected time series. Results are given in Table~\ref{tab:1000metricresults}. The hybrid framework \textit{hermes-tbats} achieves the best performance in terms of global accuracy on both datasets. 
+We can note that the accuracy of the full neural network \textit{lstm} decreases when the dataset size decreases. On the small dataset of 100 time series, a local statistical model like \textit{tbats} or \textit{stlm} largely outperforms the \textit{lstm}. Providing sharp predictions from scratch is a complex task and high-dimensional recurrent neural networks require large amounts of data to do so. By contrast, the HERMES approach can rely on its first statistical part and consequently needs less data to be trained and to obtain interesting performance.
+
+
+\begin{table}
+  \caption{Results summary on the 1000 time series and 100 time series Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.}
+ \centering
+ \resizebox{0.8\textwidth}{!}{ 
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{1000 time series Fashion dataset}\vspace{0.5cm} \\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 0.871 & - \\
+     \textit{thetam}  && 0.849 & - \\
+     \textit{arima} && 0.821 & - \\
+     \textit{ets} && 0.801 & - \\
+     \textit{stlm} && 0.765 & - \\
+     \textit{lstm} && 0.740 & 0.007 \\
+     \textit{tbats} && 0.734 & - \\
+     \textbf{\textit{hermes-tbats}} && \textbf{0.719} & 0.002 \\
+  \end{tabular}\hspace{1cm}
+\vspace{.2cm}
+
+  \begin{tabular}{l||llll}
+   \multicolumn{4}{c}{100 ts Fashion dataset}\vspace{0.5cm} \\
+   &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	\hline
+	 &&& \\
+     \textit{snaive} && 0.876 & - \\
+     \textit{thetam}  && 0.823 & - \\
+     \textit{arima} && 0.814 & - \\
+     \textit{ets} && 0.785 & - \\
+     \textit{lstm} && 0.767 & 0.045 \\
+     \textit{stlm} && 0.742 & - \\
+     \textit{tbats} && 0.745 & - \\
+     \textbf{\textit{hermes-tbats}} && \textbf{0.739} & 0.003 \\
+  \end{tabular}
+ }
+\label{tab:1000metricresults}
+\end{table}
+
+
+\subsection{Result for M4 weekly dataset}
+\label{sec:m4result}
+
+We also assessed the performance of HERMES using the M4 weekly dataset \citep{makridakis2020}. The M4 dataset gathers 359 weekly time series and has 3 main differences compared to the proposed fashion dataset. Firstly, sequences do not have the same length with sequences lying between 93 and 2610 time steps. Secondly, the 359 time series come from different sectors such that finance or Industry. Accordingly, they have very distinct scales and dynamics. Thirdly, compared to the previous fashion application, the time horizon of the prediction is set to 13 for the weekly dataset and no additional external signals are provided.
+
+\textbf{Training. }
+The M4 dataset is preprocessed as follows. As some sequences are short (93 time steps), they limit the window size $w$ of the RNN.  
+Consequently, 300 time steps are kept for each sequence. shorter sequences are duplicated in order to reach the length of 300 and longer sequences are cropped so as to keep the last 300 time steps. An overview of our train, eval, test set split and the resizing of the shortest sequences is given in Figure~\ref{fig:m4dataset}. Secondly, several M4 weekly time series have a large volume and a high level of variability. Consequently, Equation~\ref{eq:predictors} of the HERMES framework is changed to:
+\begin{equation}
+    \tspred^{pred,n}_{T+i|T} =\mbox{exp}\left( \stat^n(log\left(\ts^n_{1:T}\right);\statparam^n)_i\right)\,.
+\end{equation}
+This simple modification increases significantly the accuracy of the per-time-series predictors tested on the M4 weekly dataset while reducing the fitting time. As for the fashion dataset, a complete grid search is done on the M4 weekly dataset to fix hyperparameters of the HERMES architecture. The horizon $h$ is set to 13 and the window size $w$ to 104. For the RNN part, the same architecture as described in Section~\ref{sec:fashiontraining} is used. The Adam optimizer is used and the MASE is directly used as the loss function. Finally a rolling window is applied on the train set so as to increase the number of examples and improve the training process. The number of slinding windows, the learning rate, the batch size, the RNN architecture and input size are set using a grid search and detailled in \ref{sec:m4gridsearch}.
+
+\begin{figure*}
+  \centering
+    \includegraphics[width=1.\linewidth]{m4_dataset}
+  \caption{One of the shortest sequences of the M4 weekly dataset (93 time steps). In order to fit its predictor, the last complete year of the train set is duplicated in order to reach a total length of 300 time steps.}
+\label{fig:m4dataset}
+\end{figure*}
+
+\textbf{Evaluation. } The proposed model is evaluated along with a rich collection of benchmarks provided by the M4 competition, encompassing statistical models and neural network approaches. In addition, the hybrid model named \textit{Uber} of S.Smyl is added. For a complete description and references of the benchmark models and the hybrid model \textit{Uber}, see \citet{makridakis2020} and \citet{smyl2020}. As a HERMES candidate, a version using TBATS is proposed and called \textit{hermes-tbats}. We propose a focus on the top 3 models reaching the highest accuracy on the M4 weekly dataset. These three methods are based on an ensembling and combine various approaches.
+The first model is presented in \citet{darin2020} and called \textit{Darin \& Stellwagen}. The second model is introduced in \citet{petropoulos2020} and called \textit{Petropoulos \& Svetunkov}. Finally, a description of the third model  called \textit{Pawlikowski, et al.} can be found in \citet{pawlikowski2020}. An ensembling combining 4 HERMES variations is proposed. It is based on the FFORMA algorithm introduced in \citet{montero2020} and called \textit{fforma-hermes}. A complete description of the training process of the proposed ensembling is given in \ref{sec:fforma-hermes}. Following the M4 competition methodology, all the candidates are evaluated according to the MASE, the SMAPE and the OWA measures. A complete definition of these metrics is proposed in \citet{makridakis2020} and summarized in \ref{sec:m4overview}. See also \ref{sec:m4overview} for additional information about the M4 weekly dataset.
+
+\textbf{Results and discussion. } The final results for the M4 weekly dataset are displayed in Table~\ref{tab:m4metricresults}. The HERMES approach \textit{hermes-tbats} outperforms all the benchmarks. This result is partially induced by the use of TBATS per-time-series predictors which achieve impressively good results on the test set. Regarding the hybrid model proposed by S.Smyl, its accuracy remains low in comparison to \textit{tbats} and  \textit{hermes-tbats}. For the ensembling methods, the proposed FFORMA model with 4 HERMES variations \textit{fforma-hermes} reaches the same high level of accuracy as the top 3 methods of the competition on the weekly dataset.
+The results provided by \textit{hermes-tbats} confirm that the HERMES model is well suited for a large collection of forecasting tasks even difficult ones with small datasets, heterogeneous time series and the absence of  additional useful external signals. Secondly, the accuracy gap between the proposed hybrid model and the approach proposed in \citet{smyl2020} illustrates the importance of a global framework able to leverage any kind of per-time-series predictors depending of the use cases. Finally, our model can be easily included as part of an ensembling method to improve the final robustness and accuracy of the predictions.
+
+\begin{table*}
+  \caption{Results summary on the m4 weekly dataset. For each metric, the average on all our time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
+  \centering
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{l||lllll|lllll|lllll}
+   &&\multicolumn{3}{c}{\textbf{SMAPE}} &&& \multicolumn{3}{c}{\textbf{MASE}} &&& \multicolumn{3}{c}{\textbf{OWA}}&\\
+    &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}&&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{MLP} && 21.349 && - &&& 13.568 && - &&& 3.608 && - &\\
+     \textit{RNN} && 15.220 && - &&& 5.132 && - &&& 1.755 && - &\\
+     \textit{snaive} && 9.161 && - &&& 2.777 && - &&& 1.000 && - &\\
+     \textit{SES} && 9.012 && - &&& 2.685 && - &&& 0.975 && - &\\
+     \textit{Theta} && 9.093 && - &&& 2.637 && - &&& 0.971 && - &\\
+     \textit{Holt} && 9.708 && - &&& 2.420 && - &&& 0.966 && - &\\
+     \textit{Com} && 8.944 && - &&& 2.432 && - &&& 0.926 && - &\\
+     \textit{Damped} && 8.866 && - &&& 2.404 && - &&& 0.917 && - &\\
+     \textit{Uber} \citet{smyl2020} && 7.817 && - &&& 2.356 && - &&& 0.851 && - &\\
+     \textit{tbats} && 7.409 && - &&& 2.204 && - &&& 0.801 && - &\\
+     \textit{\textbf{hermes-tbats}} && \textbf{7.383} && 0.016 &&& \textbf{2.191} && 0.010 &&& \textbf{0.797} && 0.002 &\\
+    \hline
+    \textit{Pawlikowski, et al.} && 6.919 && - &&& 2.158 && - &&& 0.766 && - &\\
+    \textit{Petropoulos \& Svetunkov} && 6.726 && - &&& 2.133 && - &&& 0.751 && - &\\
+    \textit{Darin \& Stellwagen} && \textbf{6.582} && - &&& 2.107 && - &&& 0.739 && - &\\
+    \textbf{\textit{fforma-hermes}} && 6.614 && - &&& \textbf{2.058} && - &&& \textbf{0.732} && - &\\
+    
+  \end{tabular}
+  }
+\label{tab:m4metricresults}
+\end{table*}
+
+\section{Conclusion}
+\label{sec:conclusion}
+In this paper, we propose  a new hybird model for non stationary time series forecasting. By mixing the performance of local parametric models and a global neural network, \textit{hermes-tbats} clearly outperforms traditional statistical methods and full neural network models on two forecasting tasks. Furthermore, this new model is totally suited to deal with external signals. With a fine pre-processing and a well-designed architecture, the proposed hybrid framework succeeds at leveraging complex extra data and reaches promising accuracy levels. In addition, a fashion dataset gathering a sample of $\numberts$ time series and a collection of weak signals is provided. By making it publicly available, we hope that it will enhance the diversity of datasets for time series forecasting and pave the way for further explorations.
+As a possible future work, designing new models for the weak signals would improve their inclusion  in the HERMES architecture. Focusing on the examples with important changes of behaviours, a fine analysis of the impact of the collection of weak signals is the topic of ongoing works. In the same way, an interesting improvement of the hybrid framework can be to introduce not a single but several neural networks trained at correcting different kinds of weaknesses. A perspective is to add a latent discrete label to select dynamically the regime shifts. 
+
+\bibliography{hermes_paper}
+\bibliographystyle{tmlr}
+
+\appendix
+\section{M4 weekly dataset, Ensembling training and results}
+
+\subsection{M4 weekly dataset}
+\label{sec:m4overview}
+The M4 weekly dataset is a collection of 359 time series with  contrasting behaviours and sizes. An overview of the dataset is given in Table~\ref{tab:m4dataset} and some examples of sequences are given in Figure~\ref{fig:m4examples}. This use case is not properly suited for the HERMES approach as the dataset is small and there is no clear link between time series. Moreover, no additional external signals are available that could help the RNN part to correct the first errors of the per-time-series predictors.
+
+\begin{table}
+
+  \caption{M4 weekly dataset overview. For each category, the number of sequences and the average length are given.}
+\label{tab:m4dataset}
+  \centering
+  \resizebox{0.8\width}{!}{
+  \begin{tabular}{l||lll}
+    \\
+    &  \textbf{Nb. of sequences}  & \textbf{Avg. length} & \textbf{Min. length} \\
+    \hline
+    \hline
+    \\
+	\textbf{Demographic} & 24 & 1659 & 1615\\
+	\textbf{Finance} & 164 & 1237 & 260\\
+	\textbf{Industry} & 6 & 834 & 356\\
+	\textbf{Macro} & 41 & 1264 & 522\\
+	\textbf{Micro} & 112 & 473 & \textbf{93}\\
+	\textbf{Other} & 12 & 1598 & 470\\
+  \end{tabular}
+  }
+\end{table}
+
+
+\begin{figure}
+  \includegraphics[width=1.\linewidth]{w10}
+  \label{fig:m4examples:sub1}
+  \includegraphics[width=1.\linewidth]{w20}
+  \includegraphics[width=1.\linewidth]{w220}
+\caption{Examples of time series from the M4 weekly dataset. From Top to Bottom : time series called \textit{W10} from the \textit{Other} category, \textit{W20} from the \textit{Macro} category and \textit{W220} from the \textit{Finance} category.}
+\label{fig:m4examples}
+\end{figure}
+
+\begin{figure*}
+\centering
+  \includegraphics[width=1.\linewidth]{w133_hermes_prediction.png}
+  \includegraphics[width=1.\linewidth]{w262_hermes_prediction.png}
+\caption{forecast examples of HERMES variations on 2 time series of the M4 weekly dataset. At the top, the \textit{W133} time series is displayed with the prediction of the per-time-series predictor \textit{thetam} (green) and the final forecast of the HERMES hybrid model \textit{hermes-thetam} (red). At the bottom, the \textit{W262} time series is represented with the corresponding prediction of the per-time-series predictors \textit{ets-add} (green) and the HERMES correction of \textit{hermes-ets-add} (red).} 
+\label{fig:m4pred}
+\end{figure*}
+
+\subsection{M4 accuracy metrics}
+\label{sec:m4metric}
+
+The M4 competition proposes 3 metrics to evaluate the different approaches: the mean absolute scaled error (MASE), the symmetric mean absolute percentage error (SMAPE) and the overall weighted average (OWA). MASE and SMAPE are defined as follow:
+\begin{align*}
+&\mathrm{MASE} = \frac{T-m}{h}\frac{\sum_{j=1}^h |Y_{T+j} - \hat{Y}_{T+j}| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,
+&\mathrm{SMAPE} = \frac{2}{h}\sum_{j=1}^h\frac{|Y_{T+j} - \hat{Y}_{T+j}|}{|Y_{T+j}| + |\hat{Y}_{T+j}|}\,,
+\end{align*}
+where h is the forecast horizon and m the length of the seasonality. The final OWA is computed by following these steps: i) compute the average MASE and SMAPE of a model. ii) Divide the previous results by the MASE and SMAPE computed with the benchmark method \textit{snaïve}. iii) Compute the OWA as the average of the relative MASE and SMAPE obtained is step ii). As an example on the m4 weekly dataset, the method \textit{hermes-tbats} gets a MASE of 7.383 and a SMAPE of 2.191. The benchmark method \textit{snaïve} obtains a MASE of 9.161 and a SMAPE of 2.777. Thus the OWA of  \textit{hermes-tbats} is equal to 0.797.
+\begin{equation*}
+    OWA_{\textit{hermes-tbats}} = \frac{1}{2}(\frac{7.282}{9.161} + \frac{2.191}{2.777}) \approx 0.797
+\end{equation*} 
+
+\subsection{FFORMA ensembling with HERMES variations}
+\label{sec:fforma-hermes}
+
+In this section, a complete description of the proposed ensembling on the M4 weekly dataset is provided. In a first time, 4 HERMES variations are trained using different per-time-series predictors. The first one called \textit{hermes-tbats} uses TBATS and is presented in Section~\ref{sec:m4result}. The second version is called \textit{hermes-thetam} and use the Thetam method provided with the Python package \texttt{statsmodels}. The two remaining variations use as per-time-series predictors an additive or multiplicative exponential smoothing and are called respectively \textit{hermes-ets-add} and \textit{hermes-ets-mul}. As for Thetam, the Python package \texttt{statsmodels} is used to fit the different exponential smoothing models. Concerning the HERMES architecture, for simplicity, hyperparameters described in Section~\ref{sec:m4result} are used for each version but a grid search could have be run for each of them. 10 models are trained per version with different seeds and the best one based on the eval set is kept for the ensemble model. In a second time, the FFORMA ensembling introduced in \citet{montero2020} is used to combine the 4 HERMES methods. The R package \texttt{M4metalearning} containing the FFORMA model is directly used without change of the hyperparameters, imported in Python with the library \texttt{Rpy2} and combined with the HERMES code base.
+
+\subsection{M4 weekly dataset results}
+
+In addition of the results provided is Section~\ref{sec:m4result}, Table~\ref{tab:m4hermesvariationsresults} displays the results of all the HERMES variations included in the FFORMA ensembling as well as the accuracy of the per-time-series predictors. In each cases, HERMES approaches always improve the predictors accuracy. These improves can appear slight but are justified regarding the absence of link between time series and the absence of additional useful external signals. Nevertheless, efficient corrections can be obtained on some examples as displayed in Figure~\ref{fig:m4pred}.
+
+\begin{table}
+  \caption{Results summary on the m4 weekly dataset of the HERMES variations. For each metric, the average on all the time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed. For the statistical models \textit{ets-add}, \textit{ets-mul} and \textit{thetam}, the Python package {\texttt{statsmodels}} is used. The Python package \texttt{tbats} is used for the \textit{tbats} approach.}
+  \centering
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{l||lllll|lllll|lllll}
+   &&\multicolumn{3}{c}{\textbf{SMAPE}} &&& \multicolumn{3}{c}{\textbf{MASE}} &&& \multicolumn{3}{c}{\textbf{OWA}}&\\
+    &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}&&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{ets-mul} && 8.933 && - &&& 2.412 && - &&& 0.922 && - &\\
+     \textit{hermes-ets-mul} && 8.889 && 0.021 &&& 2.377 && 0.016 &&& 0.913 && 0.004 &\\
+     \textit{ets-add} && 8.929 && - &&& 2.410 && - &&& 0.921 && - &\\
+     \textit{hermes-ets-add} && 8.880 && 0.022 &&& 2.377 && 0.016 &&& 0.913 && 0.004 &\\
+     \textit{thetam} && 7.609 && - &&& 2.377 && - &&& 0.843 && - &\\
+     \textit{hermes-thetam} && 7.590 && 0.012 &&& 2.359 && 0.010 &&& 0.839 && 0.002 &\\
+     \textit{tbats} && 7.409 && - &&& 2.204 && - &&& 0.801 && - &\\
+     \textit{\textbf{hermes-tbats}} && \textbf{7.383} && 0.016 &&& \textbf{2.191} && 0.010 &&& \textbf{0.797} && 0.002 &\\
+  \end{tabular}
+  }
+\label{tab:m4hermesvariationsresults}
+\end{table}
+\section{Training parameters and loss}
+
+\subsection{Loss grid search on the Fashion Dataset}
+\label{sec:fashiongridsearch}
+
+Using deep learning models in time series forecasting is an appealing way to achieve higher accuracy performance. However, it induces two main issues. First, it requires a large enough dataset to train the model as illustrated in Section~\ref{sec:exp}. Second, a dataset can hide contrasting time series in terms of scale, noise and behaviour. These differences can impact training performance. For the HERMES architecture, some candidate losses were defined for the training: the Mean Absolute Error (MAE), the Mean Square Error (MSE),  the Scaled Mean Absolute Error (SMAE) and the Scaled Mean Square Error (SMSE). The loss functions are defined as follows:
+\begin{align*}
+MAE &= \frac{1}{\lag}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
+MSE &= \frac{1}{\lag}\sum_{i=1}^{\lag}(\ts^n_{T+i} - \tspred^n_{T+i|T})^2\,,\\
+SMAE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,,\\
+SMSE &= \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}(\ts^n_{T+i} - \tspred^n_{T+i|T})^2\,.
+\end{align*}
+For each loss, 10 \textit{hermes-tbats-ws} models have been trained with different seeds and the final mean and standard deviation are given in Figure~\ref{fig:loss_function}. The final Scaled Mean Absolute Error reaches the lowest MASE and was selected to train all the HERMES models on the Fashion dataset.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=1.\linewidth]{loss_function}
+  \caption{MASE accuray for the \textit{hermes-tbats-ws} model depending on the loss used during the RNN training. For each loss, 10 models with different seeds have been trained. The mean and the standard deviation are represented with a point and a vertical line.}
+\label{fig:loss_function}
+\end{figure}
+
+
+
+\subsection{Parameters grid search on the M4 weekly Dataset}
+\label{sec:m4gridsearch}
+
+In addition to the loss function, the HERMES model also depends on several hyperparameters to set correctly in order to reach satisfactory performance. For instance, an overview of the learning rate, batch size and number of windows per time series grid search for the M4 weekly dataset is shown in Figure~\ref{fig:m4parameter}. For each parameter, a collection of 10 \textit{hermes-tbats} models have been trained with different seeds and the final OWA was calculated. As in the Figure~\ref{fig:loss_function}, the mean and the standard deviation of each group of 10 trainings is computed. For the final \textit{hermes-tbats} model of the M4 weekly dataset,  the following set of parameters was selected: 3 windows per time series were used as the train set, the batch size was set to 8 and the learning rate was fixed to 0.005.
+
+ 
+\begin{figure}
+\centering
+  \includegraphics[width=.49\linewidth]{m4_sliding_window.png}
+  \includegraphics[width=.49\linewidth]{m4_learning_rate.png}
+  \includegraphics[width=1.\linewidth]{m4_batch_size.png}
+  \includegraphics[width=.49\linewidth]{m4_window_size.png}
+  \includegraphics[width=.49\linewidth]{m4_lstm_dim.png}
+\caption{OWA for the \textit{hermes-tbats} model on the eval set of the M4 weekly dataset. 5 hyperparameters used during the RNN training are tested: the number of moving windows per time series (top left), the learning rate (top right), the batch size (middle), the window size for the RNN input (bottom left) and the dimension of the LSTM layers output (bottom right). For each parameter, 10 models with different seeds have been trained. The mean and the standard deviation of the OWA on the eval set are represented with a point and a vertical line.}
+\label{fig:m4parameter}
+\end{figure}
+
+\end{document}

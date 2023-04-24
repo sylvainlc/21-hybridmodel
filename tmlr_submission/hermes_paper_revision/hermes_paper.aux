@@ -1,0 +1,176 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{makridakis2018}
+\citation{sarkka2013,douc2014,zucchini2017}
+\citation{Brown1961}
+\citation{alysha2011}
+\citation{box2015}
+\citation{touron2017}
+\citation{touron2019}
+\citation{hochreiter1997,vaswani2017,siami2018,li2019,lim2019,salinas2020}
+\citation{salinas2020}
+\citation{li2019}
+\citation{lim2019}
+\citation{martin2020}
+\citation{makridakis2018}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:introduction}{{1}{1}{Introduction}{section.1}{}}
+\citation{ma2020}
+\citation{ma2020}
+\citation{ren2015,chollet2017}
+\citation{zhang2003,jianwei2019,bandara2020}
+\citation{smyl2020}
+\citation{makridakis2020}
+\citation{ren2015}
+\citation{lin2014}
+\citation{chollet2017}
+\citation{russakovsky2014}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces From social media to fashion time series. a) A complete image dataset of 150 millions of pictures is collected from social media users localized on 5 strategic markets. b) A visual recognition pipeline is applied on images. Global fashion items are detected with a collection of fine-grain attributes. c) Results are aggregated by fashion trend over time and normalized in order to remove social media bias. }}{3}{figure.1}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{3}{From social media to fashion time series. a) A complete image dataset of 150 millions of pictures is collected from social media users localized on 5 strategic markets. b) A visual recognition pipeline is applied on images. Global fashion items are detected with a collection of fine-grain attributes. c) Results are aggregated by fashion trend over time and normalized in order to remove social media bias}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}From social media to fashion time series}{3}{section.2}\protected@file@percent }
+\newlabel{sec:dataset}{{2}{3}{From social media to fashion time series}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Translate fashion to data}{3}{subsection.2.1}\protected@file@percent }
+\newlabel{sec:dataset:a}{{2.1}{3}{Translate fashion to data}{subsection.2.1}{}}
+\citation{cleveland1990}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces A shoes trend of the fashion dataset. In black the main signal and in orange its associated \textit  {fashion-forward} weak signal. The sudden explosion of the influencers signal at the end of 2018 announces the future burst of the trend in the mass market.}}{4}{figure.2}\protected@file@percent }
+\newlabel{fig:oneemergingtrend}{{2}{4}{A shoes trend of the fashion dataset. In black the main signal and in orange its associated \textit {fashion-forward} weak signal. The sudden explosion of the influencers signal at the end of 2018 announces the future burst of the trend in the mass market}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Removing social media bias}{4}{subsection.2.2}\protected@file@percent }
+\newlabel{sec:dataset:b}{{2.2}{4}{Removing social media bias}{subsection.2.2}{}}
+\citation{rogers1962}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Example of difference between the raw sequence and the normalized one for the Jersey top fashion trend for females in China. In this example, we normalize by the deseasonalized global top fashion trend for females in China. (Top) Time series representing the raw signal of the Jersey top fashion trend for females in China. (Bottom) Time series representing the normalized signal of the Jersey top fashion trend for females in China.}}{5}{figure.3}\protected@file@percent }
+\newlabel{fig:normalization}{{3}{5}{Example of difference between the raw sequence and the normalized one for the Jersey top fashion trend for females in China. In this example, we normalize by the deseasonalized global top fashion trend for females in China. (Top) Time series representing the raw signal of the Jersey top fashion trend for females in China. (Bottom) Time series representing the normalized signal of the Jersey top fashion trend for females in China}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Weak signal}{5}{subsection.2.3}\protected@file@percent }
+\citation{smyl2020}
+\citation{smyl2020}
+\citation{alysha2011}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Fashion time series overview. For each couple geozone/category, the table gives the number of trends (Female/Male).}}{6}{table.1}\protected@file@percent }
+\newlabel{tab:fashiondataset}{{1}{6}{Fashion time series overview. For each couple geozone/category, the table gives the number of trends (Female/Male)}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Fashion dataset}{6}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}HERMES: a new hybrid model for time series forecasting}{6}{section.3}\protected@file@percent }
+\newlabel{sec:hybrid}{{3}{6}{HERMES: a new hybrid model for time series forecasting}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Per-time-series predictors}{6}{subsection.3.1}\protected@file@percent }
+\newlabel{eq:predictors}{{2}{6}{Per-time-series predictors}{equation.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Hermes forecast example on a time series representing the vertical stipes texture fashion trend for females in Brazil. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model.}}{7}{figure.4}\protected@file@percent }
+\newlabel{fig:introexamples}{{4}{7}{Hermes forecast example on a time series representing the vertical stipes texture fashion trend for females in Brazil. In green the prediction of the TBATS per-time-series predictors. In red the final forecast of our HERMES hybrid model}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Error-corrector recurrent model}{7}{subsection.3.2}\protected@file@percent }
+\citation{smyl2020}
+\citation{alysha2011}
+\newlabel{eq:nows:full:model}{{3}{8}{Error-corrector recurrent model}{equation.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Weak signal}{8}{subsection.3.3}\protected@file@percent }
+\newlabel{eq:withws:full:model}{{4}{8}{Weak signal}{equation.3.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental results}{8}{section.4}\protected@file@percent }
+\newlabel{sec:exp}{{4}{8}{Experimental results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Training}{8}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Architecture of the hybrid model with weak signals. The proposed framework can be decomposed in 5 steps: i) provide a time series. ii) (a) fit a first statistical model with the provided time series, (b) compute a first prediction and (c) preprocess the time series for the Global RNN. iii) If available, external signals can be added as part of the RNN input. iv) With a pre-trained RNN, compute a correction of the first statistical prediction. v) Compute the final forecast by adding the first time series prediction and the RNN correction.}}{9}{figure.5}\protected@file@percent }
+\newlabel{fig:architecture}{{5}{9}{Architecture of the hybrid model with weak signals. The proposed framework can be decomposed in 5 steps: i) provide a time series. ii) (a) fit a first statistical model with the provided time series, (b) compute a first prediction and (c) preprocess the time series for the Global RNN. iii) If available, external signals can be added as part of the RNN input. iv) With a pre-trained RNN, compute a correction of the first statistical prediction. v) Compute the final forecast by adding the first time series prediction and the RNN correction}{figure.5}{}}
+\citation{hyndman2020}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Temporal split for our training process. The three first years define our training set. The fourth year is used as our eval set and the final year is reserved for the test set.}}{10}{figure.6}\protected@file@percent }
+\newlabel{fig:train_eval_test_set}{{6}{10}{Temporal split for our training process. The three first years define our training set. The fourth year is used as our eval set and the final year is reserved for the test set}{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Benchmarks, hybrid models and Metrics}{10}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:fashiontraining}{{4.2}{10}{Benchmarks, hybrid models and Metrics}{subsection.4.2}{}}
+\citation{smyl2020}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Results summary on the 10000ts Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}}{11}{table.2}\protected@file@percent }
+\newlabel{tab:metricresults}{{2}{11}{Results summary on the 10000ts Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Result for the Fashion dataset}{11}{subsection.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textit  {hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit  {tbats}. In red the final forecast of our HERMES hybrid model \textit  {hermes-tbats}. (Top) Time series representing a top fashion trend for females in The United States. (Bottom) Time series representing the horizontal stipes texture fashion trend for females in China.}}{12}{figure.7}\protected@file@percent }
+\newlabel{fig:examples}{{7}{12}{\textit {hermes-tbats} forecast examples. In green the prediction of the per-time-series predictors \textit {tbats}. In red the final forecast of our HERMES hybrid model \textit {hermes-tbats}. (Top) Time series representing a top fashion trend for females in The United States. (Bottom) Time series representing the horizontal stipes texture fashion trend for females in China}{figure.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textit  {tbats}, \textit  {hermes-tbats} and \textit  {hermes-tbats-ws} models confusion matrix}}{12}{table.3}\protected@file@percent }
+\newlabel{tab:tbatsclass}{{3}{12}{\textit {tbats}, \textit {hermes-tbats} and \textit {hermes-tbats-ws} models confusion matrix}{table.3}{}}
+\citation{makridakis2020}
+\citation{makridakis2020}
+\citation{smyl2020}
+\citation{darin2020}
+\citation{petropoulos2020}
+\citation{pawlikowski2020}
+\citation{montero2020}
+\citation{makridakis2020}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Results summary on the 1000 time series and 100 time series Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.}}{13}{table.4}\protected@file@percent }
+\newlabel{tab:1000metricresults}{{4}{13}{Results summary on the 1000 time series and 100 time series Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Result for M4 weekly dataset}{13}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:m4result}{{4.4}{13}{Result for M4 weekly dataset}{subsection.4.4}{}}
+\citation{smyl2020}
+\citation{smyl2020}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces One of the shortest sequences of the M4 weekly dataset (93 time steps). In order to fit its predictor, the last complete year of the train set is duplicated in order to reach a total length of 300 time steps.}}{14}{figure.8}\protected@file@percent }
+\newlabel{fig:m4dataset}{{8}{14}{One of the shortest sequences of the M4 weekly dataset (93 time steps). In order to fit its predictor, the last complete year of the train set is duplicated in order to reach a total length of 300 time steps}{figure.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{14}{section.5}\protected@file@percent }
+\newlabel{sec:conclusion}{{5}{14}{Conclusion}{section.5}{}}
+\bibdata{hermes_paper}
+\bibcite{bandara2020}{{1}{2020}{{Bandara et~al.}}{{Bandara, Bergmeir, and Hewamalage}}}
+\bibcite{box2015}{{2}{2015}{{Box et~al.}}{{Box, Jenkins, Reinsel, and Ljung}}}
+\bibcite{Brown1961}{{3}{1961}{{Brown \& Meyer}}{{Brown and Meyer}}}
+\bibcite{chollet2017}{{4}{2017}{{Chollet}}{{}}}
+\bibcite{cleveland1990}{{5}{1990}{{Cleveland et~al.}}{{Cleveland, Cleveland, McRae, and Terpenning}}}
+\bibcite{darin2020}{{6}{2020}{{Darin \& Stellwagen}}{{Darin and Stellwagen}}}
+\bibcite{douc2014}{{7}{2014}{{Douc et~al.}}{{Douc, Moulines, and Stoffer}}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Results summary on the m4 weekly dataset. For each metric, the average on all our time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}}{15}{table.5}\protected@file@percent }
+\newlabel{tab:m4metricresults}{{5}{15}{Results summary on the m4 weekly dataset. For each metric, the average on all our time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed}{table.5}{}}
+\bibcite{hochreiter1997}{{8}{1997}{{Hochreiter \& Schmidhuber}}{{Hochreiter and Schmidhuber}}}
+\bibcite{hyndman2020}{{9}{2020}{{Hyndman et~al.}}{{Hyndman, Athanasopoulos, Bergmeir, Caceres, Chhay, O'Hara-Wild, Petropoulos, Razbash, and Wang}}}
+\bibcite{jianwei2019}{{10}{2019}{{Jianwei et~al.}}{{Jianwei, Ye, and Jin}}}
+\bibcite{li2019}{{11}{2019}{{Li et~al.}}{{Li, Jin, Xuan, Zhou, Chen, Wang, and Yan}}}
+\bibcite{lim2019}{{12}{2019}{{Lim et~al.}}{{Lim, Arik, Loeff, and Pfister}}}
+\bibcite{lin2014}{{13}{2014}{{Lin et~al.}}{{Lin, Maire, Belongie, Bourdev, Girshick, Hays, Perona, Ramanan, Zitnick, and Dollár}}}
+\bibcite{alysha2011}{{14}{2011}{{Livera et~al.}}{{Livera, Hyndman, and Snyder}}}
+\bibcite{ma2020}{{15}{2020}{{Ma et~al.}}{{Ma, Ding, Yang, Liao, Wong, and Chua}}}
+\bibcite{makridakis2018}{{16}{2018}{{Makridakis et~al.}}{{Makridakis, Spiliotis, and Assimakopoulos}}}
+\bibcite{makridakis2020}{{17}{2020}{{Makridakis et~al.}}{{Makridakis, Spiliotis, and Assimakopoulos}}}
+\bibcite{martin2020}{{18}{2021}{{Martin et~al.}}{{Martin, Ollion, Strub, Le~Corff, and Pietquin}}}
+\bibcite{montero2020}{{19}{2020}{{Montero-Manso et~al.}}{{Montero-Manso, Athanasopoulos, Hyndman, and Talagala}}}
+\bibcite{pawlikowski2020}{{20}{2020}{{Pawlikowski \& Chorowska}}{{Pawlikowski and Chorowska}}}
+\bibcite{petropoulos2020}{{21}{2020}{{Petropoulos \& Svetunkov}}{{Petropoulos and Svetunkov}}}
+\bibcite{ren2015}{{22}{2015}{{Ren et~al.}}{{Ren, He, Girshick, and Sun}}}
+\bibcite{rogers1962}{{23}{1962}{{Rogers}}{{}}}
+\bibcite{russakovsky2014}{{24}{2014}{{Russakovsky et~al.}}{{Russakovsky, Deng, Su, Krause, Satheesh, Ma, Huang, Karpathy, Khosla, Bernstein, Berg, and Fei-Fei}}}
+\bibcite{salinas2020}{{25}{2020}{{Salinas et~al.}}{{Salinas, Flunkert, Gasthaus, and Januschowski}}}
+\bibcite{sarkka2013}{{26}{2013}{{S{\"a}rkk{\"a}}}{{}}}
+\bibcite{siami2018}{{27}{2018}{{Siami-Namini et~al.}}{{Siami-Namini, Tavakoli, and Siami~Namin}}}
+\bibcite{smyl2020}{{28}{2020}{{Smyl}}{{}}}
+\bibcite{touron2017}{{29}{2017}{{Touron}}{{}}}
+\bibcite{touron2019}{{30}{2019}{{Touron}}{{}}}
+\bibcite{vaswani2017}{{31}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
+\bibcite{zhang2003}{{32}{2003}{{Zhang}}{{}}}
+\bibcite{zucchini2017}{{33}{2017}{{Zucchini et~al.}}{{Zucchini, MacDonald, and Langrock}}}
+\bibstyle{tmlr}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces M4 weekly dataset overview. For each category, the number of sequences and the average length are given.}}{17}{table.6}\protected@file@percent }
+\newlabel{tab:m4dataset}{{6}{17}{M4 weekly dataset overview. For each category, the number of sequences and the average length are given}{table.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}M4 weekly dataset, Ensembling training and results}{17}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}M4 weekly dataset}{17}{subsection.A.1}\protected@file@percent }
+\newlabel{sec:m4overview}{{A.1}{17}{M4 weekly dataset}{subsection.A.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}M4 accuracy metrics}{17}{subsection.A.2}\protected@file@percent }
+\newlabel{sec:m4metric}{{A.2}{17}{M4 accuracy metrics}{subsection.A.2}{}}
+\newlabel{fig:m4examples:sub1}{{A.1}{18}{M4 weekly dataset}{table.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Examples of time series from the M4 weekly dataset. From Top to Bottom : time series called \textit  {W10} from the \textit  {Other} category, \textit  {W20} from the \textit  {Macro} category and \textit  {W220} from the \textit  {Finance} category.}}{18}{figure.9}\protected@file@percent }
+\newlabel{fig:m4examples}{{9}{18}{Examples of time series from the M4 weekly dataset. From Top to Bottom : time series called \textit {W10} from the \textit {Other} category, \textit {W20} from the \textit {Macro} category and \textit {W220} from the \textit {Finance} category}{figure.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces forecast examples of HERMES variations on 2 time series of the M4 weekly dataset. At the top, the \textit  {W133} time series is displayed with the prediction of the per-time-series predictor \textit  {thetam} (green) and the final forecast of the HERMES hybrid model \textit  {hermes-thetam} (red). At the bottom, the \textit  {W262} time series is represented with the corresponding prediction of the per-time-series predictors \textit  {ets-add} (green) and the HERMES correction of \textit  {hermes-ets-add} (red).}}{19}{figure.10}\protected@file@percent }
+\newlabel{fig:m4pred}{{10}{19}{forecast examples of HERMES variations on 2 time series of the M4 weekly dataset. At the top, the \textit {W133} time series is displayed with the prediction of the per-time-series predictor \textit {thetam} (green) and the final forecast of the HERMES hybrid model \textit {hermes-thetam} (red). At the bottom, the \textit {W262} time series is represented with the corresponding prediction of the per-time-series predictors \textit {ets-add} (green) and the HERMES correction of \textit {hermes-ets-add} (red)}{figure.10}{}}
+\citation{montero2020}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Results summary on the m4 weekly dataset of the HERMES variations. For each metric, the average on all the time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed. For the statistical models \textit  {ets-add}, \textit  {ets-mul} and \textit  {thetam}, the Python package {\texttt  {statsmodels}} is used. The Python package \texttt  {tbats} is used for the \textit  {tbats} approach.}}{20}{table.7}\protected@file@percent }
+\newlabel{tab:m4hermesvariationsresults}{{7}{20}{Results summary on the m4 weekly dataset of the HERMES variations. For each metric, the average on all the time series is computed. For approaches using a neural network, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed. For the statistical models \textit {ets-add}, \textit {ets-mul} and \textit {thetam}, the Python package {\texttt {statsmodels}} is used. The Python package \texttt {tbats} is used for the \textit {tbats} approach}{table.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}FFORMA ensembling with HERMES variations}{20}{subsection.A.3}\protected@file@percent }
+\newlabel{sec:fforma-hermes}{{A.3}{20}{FFORMA ensembling with HERMES variations}{subsection.A.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}M4 weekly dataset results}{20}{subsection.A.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces MASE accuray for the \textit  {hermes-tbats-ws} model depending on the loss used during the RNN training. For each loss, 10 models with different seeds have been trained. The mean and the standard deviation are represented with a point and a vertical line.}}{21}{figure.11}\protected@file@percent }
+\newlabel{fig:loss_function}{{11}{21}{MASE accuray for the \textit {hermes-tbats-ws} model depending on the loss used during the RNN training. For each loss, 10 models with different seeds have been trained. The mean and the standard deviation are represented with a point and a vertical line}{figure.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Training parameters and loss}{21}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Loss grid search on the Fashion Dataset}{21}{subsection.B.1}\protected@file@percent }
+\newlabel{sec:fashiongridsearch}{{B.1}{21}{Loss grid search on the Fashion Dataset}{subsection.B.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Parameters grid search on the M4 weekly Dataset}{21}{subsection.B.2}\protected@file@percent }
+\newlabel{sec:m4gridsearch}{{B.2}{21}{Parameters grid search on the M4 weekly Dataset}{subsection.B.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces OWA for the \textit  {hermes-tbats} model on the eval set of the M4 weekly dataset. 5 hyperparameters used during the RNN training are tested: the number of moving windows per time series (top left), the learning rate (top right), the batch size (middle), the window size for the RNN input (bottom left) and the dimension of the LSTM layers output (bottom right). For each parameter, 10 models with different seeds have been trained. The mean and the standard deviation of the OWA on the eval set are represented with a point and a vertical line.}}{22}{figure.12}\protected@file@percent }
+\newlabel{fig:m4parameter}{{12}{22}{OWA for the \textit {hermes-tbats} model on the eval set of the M4 weekly dataset. 5 hyperparameters used during the RNN training are tested: the number of moving windows per time series (top left), the learning rate (top right), the batch size (middle), the window size for the RNN input (bottom left) and the dimension of the LSTM layers output (bottom right). For each parameter, 10 models with different seeds have been trained. The mean and the standard deviation of the OWA on the eval set are represented with a point and a vertical line}{figure.12}{}}
