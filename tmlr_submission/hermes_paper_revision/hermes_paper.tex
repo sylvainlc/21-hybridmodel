@@ -508,6 +508,123 @@ As a possible future work, designing new models for the weak signals would impro
 
 \appendix
 
+\textcolor{orange}{
+\section{Fashion dataset: a study of sub-samples of time series sharing the same behaviour}
+}
+\textcolor{orange}{
+On a large dataset as the Fashion dataset, looking at aggregated metrics can often hide relevant results, especially on sub-samples sharing the same behaviours. To illustrate this point, a study of 4 sub-samples of the Fashion dataset is proposed in this section. Their are defined as follows:
+\begin{itemize}
+\item \textbf{disrupting time series}: In retail and fashion industries, a strategic issue is to correctly anticipate new trends that will burst or collapse in the next weeks, months or years. To detect these sub sample of trends in the Fashion dataset, the following approach is proposed: Using the \textit{snaive} model, a prediction of the last year is computed for each trend and the linked MASE. Finally, the dirsupting time series are the 1000 time series with the highest MASE.
+\item \textbf{stable time series}: By contrast, a group a stable trend a presented. To define them, the same methodology as the previous group is used. We define them as the time series where the \textit{snaive} prediction reachs the lowest MASE. 
+\item \textbf{seasonal time series}: Another relevant group of time series is sequences showing a strong seasonal patern. So as to detect them, we compute for each trend the seasonality strength metric introduced in \citet{wang2006}. The seasonal time series group is the 1000 fashion time series with highest seasonality strength.
+\item \textbf{noisy time series}: Finally, several time series of the Fashion dataset represent niche trends only worn and posted on social media by a few people. The average volume for these sequences is low resulting in sporadic and noisy time series difficult to forecast. In order to detect them, we use the seasonality and trend strenght metrics presented in \citet{wang2006}. For each time series, the average of these two quantities is computed and we define the time series group as the 1000 sequences with the lowest averages.
+\end{itemize}
+Table~\ref{tab:fashionsubsample} displays the MASE of each models introduced in Section~\ref{sec:exp} on the 4 sub-samples of time series. Several relevant results can be highlited. Firstly, models using the influencer weak signals strongly outperform other candidates on the disruptive time series. This result is even more visible with the HERMES approach where variations using the weak signals are always better than the ones without. These results illustrate the really predictive strenght of the influencer signals proposed in the Fashion dataset and prove empirically the impact of influencers on the fashion industries.
+Secondly, on stable time series and seasonal time series, a relevant interest of the hybrid approach is revealed. Looking at the result of \textit{hermes-tbats}, we can see that this hybrid model can use the strength of \textit{tbats} to compute a first accurate prediction and then, use the strength of a global neural network to understand more complex patterns. This strenght is even more visible on seasonal time series where hybrid approach largely outperform then neural network models presented in the benchmarks.
+Finally, on noisy time series, we can see that neural network methodes reach the highest accuracy and are the less impacted by these difficult trend. Futhermore, for all the HERMES approaches, we can note that the final hybrid predictions and the per-time-series models' predictions are the same. The error-correction model doesn't try to predict the noise and let the per-time-series models' predictions as they are.}
+
+\begin{table}
+  \caption{Results summary on 4 differents sub-sample of  Fashion time series: i) disrupting time series, ii) stable time series, iii) seasonal time series and iv) noisy time series.}\vspace{0.5cm} 
+ \centering
+ \resizebox{0.8\textwidth}{!}{
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{\textit{disrupting} time series}\\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 1.455 & -\\ 
+	 \textit{thetam} && 1.314 & -\\ 
+	 \textit{ets} && 1.27 & -\\ 
+	 \textit{arima} && 1.256 & -\\ 
+	 \textit{tbats} && 1.229 & -\\ 
+	 \textit{hermes-thetam} && 1.209 & 0.005\\ 
+	 \textit{hermes-ets} && 1.202 & 0.007\\ 
+	 \textit{stlm} && 1.198 & -\\ 
+	 \textit{hermes-tbats} && 1.195 & 0.01\\ 
+	 \textit{prophet} && 1.193 & -\\ 
+	 \textit{deepar} && 1.18 & 0.03\\ 
+	 \textit{lstm} && 1.15 & 0.01\\ 
+	 \textit{hermes-thetam-ws} && 1.145 & 0.019\\ 
+	 \textit{hermes-ets-ws} && 1.131 & 0.024\\ 
+	 \textit{hermes-tbats-ws} && 1.092 & 0.007\\ 
+	 \textit{lstm-ws} && 1.086 & 0.009\\  \vspace{0.5cm}\\
+  \end{tabular}\hspace{1cm}
+  \begin{tabular}{l||llll}
+   \multicolumn{4}{c}{\textit{stable} time series}\\
+   &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	\hline
+	 &&& \\
+     \textit{prophet} && 0.629 & -\\ 
+	 \textit{thetam} && 0.615 & -\\ 
+	 \textit{ets} && 0.611 & -\\ 
+	 \textit{arima} && 0.565 & -\\ 
+	 \textit{hermes-ets-ws} && 0.555 & 0.007\\ 
+	 \textit{snaive} && 0.536 & -\\  
+	 \textit{deepar} && 0.531 & 0.024\\ 
+ 	 \textit{hermes-thetam-ws} && 0.522 & 0.004\\ 
+	 \textit{hermes-ets} && 0.518 & 0.002\\ 
+	 \textit{stlm} && 0.513 & -\\ 
+	 \textit{hermes-thetam} && 0.508 & 0.005\\ 
+	 \textit{tbats} && 0.501 & -\\ 
+	 \textit{lstm-ws} && 0.492 & 0.007\\ 
+	 \textit{hermes-tbats-ws} && 0.477 & 0.008\\ 
+	 \textit{lstm} && 0.47 & 0.004\\ 
+	 \textit{hermes-tbats} && 0.451 & 0.002\\  \vspace{0.5cm}\\
+  \end{tabular}
+ }
+ \resizebox{0.8\textwidth}{!}{ 
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{\textit{seasonal} time series}\\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 0.895 & -\\ 
+	 \textit{ets} && 0.895 & -\\ 
+	 \textit{prophet} && 0.851 & -\\ 
+	 \textit{deepar} && 0.836 & 0.035\\ 
+	 \textit{lstm-ws} && 0.829 & 0.014\\ 
+	 \textit{thetam} && 0.826 & -\\ 
+	 \textit{lstm} && 0.823 & 0.013\\ 
+	 \textit{hermes-thetam} && 0.815 & 0.008\\ 
+	 \textit{tbats} && 0.81 & -\\ 
+	 \textit{hermes-ets-ws} && 0.809 & 0.01\\ 
+	 \textit{hermes-thetam-ws} && 0.808 & 0.008\\ 
+	 \textit{arima} && 0.805 & -\\ 
+	 \textit{stlm} && 0.786 & -\\ 
+	 \textit{hermes-ets} && 0.785 & 0.003\\ 
+	 \textit{hermes-tbats-ws} && 0.777 & 0.012\\ 
+	 \textit{hermes-tbats} && 0.772 & 0.003\\ 
+  \end{tabular}\hspace{1cm}
+  \begin{tabular}{l||llll}
+   \multicolumn{4}{c}{\textit{noisy} time series}\\
+   &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	\hline
+	 &&& \\
+     \textit{snaive} && 0.842 & -\\ 
+	 \textit{hermes-ets-ws} && 0.739 & 0.005\\ 
+	 \textit{hermes-ets} && 0.726 & 0.002\\ 
+	 \textit{ets} && 0.721 & -\\ 
+	 \textit{thetam} && 0.717 & -\\ 
+	 \textit{stlm} && 0.715 & -\\ 
+	 \textit{prophet} && 0.698 & -\\ 
+	 \textit{arima} && 0.696 & -\\ 
+	 \textit{hermes-thetam-ws} && 0.672 & 0.003\\ 
+	 \textit{hermes-thetam} && 0.669 & 0.001\\ 
+	 \textit{deepar} && 0.661 & 0.007\\ 
+	 \textit{hermes-tbats-ws} && 0.647 & 0.006\\ 
+	 \textit{tbats} && 0.646 & -\\ 
+	 \textit{hermes-tbats} && 0.644 & 0.003\\ 
+	 \textit{lstm-ws} && 0.637 & 0.004\\ 
+	 \textit{lstm} && 0.636 & 0.003\\
+  \end{tabular}
+ }
+ \label{tab:fashionsubsample}
+\end{table}
+
 \section{M4 weekly dataset, Ensembling training and results}
 
 \subsection{M4 weekly dataset}
