@@ -1,0 +1,225 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+\maketitle
+
+We would like to thank the reviewer for his appreciation of the paper and his constructive feedback. We have carefully considered all the listed comments and we will propose a revision of the paper accordingly when all the reviews will be published. In the meantime, you can find below detailed responses to the reviewer's remarks and an overview of some of the  modifications that will be added in the revision of the manuscript.
+
+\section*{Detailed responses}
+
+\subsection*{Requested changes:}
+
+\begin{itemize}
+	
+	\item {\em ``The paper should provide a clear motivation or literature review for the choice of per-time-series models.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark and we acknowledge that we did not discuss enough about the choice of per-time-series models in the proposed paper. This comment has led to additional justifications and discussions to bring more clarity on this point. We highlight the major parameters that can guide this choice and show that the main limitation for this choice is the computational time of the per-time-series models. In addition, in the experiment section, a third HERMES variation is added using the Thetam approach as the per-times-series model. Table~\ref{tab:metricresults} presents the new version of Table 2 of the paper with the new HERMES candidate that we call \textit{hermes-thetam}. Changes between the old and the new version are written in orange. With three HERMES approaches using different per-time-series models, we want to highlight that numerous statistical approaches can be included in the proposed hybrid framework and that this choice impacts the final behaviour of the model.\\
+	
+	\item {\em ``The paper should explain why exponential smoothing and TBATS are chosen as the predictors, and how they compare to other possible choices such as ARIMA or HMM.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark. Indeed, The choice of the per-time-series model is really important in the proposed hybrid framework and it has to be done attentively. A main limitation in this choice is the computational time of the per-time-series models to be correctly fitted. For instance, training a HMM with the EM algorithm on thousands of time series would take days of computation. The same conclusion can be done with the ARIMA approach. Too many parameters have to be fitted and even with multiprocessing, we found that this method is too expensive to be trained on a large dataset such as the fashion dataset. Concerning TBATS, Exponential smoothing and Thetam, correctly fitting them with existing Python packages is possible in an acceptable time, from a few minutes for exponential smoothing models to a couple of hours for TBATS. To clarify this point in the paper, several justifications and comments are added in the text.\\
+	
+	\item {\em ``The paper should compare with more existing methods.''} \medskip
+	
+	\textbf{Author response:} We agree with this suggestion and this comment has led to the addition of 2 new methods in the pool of benchmark. First, the Prophet method introduced in \citet{Taylor2017} is trained and evaluated on the fashion dataset using the Python package bearing the same name \texttt{prophet}. We show that its results are not at the level of the hybrid one on the whole fashion dataset, but it starts to show a relevant accuracy level on the use case where only 100 time series are accessible. Secondly, the recent and powerful DeepAR method introduced in \citet{salinas2020} is added  and trained with the Python package \texttt{Gluonts} \citep{Alexandrov2020}. This method shows striking results on the fashion dataset and is a strong competitor of the proposed hybrid approach. As an illustration, Table~\ref{tab:metricresults} presents the new version of the Table 2 of the paper with the two new models: Prophet and DeepAR. Changes between the old and the new version are written in orange.\\
+	
+	\item {\em ``The paper should explain how HERMES handles different types of time series, such as stationary, non-stationary, seasonal, or sporadic.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark that leads to a new part in the appendix where 4 sub-sample of the Fashion dataset are built and forecasted separately. The first one called \textit{disrupting} time series gathers the most difficult sequences to forecast. The second one called \textit{stable} time series defines a sample of fashion time series that are stable from a year to another. The third one called \textit{seasonal} time series gathers sequences showing a strong seasonality. Finally, the last group represents the most sporadic and noisy time series of the fashion time series. Looking at the predictions of each model on these sub-sample, interesting results can be noted and a deeper analysis of the hybrid approach, the fashion dataset and the interest of the external signal is provided. Table~\ref{tab:fashionsubsample} shows the results of each method on the 4 sub-samples and it will be added in appendix as well as a section describing more precisely how the 4 samples are built.\\
+\end{itemize}
+
+\begin{table}
+  \caption{Results summary on the 10000ts Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
+  \centering
+  \begin{tabular}{l||lllll|lllll}
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+    &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.881 && - &&& 0.357 && - &\\
+     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.845} && \textcolor{orange}{-} &&& \textcolor{orange}{0.463} && \textcolor{orange}{-}\\
+     \textit{arima} && 0.826 && -&&& 0.464 && - & \\
+     \textit{ets} && 0.807 && -&&& 0.449 && - & \\
+     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.786} && \textcolor{orange}{-} &&& \textcolor{orange}{0.485} && \textcolor{orange}{-}\\
+     \textit{stlm} && 0.770 && -&&& 0.482 && - & \\
+     \textit{hermes-ets-ws} && 0.769 && 0.005 &&& 0.501 && 0.007 &\\
+     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.764} && \textcolor{orange}{0.003} &&& \textcolor{orange}{0.497} && \textcolor{orange}{0.005}\\
+     \textcolor{orange}{\textit{hermes-thetam-ws}} && \textcolor{orange}{0.760} && \textcolor{orange}{0.004} &&& \textcolor{orange}{\textbf{0.520}} && \textcolor{orange}{0.010}\\
+     \textit{hermes-ets} && 0.758 && 0.001 &&& 0.490 && 0.006 &\\
+     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.752} && \textcolor{orange}{0.018} &&& \textcolor{orange}{0.459} && \textcolor{orange}{0.015}\\
+     \textit{tbats} && 0.745 && -&&& 0.453 && - & \\
+     \textit{lstm-ws} && 0.728 && 0.004 &&& 0.500 && 0.008 &\\
+     \textit{lstm} && 0.724 && 0.003 &&& 0.498 && 0.007 &\\
+     \textit{hermes-tbats} && 0.715 && 0.002 &&& 0.488 && 0.008 &\\
+     \textbf{\textit{hermes-tbats-ws}} && \textbf{0.712} && 0.004 &&& 0.510 && 0.005 &\\
+  \end{tabular}
+\label{tab:metricresults}
+\end{table}
+
+\begin{table}
+  \caption{Results summary on 4 differents sub-sample of  Fashion time series: i) disrupting time series, ii) stable time series, iii) seasonal time series and iv) noisy time series.}\vspace{0.5cm} 
+ \centering
+ \resizebox{0.8\textwidth}{!}{
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{\textit{disrupting} time series}\\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 1.455 & -\\ 
+	 \textit{thetam} && 1.314 & -\\ 
+	 \textit{ets} && 1.27 & -\\ 
+	 \textit{arima} && 1.256 & -\\ 
+	 \textit{tbats} && 1.229 & -\\ 
+	 \textit{hermes-thetam} && 1.209 & 0.005\\ 
+	 \textit{hermes-ets} && 1.202 & 0.007\\ 
+	 \textit{stlm} && 1.198 & -\\ 
+	 \textit{hermes-tbats} && 1.195 & 0.01\\ 
+	 \textit{prophet} && 1.193 & -\\ 
+	 \textit{deepar} && 1.18 & 0.03\\ 
+	 \textit{lstm} && 1.15 & 0.01\\ 
+	 \textit{hermes-thetam-ws} && 1.145 & 0.019\\ 
+	 \textit{hermes-ets-ws} && 1.131 & 0.024\\ 
+	 \textit{hermes-tbats-ws} && 1.092 & 0.007\\ 
+	 \textit{lstm-ws} && 1.086 & 0.009\\  \vspace{0.5cm}\\
+  \end{tabular}\hspace{1cm}
+  \begin{tabular}{l||llll}
+   \multicolumn{4}{c}{\textit{stable} time series}\\
+   &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	\hline
+	 &&& \\
+     \textit{prophet} && 0.629 & -\\ 
+	 \textit{thetam} && 0.615 & -\\ 
+	 \textit{ets} && 0.611 & -\\ 
+	 \textit{arima} && 0.565 & -\\ 
+	 \textit{hermes-ets-ws} && 0.555 & 0.007\\ 
+	 \textit{snaive} && 0.536 & -\\  
+	 \textit{deepar} && 0.531 & 0.024\\ 
+ 	 \textit{hermes-thetam-ws} && 0.522 & 0.004\\ 
+	 \textit{hermes-ets} && 0.518 & 0.002\\ 
+	 \textit{stlm} && 0.513 & -\\ 
+	 \textit{hermes-thetam} && 0.508 & 0.005\\ 
+	 \textit{tbats} && 0.501 & -\\ 
+	 \textit{lstm-ws} && 0.492 & 0.007\\ 
+	 \textit{hermes-tbats-ws} && 0.477 & 0.008\\ 
+	 \textit{lstm} && 0.47 & 0.004\\ 
+	 \textit{hermes-tbats} && 0.451 & 0.002\\  \vspace{0.5cm}\\
+  \end{tabular}
+ }
+ \resizebox{0.8\textwidth}{!}{ 
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{\textit{seasonal} time series}\\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 0.895 & -\\ 
+	 \textit{ets} && 0.895 & -\\ 
+	 \textit{prophet} && 0.851 & -\\ 
+	 \textit{deepar} && 0.836 & 0.035\\ 
+	 \textit{lstm-ws} && 0.829 & 0.014\\ 
+	 \textit{thetam} && 0.826 & -\\ 
+	 \textit{lstm} && 0.823 & 0.013\\ 
+	 \textit{hermes-thetam} && 0.815 & 0.008\\ 
+	 \textit{tbats} && 0.81 & -\\ 
+	 \textit{hermes-ets-ws} && 0.809 & 0.01\\ 
+	 \textit{hermes-thetam-ws} && 0.808 & 0.008\\ 
+	 \textit{arima} && 0.805 & -\\ 
+	 \textit{stlm} && 0.786 & -\\ 
+	 \textit{hermes-ets} && 0.785 & 0.003\\ 
+	 \textit{hermes-tbats-ws} && 0.777 & 0.012\\ 
+	 \textit{hermes-tbats} && 0.772 & 0.003\\ 
+  \end{tabular}\hspace{1cm}
+  \begin{tabular}{l||llll}
+   \multicolumn{4}{c}{\textit{noisy} time series}\\
+   &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	\hline
+	 &&& \\
+     \textit{snaive} && 0.842 & -\\ 
+	 \textit{hermes-ets-ws} && 0.739 & 0.005\\ 
+	 \textit{hermes-ets} && 0.726 & 0.002\\ 
+	 \textit{ets} && 0.721 & -\\ 
+	 \textit{thetam} && 0.717 & -\\ 
+	 \textit{stlm} && 0.715 & -\\ 
+	 \textit{prophet} && 0.698 & -\\ 
+	 \textit{arima} && 0.696 & -\\ 
+	 \textit{hermes-thetam-ws} && 0.672 & 0.003\\ 
+	 \textit{hermes-thetam} && 0.669 & 0.001\\ 
+	 \textit{deepar} && 0.661 & 0.007\\ 
+	 \textit{hermes-tbats-ws} && 0.647 & 0.006\\ 
+	 \textit{tbats} && 0.646 & -\\ 
+	 \textit{hermes-tbats} && 0.644 & 0.003\\ 
+	 \textit{lstm-ws} && 0.637 & 0.004\\ 
+	 \textit{lstm} && 0.636 & 0.003\\
+  \end{tabular}
+ }
+ \label{tab:fashionsubsample}
+\end{table}
+	
+\subsection*{Broader Impact Concerns:}	
+
+\begin{itemize}
+	\item {\em ``The paper should discuss the potential positive and negative impacts of the proposed model and dataset on the society and the environment.''} \medskip
+	\textbf{Author response:} \\
+	
+	\item {\em ``The paper should address the privacy and consent issues of using social media images and data to construct the fashion dataset and the weak signals.''} \medskip
+	\textbf{Author response:} \\
+	
+	\item {\em ``The paper should explain how the data is collected, processed, and anonymized, and what are the ethical and legal implications of this process.''} \medskip
+	\textbf{Author response:} \\
+	
+	\item {\em ``The paper should also acknowledge the potential risks or biases of using social media data to represent fashion trends, such as cultural diversity, inclusivity, or sustainability.''} \medskip
+	\textbf{Author response:} \\	
+\end{itemize}
+
+\bibliography{hermes_paper}
+\bibliographystyle{tmlr}
+
+\end{document}
