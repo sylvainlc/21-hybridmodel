@@ -207,16 +207,20 @@ We would like to thank the reviewer for his appreciation of the paper and his co
 
 \begin{itemize}
 	\item {\em ``The paper should discuss the potential positive and negative impacts of the proposed model and dataset on the society and the environment.''} \medskip
-	\textbf{Author response:} \\
+	
+	\textbf{Author response:} We agree with the suggestion of the referee and this point is now developed in the discussion Section. The proposed dataset and the HERMES model relies on neural networks and consequently, they have an impact on the environment. However, the aim of this work is to show that it is possible to better forecast and anticipate consumers behaviours in the retail and fashion industry. With a better anticipation of consumer needs, companies could better adjust their production, reduce massive wastes due to their overstocks and finally offset the environmental cost of this work.  \\
 	
 	\item {\em ``The paper should address the privacy and consent issues of using social media images and data to construct the fashion dataset and the weak signals.''} \medskip
-	\textbf{Author response:} \\
+	
+	\textbf{Author response:} We thank the referee for this remark and several information concerning this issue have been added in Section 2. The whole creation of the dataset respects the privacy and data protection regulations, including the General Data Protection Regulation. Concerning the image recovery on social media, only public accounts have been analysed and the accounts name were anonymized before any processing. Concerning the time series, all the trends names have been anonymized and only macro information such as the geolocalisation, the type of cloth and the gender are revealed publicly.\\
 	
 	\item {\em ``The paper should explain how the data is collected, processed, and anonymized, and what are the ethical and legal implications of this process.''} \medskip
-	\textbf{Author response:} \\
+	
+	\textbf{Author response:} We agree with the referee and  we added several sentences in the Section 2 to clarify this point. \\
 	
 	\item {\em ``The paper should also acknowledge the potential risks or biases of using social media data to represent fashion trends, such as cultural diversity, inclusivity, or sustainability.''} \medskip
-	\textbf{Author response:} \\	
+	
+	\textbf{Author response:} We totally agree with the referee. The question of representing the fashion sphere through social media raises a lot of interrogation. First of all, an important part of this work was to design a correct normalization process to remove the most visible biases bring with social media. Then, by proposing time series splitted by geo zone, we have tried to have an accurate representation of the diversity of behaviours that exists all around the world. We acknowledge that the proposed geozones may seem large. A future work could be to built trends at country level. Finally, by proposing a global model to forecast all the fashion trends, it is possible that rare patterns may not be correctly learned by the proposed framework. A future relevant work would be to learn models with latent processes and an unsupervised learning to explore more deeper the time series included in the Fashion dataset.\\	
 \end{itemize}
 
 \bibliography{hermes_paper}
