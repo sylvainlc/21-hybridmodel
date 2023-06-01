@@ -1,0 +1,167 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+\maketitle
+
+We would like to thank the reviewer for his appreciation of the paper and his constructive feedback. We have carefully considered all the listed comments and we will proposed a revision of the paper accordingly when all the reviews will be published. In the meantime, you can find below detailed responses to the reviewer's remarks and an overview of some of the  modifications that will be added in the revision of the manuscript.
+
+\section*{Detailed responses}
+
+\subsection*{Requested changes:}
+\begin{itemize}
+	\item {\em ``The evaluation would be more complete if performance for model trained with weak signals is reported for smaller subsets of data. Also the classification performance should be reported for smaller datasets.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark. In fact, only results for method without weak signals were presented on the smaller datasets in Table 4. The original idea was to illustrate that the proposed hybrid framework seems to be a better solution on small datasets than methods only using neural networks. However, we agree with the referee and for completeness, all the models and metrics presented on the whole Fashion dataset are now also presented in Table 4. As an illustration, Table~\ref{tab:1000metricresults} presents the new version of the Table 4 of the revised paper.\\
+	
+	\item {\em ``The authors should also consider reporting results for multiple temporal splits of data''} \medskip
+	
+	\textbf{Author response:} We totally understand the expectations of the referee with this remark. As the Fashion time series only have 5 years of historical data, Figure 6 illustrates that we have just enough historical data for the proposed split train/eval/test. It is then difficult to propose different splits (using rolling windows for instance) unless the forecast horizon is reduced. However, this option is not really relevant as clothes collection are usually prepared one year or more in advance in the fashion industry. In order to evaluate the HERMES model on a different forecasting task, we propose the second application on the M4 dataset where the horizon is set to 13, the eval set is reduced and a moving window is applied on the training part of the time series to increase the size of the trainng set. Several sentences and an introductive paragraphe have been added in the experimental section to bring more clarity on this point and highlight the difference between the Fashion application case and the M4's one.\\
+	
+	\item {\em ``It seems that there is no concept of trend birth and death in the proposed dataset. It would be nice if the authors can clarify if that is true and why is that the case
+.''} \medskip
+
+	\textbf{Author response:} We agree with the referee for this remark and we acknowledge that we did not proposed a clear exploration of this concept in the proposed work. Detecting trend birth and death is one of the main challenge of the fashion industry nowaday. Thus, an aim of this work is to illustrate that analysing social media and influencers seems to be a promising way to tackle this issue. To clarify this point, a new part in the appendix has been added where 4 sub-sample of the Fashion dataset are built and forecasted separately. One of them is  called \textit{disrupting} time series and gathers the most difficult sequences to forecast: the fashion trends that burst or collapse on the last year of data. On this particular group, we show that methods using the influencers external signal reach the highest accuracy and largely outperforms the other approaches. Table~\ref{tab:fashionsubsample} presents these results and will be added in the revised version of the paper.\\		
+\end{itemize}
+
+\begin{table}
+  \caption{Results summary on 1000 time series and 100 time series of the Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.\vspace{0.5cm}}
+ \centering
+ \resizebox{1.\textwidth}{!}{ 
+ \begin{tabular}{l||lllll|lllll}
+   \multicolumn{11}{c}{1000 time series Fashion dataset}\vspace{0.5cm}\\
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+   &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.871 && - &&& \textcolor{orange}{0.383} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.837} && \textcolor{orange}{-} &&& \textcolor{orange}{0.484} && \textcolor{orange}{-} &\\
+     \textit{arima} && 0.821 && - &&& \textcolor{orange}{0.472} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.801} && \textcolor{orange}{-} &&& \textcolor{orange}{0.469} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.788} && \textcolor{orange}{-} &&& \textcolor{orange}{0.476} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.767} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.482} && \textcolor{orange}{0.009} &\\
+     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.766} && \textcolor{orange}{0.002} &&& \textcolor{orange}{0.476} && \textcolor{orange}{0.009} &\\
+      \textcolor{orange}{\textit{hermes-ets-ws}} && \textcolor{orange}{0.766} && \textcolor{orange}{0.004} &&& \textcolor{orange}{\textbf{0.507}} && \textcolor{orange}{0.013} &\\
+     \textit{stlm} && 0.765 && - &&& \textcolor{orange}{0.493} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-thetam-ws}} && \textcolor{orange}{0.763} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.501} && \textcolor{orange}{0.009} &\\
+     \textcolor{orange}{\textit{lstm}} && \textcolor{orange}{0.740} && \textcolor{orange}{0.007} &&& \textcolor{orange}{0.487} && \textcolor{orange}{0.014} &\\
+     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.738} && \textcolor{orange}{0.017} &&& \textcolor{orange}{0.465} && \textcolor{orange}{0.013} &\\
+     \textit{tbats} && 0.734 && - &&& \textcolor{orange}{0.466} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{lstm-ws}} && \textcolor{orange}{0.731} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.492} && \textcolor{orange}{0.012} &\\
+     \textcolor{orange}{\textit{hermes-tbats}} && \textcolor{orange}{0.721} && \textcolor{orange}{0.002} &&& \textcolor{orange}{0.487} && \textcolor{orange}{0.014} &\\
+     \textcolor{orange}{\textbf{\textit{hermes-tbats-ws}}} && \textcolor{orange}{0.717} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.500} && \textcolor{orange}{0.010} &\\
+     
+  \end{tabular}\hspace{1cm}
+\vspace{.2cm}
+
+  \begin{tabular}{l||lllll|lllll}
+   \multicolumn{11}{c}{100 time series Fashion dataset}\vspace{0.5cm}\\
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+   &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.876 && - &&& \textcolor{orange}{0.330} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.822} && \textcolor{orange}{-} &&& \textcolor{orange}{0.470} && \textcolor{orange}{-} &\\
+     \textit{arima} && 0.814 && - &&& \textcolor{orange}{0.400} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.812} && \textcolor{orange}{0.009} &&& \textcolor{orange}{0.446} && \textcolor{orange}{0.031} &\\
+     \textcolor{orange}{\textit{lstm}} && \textcolor{orange}{0.810} && \textcolor{orange}{0.015} &&& \textcolor{orange}{0.446} && \textcolor{orange}{0.049} &\\
+     \textcolor{orange}{\textit{hermes-thetam-ws}} && \textcolor{orange}{0.810} && \textcolor{orange}{0.008} &&& \textcolor{orange}{0.479} && \textcolor{orange}{0.024} &\\
+     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.804} && \textcolor{orange}{0.024} &&& \textcolor{orange}{0.393} && \textcolor{orange}{0.029} &\\
+     \textcolor{orange}{\textit{hermes-ets-ws}} && \textcolor{orange}{0.792} && \textcolor{orange}{0.003} &&& \textcolor{orange}{0.386} && \textcolor{orange}{0.010} &\\
+     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.790} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.374} && \textcolor{orange}{0.005} &\\
+     \textcolor{orange}{\textit{lstm-ws}} && \textcolor{orange}{0.789} && \textcolor{orange}{0.010} &&& \textcolor{orange}{0.485} && \textcolor{orange}{0.036} &\\
+     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.786} && \textcolor{orange}{-} &&& \textcolor{orange}{0.400} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.767} && \textcolor{orange}{-} &&& \textcolor{orange}{\textbf{0.490}} && \textcolor{orange}{-} &\\
+     \textit{tbats} && 0.745 && - &&& \textcolor{orange}{0.440} && \textcolor{orange}{-} &\\
+     \textit{stlm} && 0.742 && - &&& \textcolor{orange}{0.450} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-tbats}} && \textcolor{orange}{0.741} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.462} && \textcolor{orange}{0.021} &\\
+     \textcolor{orange}{\textbf{\textit{hermes-tbats-ws}}} && \textcolor{orange}{\textbf{0.737}} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.486} && \textcolor{orange}{0.027} &\\
+  \end{tabular}
+ }
+\label{tab:1000metricresults}
+\end{table}
+
+\begin{table}
+  \caption{Results summary on a sub-sample of Fashion time series named \textit{disrupting} time series.}\vspace{0.5cm} 
+ \centering
+ \resizebox{0.5\textwidth}{!}{
+  \begin{tabular}{l||llll}
+    \multicolumn{4}{c}{\textit{disrupting} time series}\\
+    &&\multicolumn{2}{c}{\textbf{MASE}} \\
+    &&  \textit{mean}  & \textit{std}  \\
+	 \hline
+	 &&& \\
+     \textit{snaive} && 1.455 & -\\ 
+	 \textit{thetam} && 1.314 & -\\ 
+	 \textit{ets} && 1.27 & -\\ 
+	 \textit{arima} && 1.256 & -\\ 
+	 \textit{tbats} && 1.229 & -\\ 
+	 \textit{hermes-thetam} && 1.209 & 0.005\\ 
+	 \textit{hermes-ets} && 1.202 & 0.007\\ 
+	 \textit{stlm} && 1.198 & -\\ 
+	 \textit{hermes-tbats} && 1.195 & 0.01\\ 
+	 \textit{prophet} && 1.193 & -\\ 
+	 \textit{deepar} && 1.18 & 0.03\\ 
+	 \textit{lstm} && 1.15 & 0.01\\ 
+	 \textit{hermes-thetam-ws} && 1.145 & 0.019\\ 
+	 \textit{hermes-ets-ws} && 1.131 & 0.024\\ 
+	 \textit{hermes-tbats-ws} && 1.092 & 0.007\\ 
+	 \textit{lstm-ws} && 1.086 & 0.009\\  \vspace{0.5cm}\\
+  \end{tabular}\hspace{1cm}
+  }
+ \label{tab:fashionsubsample}
+\end{table}
+
+
+\subsection*{Broader Impact Concerns:}
+\begin{itemize}
+	\item {\em `The work releases a new dataset in the public domain, which is derived from social media activity of a large number of user across multiple regions. It would be in order if the authors clarify whether due to the data collection or the release of the fashion dataset, there will be any implications for individuals' privacy whose data were utilized for this work.`''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark and several information concerning this issue have been added in Section 2. The whole creation of the dataset respects the privacy and data protection regulations, including the General Data Protection Regulation. Concerning the image recovery on social media, only public accounts have been analysed and no potential private information were used, saved or revealed during the whole process. Concerning the time series, all the trends names have been anonymized and only macro information such as the geolocalisation, the type of cloth and the gender are revealed publicly. \\		
+\end{itemize}
+
+\end{document}
