@@ -262,9 +262,16 @@ An illustration of the proposed  model is displayed in Figure~\ref{fig:architect
 \section{Experimental results}
 \label{sec:exp}
 
+\textcolor{orange}{In this section, performance of the hybrid model are presented and compared with a rich collection of other approaches. the HERMES framework is evaluated on two different use cases:
+\begin{itemize}
+	\item a first application is proposed on the Fashion dataset. The HERMES model is trained at forecasting the fashion time series one year ahead (h=52). This use case is mostly guided by the fashion and retail industry where clothes collection are usually prepared one year or more in advance. As additionals signals representing influencers behaviours are available, a focus is also done on the capability of the HERMES approach to leverage these weak signals.
+	\item A second application is proposed on the weekly dataset of the m4 competition \citep{makridakis2018}. This use case is completely different from the previous one. based on the competition's rules, the forecasting horizon is set to 13 an no external signals are available. Futhermore, the proposed times series come from different sectors, have variable lengths and show contrasting behaviours.
+\end{itemize}
+}
+
 \subsection{Training}
 The dataset is split into three blocks, {\em train}, {\em eval} and {\em test} sets. The 3 first years are used as the {\em train} set, the 4th year is kept for the {\em eval} set and the {\em test} set is made of the last year. The hybrid model is trained to compute a one-year ahead prediction, $\lag$ equal to 52, and the window size $\window$ is fixed at 104.
-Using the two first years of the {\em train} set, a first per-time-series parametric model for each time series is fitted. With the resulting collection of local models, a forecast of the third year is computed for each sequence. Corrector inputs are finally computed and the RNN is trained at correcting this first collection of third-year forecasts. For the {\em eval} set, per-time-series predictors are fitted a second time using the three first years and forecasts of the fourth year are computed. The {\em eval} set is used during  training to control the learning of the RNN model and prevent overfitting. The per-time-series predictors are fitted a last time for the {\em test} set using the four first years. The final accuracy measures of all our models are computed on this {\em test} set. As an illustration, an example of our split is shown in Figure~\ref{fig:train_eval_test_set}.
+Using the two first years of the {\em train} set, a first per-time-series parametric model for each time series is fitted. With the resulting collection of local models, a forecast of the third year is computed for each sequence. Corrector inputs are finally computed and the RNN is trained at correcting this first collection of third-year forecasts. For the {\em eval} set, per-time-series predictors are fitted a second time using the three first years and forecasts of the fourth year are computed. The {\em eval} set is used during  training to control the learning of the RNN model and prevent overfitting. The per-time-series predictors are fitted a last time for the {\em test} set using the four first years. The final accuracy measures of all our models are computed on this {\em test} set. As an illustration, an example of our split is shown in Figure~\ref{fig:train_eval_test_set}. \textcolor{orange}{Looking at this figure, we can note that fashion time series have just enough historical data to perform the proposed train/eval/test split. Therefore, the common solution of applying a rolling window to increase the different splits can't be used of the Fashion dataset. At the end, only one couple input/output is provided for each split per time series.}
 
 For the first parametric per-time-series models, existing Python  libraries named \texttt{statsmodels} and  \texttt{tbats} are used to estimate the different parameters $\statparam^n$.  Depending of the choice of local parametric models, two versions of HERMES are proposed. The first one uses as predictors an additive exponential smoothing model as a reference close to \citet{smyl2020}. The second one uses the TBATS model of \citet{alysha2011} and  achieves the highest accuracy results on the fashion dataset. The neural network architecture is composed of 3 LSTM layers of shape 50 and a final Dense layer to provide the correct output dimension. A classical Adam optimizer is used with a learning rate and a batch size set using a grid search. The loss function is defined as follows:
 $$
@@ -311,7 +318,7 @@ Detecting emerging and declining trends is a crucial issue for the fashion indus
 Models using our weak signals perform similarly as without-weak-signals models for the MASE.  Interestingly, weak signals significantly improve the accuracy in detecting emerging and declining trends. Figure~\ref{fig:examples} displays some examples of \textit{hermes-tbats} models and some weaknesses that can be corrected.}
 
 \begin{table}
-  \caption{Results summary on the 10000ts Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
+  \caption{Results summary on the 10000 time series of the Fashion dataset. For each metric, the average on all our time series is computed. For approaches using neural networks, 10 models are trained with different seeds. The mean and the standard deviation of the 10 results are displayed.}
   \centering
   \begin{tabular}{l||lllll|lllll}
    &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
@@ -397,48 +404,57 @@ Models using our weak signals perform similarly as without-weak-signals models f
 
 
 \begin{table}
-  \caption{Results summary on the 1000 time series and 100 time series Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.}
+  \caption{Results summary on 1000 time series and 100 time series of the Fashion dataset. The MASE average on all the time series is computed. For the two approaches using a neural network, 10 models with different seeds are trained. the mean and the standard deviation of the 10 results are displayed.\vspace{0.5cm}}
  \centering
- \resizebox{0.8\textwidth}{!}{ 
-  \begin{tabular}{l||llll}
-    \multicolumn{4}{c}{1000 time series Fashion dataset}\vspace{0.5cm} \\
-    &&\multicolumn{2}{c}{\textbf{MASE}} \\
-    &&  \textit{mean}  & \textit{std}  \\
+ \resizebox{1.\textwidth}{!}{ 
+ \begin{tabular}{l||lllll|lllll}
+   \multicolumn{11}{c}{1000 time series Fashion dataset}\vspace{0.5cm}\\
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+   &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
 	 \hline
-	 &&& \\
-     \textit{snaive} && 0.871 & - \\
-     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.837} & \textcolor{orange}{-} \\
-     \textit{arima} && 0.821 & - \\
-     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.801} & \textcolor{orange}{-} \\
-     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.788} & \textcolor{orange}{-} \\
-     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.768} & \textcolor{orange}{0.005} \\
-     \textit{stlm} && 0.765 & - \\
-     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.764} & \textcolor{orange}{0.004} \\
-     \textit{lstm} && 0.740 & 0.007 \\
-     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.738} & \textcolor{orange}{0.017} \\
-     \textit{tbats} && 0.734 & - \\
-     \textbf{\textit{hermes-tbats}} && \textbf{0.719} & 0.002 \\
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.871 && - &&& \textcolor{orange}{0.383} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.837} && \textcolor{orange}{-} &&& \textcolor{orange}{0.484} && \textcolor{orange}{-} &\\
+     \textit{arima} && 0.821 && - &&& \textcolor{orange}{0.472} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.801} && \textcolor{orange}{-} &&& \textcolor{orange}{0.469} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.788} && \textcolor{orange}{-} &&& \textcolor{orange}{0.476} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.767} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.482} && \textcolor{orange}{0.009} &\\
+     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.766} && \textcolor{orange}{0.002} &&& \textcolor{orange}{0.476} && \textcolor{orange}{0.009} &\\
+      \textcolor{orange}{\textit{hermes-ets-ws}} && \textcolor{orange}{0.766} && \textcolor{orange}{0.004} &&& \textcolor{orange}{\textbf{0.507}} && \textcolor{orange}{0.013} &\\
+     \textit{stlm} && 0.765 && - &&& \textcolor{orange}{0.493} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-thetam-ws}} && \textcolor{orange}{0.763} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.501} && \textcolor{orange}{0.009} &\\
+     \textcolor{orange}{\textit{lstm}} && \textcolor{orange}{0.740} && \textcolor{orange}{0.007} &&& \textcolor{orange}{0.487} && \textcolor{orange}{0.014} &\\
+     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.738} && \textcolor{orange}{0.017} &&& \textcolor{orange}{0.465} && \textcolor{orange}{0.013} &\\
+     \textit{tbats} && 0.734 && - &&& \textcolor{orange}{0.466} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{lstm-ws}} && \textcolor{orange}{0.731} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.492} && \textcolor{orange}{0.012} &\\
+     \textcolor{orange}{\textit{hermes-tbats}} && \textcolor{orange}{0.721} && \textcolor{orange}{0.002} &&& \textcolor{orange}{0.487} && \textcolor{orange}{0.014} &\\
+     \textcolor{orange}{\textbf{\textit{hermes-tbats-ws}}} && \textcolor{orange}{0.717} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.500} && \textcolor{orange}{0.010} &\\
+     
   \end{tabular}\hspace{1cm}
 \vspace{.2cm}
 
-  \begin{tabular}{l||llll}
-   \multicolumn{4}{c}{100 ts Fashion dataset}\vspace{0.5cm} \\
-   &&\multicolumn{2}{c}{\textbf{MASE}} \\
-    &&  \textit{mean}  & \textit{std}  \\
-	\hline
-	 &&& \\
-     \textit{snaive} && 0.876 & - \\
-     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.822} & \textcolor{orange}{-} \\
-     \textit{arima} && 0.814 & - \\
-     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.808} & \textcolor{orange}{0.006} \\
-     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.804} & \textcolor{orange}{0.024} \\
-     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.792} & \textcolor{orange}{0.003} \\
-     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.786} & \textcolor{orange}{-} \\
-     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.767} & \textcolor{orange}{-} \\
-     \textit{lstm} && 0.767 & 0.045 \\
-     \textit{stlm} && 0.742 & - \\
-     \textit{tbats} && 0.745 & - \\
-     \textbf{\textit{hermes-tbats}} && \textbf{0.739} & 0.003 \\
+  \begin{tabular}{l||lllll|lllll}
+   \multicolumn{11}{c}{100 time series Fashion dataset}\vspace{0.5cm}\\
+   &&\multicolumn{3}{c}{\textbf{MASE $\downarrow$}} &&& \multicolumn{3}{c}{\textbf{ACCURACY $\uparrow$}}&\\
+   &&  \textit{mean}  && \textit{std} &&&  \textit{mean}  && \textit{std}& \\
+	 \hline
+	 &&&&&&&&&&\\
+     \textit{snaive} && 0.876 && - &&& \textcolor{orange}{0.330} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{thetam}} && \textcolor{orange}{0.822} && \textcolor{orange}{-} &&& \textcolor{orange}{0.470} && \textcolor{orange}{-} &\\
+     \textit{arima} && 0.814 && - &&& \textcolor{orange}{0.400} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-thetam}} && \textcolor{orange}{0.812} && \textcolor{orange}{0.009} &&& \textcolor{orange}{0.446} && \textcolor{orange}{0.031} &\\
+     \textcolor{orange}{\textit{lstm}} && \textcolor{orange}{0.810} && \textcolor{orange}{0.015} &&& \textcolor{orange}{0.446} && \textcolor{orange}{0.049} &\\
+     \textcolor{orange}{\textit{hermes-thetam-ws}} && \textcolor{orange}{0.810} && \textcolor{orange}{0.008} &&& \textcolor{orange}{0.479} && \textcolor{orange}{0.024} &\\
+     \textcolor{orange}{\textit{deepar}} && \textcolor{orange}{0.804} && \textcolor{orange}{0.024} &&& \textcolor{orange}{0.393} && \textcolor{orange}{0.029} &\\
+     \textcolor{orange}{\textit{hermes-ets-ws}} && \textcolor{orange}{0.792} && \textcolor{orange}{0.003} &&& \textcolor{orange}{0.386} && \textcolor{orange}{0.010} &\\
+     \textcolor{orange}{\textit{hermes-ets}} && \textcolor{orange}{0.790} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.374} && \textcolor{orange}{0.005} &\\
+     \textcolor{orange}{\textit{lstm-ws}} && \textcolor{orange}{0.789} && \textcolor{orange}{0.010} &&& \textcolor{orange}{0.485} && \textcolor{orange}{0.036} &\\
+     \textcolor{orange}{\textit{ets}} && \textcolor{orange}{0.786} && \textcolor{orange}{-} &&& \textcolor{orange}{0.400} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{prophet}} && \textcolor{orange}{0.767} && \textcolor{orange}{-} &&& \textcolor{orange}{\textbf{0.490}} && \textcolor{orange}{-} &\\
+     \textit{tbats} && 0.745 && - &&& \textcolor{orange}{0.440} && \textcolor{orange}{-} &\\
+     \textit{stlm} && 0.742 && - &&& \textcolor{orange}{0.450} && \textcolor{orange}{-} &\\
+     \textcolor{orange}{\textit{hermes-tbats}} && \textcolor{orange}{0.741} && \textcolor{orange}{0.005} &&& \textcolor{orange}{0.462} && \textcolor{orange}{0.021} &\\
+     \textcolor{orange}{\textbf{\textit{hermes-tbats-ws}}} && \textcolor{orange}{\textbf{0.737}} && \textcolor{orange}{0.004} &&& \textcolor{orange}{0.486} && \textcolor{orange}{0.027} &\\
   \end{tabular}
  }
 \label{tab:1000metricresults}
@@ -456,7 +472,7 @@ Consequently, 300 time steps are kept for each sequence. shorter sequences are d
 \begin{equation}
     \tspred^{pred,n}_{T+i|T} =\mbox{exp}\left( \stat^n(log\left(\ts^n_{1:T}\right);\statparam^n)_i\right)\,.
 \end{equation}
-This simple modification increases significantly the accuracy of the per-time-series predictors tested on the M4 weekly dataset while reducing the fitting time. As for the fashion dataset, a complete grid search is done on the M4 weekly dataset to fix hyperparameters of the HERMES architecture. The horizon $h$ is set to 13 and the window size $w$ to 104. For the RNN part, the same architecture as described in Section~\ref{sec:fashiontraining} is used. The Adam optimizer is used and the MASE is directly used as the loss function. Finally a rolling window is applied on the train set so as to increase the number of examples and improve the training process. The number of slinding windows, the learning rate, the batch size, the RNN architecture and input size are set using a grid search and detailled in \ref{sec:m4gridsearch}.
+This simple modification increases significantly the accuracy of the per-time-series predictors tested on the M4 weekly dataset while reducing the fitting time. As for the fashion dataset, a complete grid search is done on the M4 weekly dataset to fix hyperparameters of the HERMES architecture. The horizon $h$ is set to 13 and the window size $w$ to 104. For the RNN part, the same architecture as described in Section~\ref{sec:fashiontraining} is used. The Adam optimizer is used and the MASE is directly used as the loss function. \textcolor{gray}{Finally a rolling window is applied on the train set so as to increase the number of examples and improve the training process.} \textcolor{orange}{As some of the m4 weekly time series have many years of historical data, a rolling window is finally applied on the train set so as to increase the number of examples and improve the training process.} The number of slinding windows, the learning rate, the batch size, the RNN architecture and input size are set using a grid search and detailled in \ref{sec:m4gridsearch}.
 
 \begin{figure*}
   \centering
