@@ -1,0 +1,62 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+Response to review.\vspace{0.2cm}
+
+We would like to thank the reviewer for the appreciation of the paper and the constructive feedback. We have carefully considered all comments and we will propose a revision of the paper accordingly when all reviews will be published. In the meantime, you can find below responses to some of the remarks:
+
+- In fact, only results for methods without weak signals were presented on the smaller datasets in Table 4. The original idea was to illustrate that the proposed hybrid framework seems to be a better solution on small datasets than methods only using neural networks. However, we agree with the referee and for completeness, all the models and metrics presented on the whole Fashion dataset are now also presented in Table 4.
+	
+- We understand the remark concerning absence of results for multiple temporal splits of data. As the Fashion time series only have 5 years of historical data, Figure 6 illustrates that we have just enough historical data for the proposed split train/eval/test. It is then difficult to propose different splits (using rolling windows for instance) unless the forecast horizon is reduced. However, this option is not really relevant as clothes collection are usually prepared one year or more in advance in the fashion industry.  In order to evaluate the HERMES model on a different forecasting task, we propose the second application on the M4 dataset where the horizon is set to 13, the eval set is reduced and a moving window is applied on the training part of the time series to increase the size of the trainng set. A paragraph was added in the experiment section to clarify this point and highlight the difference between the Fashion application case and the M4's one.
+
+- Detecting trend birth and death is one of the main challenge of the fashion industry. Thus, an aim of this work is to illustrate that analysing social media and influencers seems to be a promising way to tackle this issue. To clarify this point, a new part in the appendix was added where 4 sub-samples of the Fashion dataset are built and forecasted separately. One of them is called 'disrupting' time series and gathers the most difficult sequences to forecast: the fashion trends that burst or collapse on the last year of data. We define them as follows: using the 'snaive' model, a prediction of the last year and its linked MASE is computed for each trend. The  'dirsupting' time series are the 1000 time series where the 'snaive' prediction reachs the highest MASE. On this particular group, we show that methods using the influencers external signal reach the highest accuracy and largely outperforms the other approaches.
+
+- We thank the referee for the remark on potential privacy issues resulting from the use of social media images. Several information concerning these issues were added in Section 2. The whole design of the dataset respects the privacy and data protection regulations, including the General Data Protection Regulation. Concerning the image recovery on social media, only public accounts have been analysed and no potential private information were used, saved or revealed during the whole process. Concerning the time series, as they represent aggregate and normalized signals, no users' personal information can be tracked down.		
+
+
+\end{document}
