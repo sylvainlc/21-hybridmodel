@@ -54,36 +54,40 @@ We would like to thank the reviewer for the appreciation of the paper and the co
 
 \subsection*{Requested changes:}
 \begin{itemize}
-	\item {\em ``The reliability of the data is important for the use of this data by third parties. Please explain in detail how the human processing was done. Also, to what extent can machine failures be included in image processing? Do humans correct them?''} \medskip
+	\item {\em ``The reliability of the data is important for the use of this data by third parties. Please explain in detail how the human processing was done. Also, to what extent can machine failures be included in image processing ? Do humans correct them ?''} \medskip
 	
-	\textbf{Author response:} \\
+	\textbf{Author response:} We thank the referee for this remark. Regarding the data-acquisition pipeline presented in section 2, the human actions are limited. The first human processing occured during the training of the visual recognition models where manually labeled dataset are used. The second human processing is at the step where the fashion trends are defined. All the attributes detecting by the vision recognition models are not relevant for the fashion industry by themself. For instance the shape of a clothing' collar. A general collar shape is not relevant by itself but it is when it is link to a mini dress with a particular color and texture. These associations of fine-grain attributes are define by a team of fashion experts and are not provided with the paper. Concerning the machine failures, all the visual recognition used to build this paper have been trained with a standard processus implying a train, a eval and a test set. Thus, models showing poor performance in terms of accuracy and recall in the test set have not been used in the proposed pipeline. \\
 	
 	\item {\em ``In publishing the data, it would be good to add a little more analysis of the characteristics of the data. For example, basic statistics for each market, statistics for the Weak signal $w^{f,i}_t$, etc.''} \medskip
 	
-	\textbf{Author response:} \\
+	\textbf{Author response:} We agree with the referee and we aknowledge that we have not enough presented the diversity of behaviours hidden in the proposed fashion dataset. So as to improve this point, a new section is added in appendice of the revised version of the paper where 4 differents sub-samples of time series sharing the same behaviour are studied separately. A \\
 	
 	\item {\em ``It is written that represents the index of fashion trends, but it is unclear what exactly it refers to. Does it correspond to a product/item?''} \medskip
 
-	\textbf{Author response:}\\
+	\textbf{Author response:} We understand this remark and a sentence has been added in the revised paper to clarify this point. The index of fashion trends represent the name of the fashion cloth relevant for the fashion industry. It can be just one attribute detected by a visaul recognition model (for instance the fashion trend "sneaker") but it can also be a combination of several attributes (for instance the A-line dress is a combination of a collar shape and a dress shape attribute). As the fashion trends' name are anonymized in the proposed dataset, the architecture behind the fashion trends definition is not presented in this paper. \\
 	
 	\item {\em ``I didn't know what statistic was $\hat{y}^{c,g,m}$. Could you please explain it in detail?''} \medskip
 
-	\textbf{Author response:}\\	
+	\textbf{Author response:} We are not sure of the notation in the question of the referee, in the paper we introduce $\bar{y}^{c,g,m}$ and $\Tilde{y}^{c,g,m}$ but not $\hat{y}^{c,g,m}$. If it is a mistake, we present bellow a explanation of the two statistic $\bar{y}^{c,g,m}$ and $\Tilde{y}^{c,g,m}$
+	\begin{itemize}
+	\item $\Tilde{y}^{c,g,m}$ is the time series representing the behaviour of the global cloth type $c$ for the gender $g$ on the market $m$. It can be for exemple the time series representing the evolution of the general pants for female in Europe. The sequence $\Tilde{y}^{c,g,m}$ is then used to normalized each time series $y^{c,g,m,i}$ with the same $c$, $g$ and $m$. All the fashion trends of pants for female in Europe are normalized by the time series representing the general pants for female in Europe. 
+	\item $\bar{y}^{c,g,m}$ is the time series $\Tilde{y}^{c,g,m}$ where the seasonality component have been removed. The seasonality component is removed as we only want remove the social media bias with the normalization step and not remove or change the seasonaly of the proposed fashion trends.
+	\end{itemize}	
 
-	\item {\em ``It may be a good idea to modify the structure of Section 3. It is better to explain the hybrid model (4) at first.  Then, elaborate on the motivation behind the formulation of (4). The output of the RNN appears to represent the weights in summing $f^(.)$ and $\bar{y}^n_{T}$. Is that correct? Also, when is one of $y^{pred}$ and $y^{corr}$ more dominant than the other? The cost function described in Section 4.1 should be moved to Section 3.''} \medskip
+	\item {\em ``It may be a good idea to modify the structure of Section 3. It is better to explain the hybrid model (4) at first.  Then, elaborate on the motivation behind the formulation of (4). The output of the RNN appears to represent the weights in summing $f^n(.)$ and $\bar{y}^n_{T}$. Is that correct? Also, when is one of $y^{pred}$ and $y^{corr}$ more dominant than the other? The cost function described in Section 4.1 should be moved to Section 3.''} \medskip
 
-	\textbf{Author response:}\\	
+	\textbf{Author response:}We tank the referee for this remark. In the proposed method, $\bar{y}^n_{T}$ is a scaling factor to rescaled inputs and ouputs of the Neural network  output. Note that $f^n(.)$ represent the parametric model learned and that is different for every time series. By constrast, the reccurent neural network denoted $RNN()$ in the paper is global and the same network is used for every time series. It is why we need to use a rescale factor as we do not assume that all the time series have the same volumne. The faction of the final prediction due to $y^{pred}$ or $y^{corr}$ is variable and repose on the nature of the time series (and the external signal if it is provided to the corrector). A good illustration of this point is presented in a new section that will be added in the appendice of the revised paper. In this section, we study the accuracy of the HERMES model on a sub sample of time series with a high level of noise. On this sub-sample, the difference of accuracy between the predictor alone and the predictor plus the corrector is null. The final prediction of the HERMES model relies only on $y^{pred}$ on this specific sub-sample. Finally, we decided to present the cost function in the Experiment section and not in the section presenting the model as the choice of the loss function can change depending of the use case. For the Fashion dataset, we selected the L1 loss function to train the HERMES variations based on a gridsearch. For the M4 dataset, the MASE has been used. \\	
 
 	\item {\em ``It would be good to add a discussion of the limitations of this study. Other external factors could be various, such as advertisements. This study focuses on the correlation between weak signals and trends, not causality. This should be clearly stated. As seen in Figure 2, the effect of the external factor is accompanied by a time delay. It would be interesting to analyze how such time delays vary by fashion category and market. It would also be interesting to incorporate this into machine learning models.''} \medskip
 
-	\textbf{Author response:}\\	
+	\textbf{Author response:} We thank the referee for this remark. In this paper, we illustrate that the use of external signals is decisive in the detection of burst of collapse of fashion trends. However, we acknowledge that we let a reccurent neural network entirely leverage these signals and consequently, we lost the interpretability of the impact of the external signal on the main signal. A future work would be to study more closely how the external signal could be in advance of the main signal. How many time in advance are we able to detect a trend burst based on the influencer signal, etc...\\	
 
 	\item {\em ``In Table 2, it would be good to clarify which methods can handle weak signals and which cannot. Then, please clarify by experiment that it is effective to construct a hybrid model by the weighted sum of two terms as in the proposed method (4).''} \medskip
 
-	\textbf{Author response:}\\	
+	\textbf{Author response:} We totally agree with the referee. In the revised version of the paper, a stars is added in Table 2 and Table 4 to specify which methods has access to the weak signals and which has not. In addition, in Table 4, results of HERMES declination with and without the weak signal are added. Finally, so as to provide more benchmark, the Prophet method, the DeepAR model and a third HERMES variation are added for the Fashion use case.\\
 	
 	\item {\em ``Minor issues: i)The term "causal inference" appears in the abstract, but it is not discussed in this study and should be changed to another term. ii) The proposed method, HERMES, does not specify what it stands for. iii) Please cite Figure 1 in the text. iv) Please change the "t" in "At each time t" in section 2.1 to italic.''} \medskip
 
-	\textbf{Author response:} \textcolor{orange}{correction faites sauf pour la remarque sur HERMES. Peut etre que dans la réponse on pourra dire que c'est pour Hybird ERro-corrector Model with inclusion of External Signals ...}\\	
+	\textbf{Author response:} We thank the referee for these remarks and the text has been corrected accordingly. Concerning the remark on the name of the proposed model, HERMES stands of Hybrid ERror-corrector Model with inclusion of External Signals.\\	
 \end{itemize}
 \end{document}
