@@ -1,0 +1,89 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+\maketitle
+
+We would like to thank the reviewer for the appreciation of the paper and the constructive feedback. We have carefully considered all comments and we will propose a revision of the paper accordingly. In the meantime, you can find below detailed responses and an overview of some of the  modifications that will be added in the revised manuscript.
+
+\section*{Detailed responses}
+
+\subsection*{Requested changes:}
+\begin{itemize}
+	\item {\em ``The reliability of the data is important for the use of this data by third parties. Please explain in detail how the human processing was done. Also, to what extent can machine failures be included in image processing? Do humans correct them?''} \medskip
+	
+	\textbf{Author response:} \\
+	
+	\item {\em ``In publishing the data, it would be good to add a little more analysis of the characteristics of the data. For example, basic statistics for each market, statistics for the Weak signal $w^{f,i}_t$, etc.''} \medskip
+	
+	\textbf{Author response:} \\
+	
+	\item {\em ``It is written that represents the index of fashion trends, but it is unclear what exactly it refers to. Does it correspond to a product/item?''} \medskip
+
+	\textbf{Author response:}\\
+	
+	\item {\em ``I didn't know what statistic was $\hat{y}^{c,g,m}$. Could you please explain it in detail?''} \medskip
+
+	\textbf{Author response:}\\	
+
+	\item {\em ``It may be a good idea to modify the structure of Section 3. It is better to explain the hybrid model (4) at first.  Then, elaborate on the motivation behind the formulation of (4). The output of the RNN appears to represent the weights in summing $f^(.)$ and $\bar{y}^n_{T}$. Is that correct? Also, when is one of $y^{pred}$ and $y^{corr}$ more dominant than the other? The cost function described in Section 4.1 should be moved to Section 3.''} \medskip
+
+	\textbf{Author response:}\\	
+
+	\item {\em ``It would be good to add a discussion of the limitations of this study. Other external factors could be various, such as advertisements. This study focuses on the correlation between weak signals and trends, not causality. This should be clearly stated. As seen in Figure 2, the effect of the external factor is accompanied by a time delay. It would be interesting to analyze how such time delays vary by fashion category and market. It would also be interesting to incorporate this into machine learning models.''} \medskip
+
+	\textbf{Author response:}\\	
+
+	\item {\em ``In Table 2, it would be good to clarify which methods can handle weak signals and which cannot. Then, please clarify by experiment that it is effective to construct a hybrid model by the weighted sum of two terms as in the proposed method (4).''} \medskip
+
+	\textbf{Author response:}\\	
+	
+	\item {\em ``Minor issues: i)The term "causal inference" appears in the abstract, but it is not discussed in this study and should be changed to another term. ii) The proposed method, HERMES, does not specify what it stands for. iii) Please cite Figure 1 in the text. iv) Please change the "t" in "At each time t" in section 2.1 to italic.''} \medskip
+
+	\textbf{Author response:} \textcolor{orange}{correction faites sauf pour la remarque sur HERMES. Peut etre que dans la réponse on pourra dire que c'est pour Hybird ERro-corrector Model with inclusion of External Signals ...}\\	
+\end{itemize}
+\end{document}
