@@ -1,0 +1,81 @@
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{tmlr}
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{tmlr}
+% To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
+%\usepackage[preprint]{tmlr}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[pdftex]{graphicx}
+
+\title{HERMES: Hybrid Error-corrector Model with inclusion of External Signals for nonstationary fashion time series}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the tmlr package is used without the [accepted] or [preprint] options.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\name \'Etienne David \email etienne.david@heuritech.com \\
+      \addr SAMOVAR, Télécom SudParis,\\
+      Institut Polytechnique de Paris, 91120 Palaiseau, France
+      \AND
+      \name Jean Bellot \email jean.bellot@heuritech.com \\
+      \addr Heuritech, \\
+      6 Rue de Braque, 75003 Paris
+      \AND
+      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \addr LPSM, \\
+      Sorbonne Université, UMR CNRS 8001, 75005, Paris
+      }
+
+% The \author macro works with any number of authors. Use \AND 
+% to separate the names and addresses of multiple authors.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\month{01}  % Insert correct month for camera-ready version
+\def\year{2023} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
+
+
+\begin{document}
+
+
+\maketitle
+
+We would like to thank the reviewer for the appreciation of the paper and the constructive feedback. We have carefully considered all comments and we will propose a revision of the paper accordingly. In the meantime, you can find below detailed responses and an overview of some of the  modifications that will be added in the revised manuscript.
+
+\section*{Detailed responses}
+
+\subsection*{Requested changes:}
+\begin{itemize}
+	\item {\em ``Clearly define the terms like trend and cloth type using examples.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark and we acknowledge that we have not presented enough the definition of what we call a fashion trend. In the revision of the article, additional information has been added to clarify this point as well as a complete example of the Jersey top trend for women in China.\\
+	
+	\item {\em ``Section 2 should be described in a top-down manner if the resulting dataset is claimed to be one of the main contributions. Describe first what the resulting data looks like, then explain how you generated it.''} \medskip
+	
+	\textbf{Author response:} We understand the remark of the reviewer and reversing the order could be a nicer way to present the fashion dataset. However, regarding the reviewing timeline, we will not be able to deeply change the structure of Section 2 before the end of the process. We apologize for that and we hope that the current structure of Section 2 with the modification made in the revised version is acceptable.\\
+	
+	\item {\em ``It is not clear if the authors are calming technical contributions in the preprocess approaches. If so, the authors need to validate the specific choices like (1). The figure looks like a cherry-picked example.''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark. The preprocess approach presented in (1) is not presented as a technical contribution but more as a straightforward way to normalize data from social networks. In fact, as the popularity of social media has increased since the last few years, it is easier to collect data nowaday than in 2015. This principle is illustrated in the first graph of Figure 3 where the raw volume of the Jersey top time series is continuously increasing from 2015 to 2020. The question here is to understand if this increase of visibility is a consequence of the increase of the users interest in the Jersey top or just the increase of social media use. In (1) we propose to divide each proposed time series by a norm time series presenting the same social media bias. For instance, the Jersey top from female in China is normalized by the time series representing the evolution of the general Top from female in China. Regarding the second graph of Figure 3, we can see that the normalized signal of the Jersey top is flat. We can conclude that the increase of the raw signal of this time series is only due to the increase of the volume collected through the years and not the explosion of the visibility of this trend on social media.\\
+	
+	\item {\em ``The univariate model adopted is not clearly described. What is the model?''} \medskip
+	
+	\textbf{Author response:} We thank the referee for this remark. One of the novelties of the proposed approach is that we present a general hybrid framework able to include any kind of univariate model and it is why we only introduced a general $f^n()$ in Section 3. We acknowledge that this strength of the proposed model was not sufficiently highlighted in the original paper. Consequently, additional information has been added in Section 3 and a third HERMES variation has been added in Section 4 to illustrate this point.\\
+	
+	\item {\em ``The term "error correction" sounds misleading as there is not such an explicit algorithm to compute the error. Perhaps the second term of (3) should be called just the correction term. ''} \medskip
+	
+	\textbf{Author response:} We call the second term of (3) "error correction" to illustrate that its purpose is to anticipate future errors of the time-series parametric models and correct them. We agree that calling it "correction term" also seems appropriate and the two terms could be used interchangeably.\\
+	
+	\item {\em ``I need methodological validation on (4). Apparently, the scaling of the input of RNN is critical to serving the RNN term as the coefficient of the correction term.''} \medskip
+	
+	\textbf{Author response:} The 10000 time series in the fashion dataset have different volumes, from $10^-5$ for niche trends to $10^-1$ for common trends. As we want to train the RNN part on the whole dataset to learn cross dynamics, the normalization step of the RNN input is inevitable. Two methods have been tested and are discussed at the end of Section 3.2. i) We can normalize the RNN input by directly dividing it by the prediction of the univariate model prediction. ii) We can normalize the RNN input by the mean volume of the time series. The first solution presents a main issue that it shows instabilities with time series closed to 0 and it can simply not be used if the prediction of the univariate model prediction hits 0. Consequently, the second solution is used in the proposed hybrid framework.\\
+\end{itemize}
+\end{document}
