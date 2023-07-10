@@ -706,10 +706,10 @@ The M4 competition proposes 3 metrics to evaluate the different approaches: the 
 &\mathrm{MASE} = \frac{T-m}{h}\frac{\sum_{j=1}^h |Y_{T+j} - \hat{Y}_{T+j}| }{\sum_{i=1}^{T-m} |Y_i - Y_{i-m}|}\,,
 &\mathrm{SMAPE} = \frac{2}{h}\sum_{j=1}^h\frac{|Y_{T+j} - \hat{Y}_{T+j}|}{|Y_{T+j}| + |\hat{Y}_{T+j}|}\,,
 \end{align*}
-where h is the forecast horizon and m the length of the seasonality. The final OWA is computed by following these steps: i) compute the average MASE and SMAPE of a model. ii) Divide the previous results by the MASE and SMAPE computed with the benchmark method \textit{snaïve}. iii) Compute the OWA as the average of the relative MASE and SMAPE obtained is step ii). As an example on the m4 weekly dataset, the method \textit{hermes-tbats} gets a MASE of 7.383 and a SMAPE of 2.191. The benchmark method \textit{snaïve} obtains a MASE of 9.161 and a SMAPE of 2.777. Thus the OWA of  \textit{hermes-tbats} is equal to 0.797.
-\begin{equation*}
-    OWA_{\textit{hermes-tbats}} = \frac{1}{2}(\frac{7.282}{9.161} + \frac{2.191}{2.777}) \approx 0.797
-\end{equation*} 
+where h is the forecast horizon and m the length of the seasonality. The final OWA is computed by following these steps: i) compute the average MASE and SMAPE of a model. ii) Divide the previous results by the MASE and SMAPE computed with the benchmark method \textit{snaïve}. iii) Compute the OWA as the average of the relative MASE and SMAPE obtained is step ii). As an example on the M4 weekly dataset, the method \textit{hermes-tbats} has a MASE of 7.383 and a SMAPE of 2.191. The benchmark method \textit{snaïve} has a MASE of 9.161 and a SMAPE of 2.777. Thus the OWA of  \textit{hermes-tbats} is equal to 0.797.
+%\begin{equation*}
+%    OWA_{\textit{hermes-tbats}} = \frac{1}{2}(\frac{7.282}{9.161} + \frac{2.191}{2.777}) \approx 0.797
+%\end{equation*} 
 
 \subsection{FFORMA ensembling with HERMES variations}
 \label{sec:fforma-hermes}
