@@ -70,10 +70,10 @@ We would like to thank the reviewer for the appreciation of the paper and the co
 	
 	\item {\em ``The univariate model adopted is not clearly described. What is the model?''} \medskip
 	
-	\textbf{Author response:} We thank the referee for this remark. One of the novelties of the proposed approach is that we present a general hybrid framework able to include any kind of univariate model and it is why we only introduced a general $f^n()$ in Section 3. In the paper we propose different models: exponential smoothing, Thetam and TBATS. These models are given with the references as they are not the contribution of the paper, but could be added in the appendix if necessary.
+	\textbf{Author response:} We thank the referee for this remark. One of the novelties of the proposed approach is that we present a general hybrid framework able to include all univariate models and it is why we only introduced a general notation $f^n()$ in Section 3 for this model. In the paper we propose different models: exponential smoothing, Thetam and TBATS. These models are given with the references as they are not the contribution of the paper, but could be added in the appendix if necessary.
 
 
-We acknowledge that this strength of the proposed model was not sufficiently highlighted in the original paper. Consequently, additional information has been added in Section 3 and a third HERMES variation has been added in Section 4 to illustrate this point.\\
+We acknowledge that this feature of the proposed model was not sufficiently highlighted in the original paper. Consequently, additional information has been added in Section 3 and a third HERMES variation has been added in Section 4 to illustrate this point.\\
 	
 	\item {\em ``The term "error correction" sounds misleading as there is not such an explicit algorithm to compute the error. Perhaps the second term of (3) should be called just the correction term. ''} \medskip
 	
@@ -81,6 +81,8 @@ We acknowledge that this strength of the proposed model was not sufficiently hig
 	
 	\item {\em ``I need methodological validation on (4). Apparently, the scaling of the input of RNN is critical to serving the RNN term as the coefficient of the correction term.''} \medskip
 	
-	\textbf{Author response:} The 10000 time series in the fashion dataset have different volumes, from $10^{-5}$ for niche trends to $10^{-1}$ for common trends. As we want to train the RNN part on the whole dataset to learn cross dynamics, the normalization step of the RNN input is inevitable. Two methods have been tested and are discussed at the end of Section 3.2. i) We can normalize the RNN input by directly dividing it by the prediction of the univariate model prediction. ii) We can normalize the RNN input by the mean volume of the time series. The first solution presents a main issue that it shows instabilities with time series closed to 0 and it can simply not be used if the prediction of the univariate model prediction hits 0. Consequently, the second solution is used in the proposed hybrid framework.\\
+	\textbf{Author response:} The 10000 time series in the fashion dataset have different volumes, from $10^{-5}$ for niche trends to $10^{-1}$ for common trends. As we want to train the RNN part on the whole dataset to learn cross dynamics, the normalization step of the RNN input is inevitable. Two methods have been tested and are discussed at the end of Section 3.2. i) The RNN input can be normalized by directly dividing it by the prediction of the univariate model prediction. ii) The RNN input can be normalized by the mean volume of the time series. The first solution presents a main issue that it shows instabilities with time series close to 0 and it can simply not be used if the prediction of the univariate model prediction hits 0. Consequently, the second solution is used in the proposed hybrid framework. 
+
+Of course, other scaling procedures could be used. In this paper this is not the main topic of interest and this step is used to design a training procedure that can deal with thousands of time series. Analyzing in detail the impact of the scaling procedure on the overall training is left for future works.\\
 \end{itemize}
 \end{document}
