@@ -84,5 +84,11 @@ We acknowledge that this feature of the proposed model was not sufficiently high
 	\textbf{Author response:} The 10000 time series in the fashion dataset have different volumes, from $10^{-5}$ for niche trends to $10^{-1}$ for common trends. As we want to train the RNN part on the whole dataset to learn cross dynamics, the normalization step of the RNN input is inevitable. Two methods have been tested and are discussed at the end of Section 3.2. i) The RNN input can be normalized by directly dividing it by the prediction of the univariate model prediction. ii) The RNN input can be normalized by the mean volume of the time series. The first solution presents a main issue that it shows instabilities with time series close to 0 and it can simply not be used if the prediction of the univariate model prediction hits 0. Consequently, the second solution is used in the proposed hybrid framework. 
 
 Of course, other scaling procedures could be used. In this paper this is not the main topic of interest and this step is used to design a training procedure that can deal with thousands of time series. Analyzing in detail the impact of the scaling procedure on the overall training is left for future works.\\
+
+
+	\item {\em ``I understand the review was delayed. My comment is based on the original submission. If the data preprocessing is a sort of heuristic chosen in an ad hoc manner (that's perfectly fine, if you are not claiming technical contributions there), you may want to mention it clearly to avoid confusion.''} \medskip
+
+	\textbf{Author response: We agree with the referee and the  the text has been corrected accordingly.}
+
 \end{itemize}
 \end{document}
