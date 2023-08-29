@@ -57,7 +57,7 @@
       \addr Heuritech, \\
       6 Rue de Braque, 75003 Paris
       \AND
-      \name Sylvain Le Corff \email sylvain.lecorff@gmail.com\\
+      \name Sylvain Le Corff \email sylvain.le\_corff@sorbonne-universite.fr\\
       \addr LPSM, \\
       Sorbonne Université, UMR CNRS 8001, 75005, Paris
       }
@@ -79,7 +79,7 @@
 \maketitle
 
 \begin{abstract}
-Developing models and algorithms to predict nonstationary time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}} a dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviours of influencers. Secondly, to leverage such a dataset, we propose a new hybrid forecasting model\footnotemark. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \citep{makridakis2018}, and illustrates the benefit of the contribution of external weak signals.
+Developing models and algorithms to predict nonstationary time series is a long standing statistical problem. It is crucial for many applications, in particular for fashion or retail industries, to make optimal inventory decisions and avoid massive wastes. By tracking thousands of fashion trends on social media with state-of-the-art computer vision approaches, we propose a new model for fashion time series forecasting. Our contribution is  twofold. We first provide publicly\footnote[1]{\url{https://github.com/etidav/HERMES}} a dataset gathering \numberts\ weekly fashion time series. As influence dynamics are the key of emerging trend detection, we associate with each time series an external weak signal representing behaviours of influencers. Secondly, to leverage such a dataset, we propose a new hybrid forecasting model\footnotemark. Our approach combines per-time-series parametric models with seasonal components and a global recurrent neural network to include sporadic external signals. This hybrid model provides state-of-the-art results on the proposed fashion dataset, on the weekly time series of the M4 competition \citep{makridakis2018}, and illustrates the benefit of the contribution of external weak signals.
 \end{abstract}
 
 \section{Introduction}
@@ -159,7 +159,7 @@ where T denotes the number of available time steps. Values close to 0.5 indicate
 
 \subsection{Fashion dataset}
 
-With this paper, we provide publicly\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}} a sample of $\numberts$ normalized fashion trends for men and women, over 9 different categories and 5 different markets. Each sequence has 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. This collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes, referred to as emerging or declining trends. A central point of this work is to accurately detect and forecast such trends. In addition, each fashion time series is linked with its associated normalized fashion forward signal as presented in the section above. An overview of the dataset can be found in Table~\ref{tab:fashiondataset}. All the trends names are anonymized and for each trend, only the following macro information are revealed: the geolocalisation, the gender and the cloth type.
+With this paper, we provide publicly\footnote[1]{\url{https://github.com/etidav/HERMES}} a sample of $\numberts$ normalized fashion trends for men and women, over 9 different categories and 5 different markets. Each sequence has 261 time steps, from 2015-01-05 to 2019-12-31 with weekly values and no missing values. This collection of $\numberts$ fashion trends was selected in order to represent finely the issues faced by the fashion industry. For instance, some sequences show complex behaviours with sudden changes, referred to as emerging or declining trends. A central point of this work is to accurately detect and forecast such trends. In addition, each fashion time series is linked with its associated normalized fashion forward signal as presented in the section above. An overview of the dataset can be found in Table~\ref{tab:fashiondataset}. All the trends names are anonymized and for each trend, only the following macro information are revealed: the geolocalisation, the gender and the cloth type.
 
 \begin{table*}
   \caption{Fashion time series overview. For each couple geozone/category, the table gives the number of trends (Female/Male).}
@@ -278,7 +278,7 @@ For the first parametric per-time-series models, existing Python  libraries name
 $$
 \ell(\ts^n_{T+1:T+\lag},\tspred^n_{T+1:T+\lag|T}) = \frac{1}{\meants^n_T}\sum_{i=1}^{\lag}|\ts^n_{T+i} - \tspred^n_{T+i|T}|\,.
 $$
-This choice of $\mathrm{L}_1$ loss function is motivated by its robustness to outliers which accounts for some time series in the fashion industry with very specific behaviours. The loss and previous parameters are all set with a complete grid search and have to be adapted regarding the use case. See \ref{sec:fashiongridsearch} for additional results concerning the loss function choice and \ref{sec:m4gridsearch} for a complete grid search example. The code is developed in Python using the Tensorflow library and publicly available\footnote[1]{\url{https://anonymous.4open.science/r/HERMES-703F/}}. It allows the use of GPU to speed up the training process.
+This choice of $\mathrm{L}_1$ loss function is motivated by its robustness to outliers which accounts for some time series in the fashion industry with very specific behaviours. The loss and previous parameters are all set with a complete grid search and have to be adapted regarding the use case. See \ref{sec:fashiongridsearch} for additional results concerning the loss function choice and \ref{sec:m4gridsearch} for a complete grid search example. The code is developed in Python using the Tensorflow library and publicly available\footnote[1]{\url{https://github.com/etidav/HERMES}}. It allows the use of GPU to speed up the training process.
 
 
 
